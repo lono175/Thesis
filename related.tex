@@ -29,12 +29,25 @@ But it is not required to be perfect or optimal. AI in video games cannot be per
 would be not possible for a human player to beat the game. The opponent is suboptimal in nature.
 3. Little prior knowledge on the games. Unlike keep away, it's not possible to design heiracial action
 for (Pong). It must be able to play the game from primitive actions or construct the complex actions by itself.
+Volleyball
 Example: 
   Fireball vs Soccer ball
   In one game, it's necesart to intercept the soccer ball.
   In another game, it's lethal to touch any ball.
 4. Huge game states
+5. Little training time (the game has 30fps), cant increase that
 
+Motivation for reinforcement learning
+
+Application:
+1. desktop (sort the data row??)
+2. gaming ( a alternative of in game AI)
+3. game modeling ( convert to another platform)
+high level editing
+4. game synthesys
+
+Input of the program:
+User cases:
 1. Q-Learning
 2. SARSA
 3. MinMax Q
@@ -45,6 +58,52 @@ Example:
 7. Cite Kevin work
 8. Performance comparison of heuristic search vs RL
 9. Make MinMaxQ work
+
+The reinforcement learning algorithm would build a learning agent. The learning agent will take
+actions based on the current state. In the beginning, the agent does not know anything about 
+the environment, therefore the agent has to choose the first action randomly. After the environment
+receives the action, it would provide a reward to the agent as a feedback. The reward can be either
+positive or negative.
+
+The agent would adjust the value function to maximize the expected reward in the future.
+The value function represent the expected reward when the agent takes certain action in the current
+state, and it is used to estimate the "quality" of an action. The initial value of value function is 
+usually 0, but it is possible to set it to some high enough value to encourage exploration.
+When we design a reinforcement learning algorithms, it is important to evaluate the value function 
+correctly. If some actions with low expected reward are estimated as high, it would affect the
+performance of the agent.
+
+The agent can select an action which leads to the highest value of value function. However, 
+this strategy would not allow the agent to explore the states which are not visited before.
+A better approach is to use \epsilon-greedy method. The method allows the agent abandon the
+best action and choose
+a random action with a very small probability \epsilon. The higher the probability, the more
+likely that the agent would explore the new actions while increasing the time to converge.
+
+After the agent takes an action, the environment would provide the reward and the new state to the
+agent based on the action. The agent then decide an new action for the new state. After the iterative
+process, the agent can learn an correspondence for the action and state. The correspondence is called 
+"policy". 
+
+Temporal Difference
+There are 3 types of the reinforcement learning algorithm -- dynamic programming(DP), Monte Carlo 
+methods, and temporal-difference (TD). Dynamic programming can get the optimal solution, but it 
+requires the precise model of the environment. Nevertheless, in most of the cases, the environment
+is too complex to be modeled precisely, and it is not easy to get the complte information about
+the environment. On the other hand, it is usually feasible to sample the environment to
+get the partial information. Monte Carlo method uses .
+Like the Monte Carlo mehtod, the TD method uses sampling, and therefore it does not require the 
+complte model of the environment. TD method is a bootstrapping method, similar to the dynamic 
+programming approach, it updates the new value function based on the previous one.
+
+The equation to compute the value function in TD:
+$
+   V(S_t) <- V(S_t) + \alpha[r_{t+1} + \gammaV(S_{t+1}) - V(S_t)],
+$
+where $V(s_t)$ is the value function of the state $s_t$. $V(s_t)$ is the expected reward when
+the agent reaches the state $s_t$. $r_{t+1} is the reward given to the agent when it chooses
+the action at state $s_t$.
+
 
 This document provides a quick set of instructions for using the
 \class{ubcdiss} class to write a dissertation in \LaTeX. 
