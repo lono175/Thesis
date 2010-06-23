@@ -41,8 +41,9 @@ Motivation for reinforcement learning
 
 Application:
 1. desktop (sort the data row??)
-2. gaming ( a alternative of in game AI)
+2. gaming ( a alternative of in game AI) can act as opponent or friends (human and computer cooperation)( with 2 different computers)
 3. game modeling ( convert to another platform)
+
 high level editing
 4. game synthesys
 
@@ -101,8 +102,16 @@ $
    V(S_t) <- V(S_t) + \alpha[r_{t+1} + \gammaV(S_{t+1}) - V(S_t)],
 $
 where $V(s_t)$ is the value function of the state $s_t$. $V(s_t)$ is the expected reward when
-the agent reaches the state $s_t$. $r_{t+1} is the reward given to the agent when it chooses
+the agent reaches the state $s_t$. $r_{t+1}$ is the reward given to the agent when it chooses
 the action at state $s_t$.
+
+Q-Learning
+Q-Learning is an off-policy TD approach. Compared to SARSA, Q-Learning updates the value function
+by the highest value in the possible next states, rather than the value in the next state. 
+$
+Q(s_t, a_t) <- Q(s_t, a_t) + \alpha[r_{t+1}+\gamma \max_a Q(s_{t+1},a)-Q(s_t,a_t)]    
+$,
+where 
 
 
 This document provides a quick set of instructions for using the

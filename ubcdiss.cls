@@ -36,6 +36,9 @@
 \RequirePackage{calc}
 \RequirePackage{ifthen}
 
+% add by lono
+\RequirePackage{tabbing}
+
 %% Useful command stolen from Forbes' genthesis.cls
 \newcommand{\@addto}[2]{
   \expandafter\let\expandafter\old\csname#1\endcsname
