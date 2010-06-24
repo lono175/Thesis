@@ -149,6 +149,8 @@ You could put scraps here or things in progress.
 
 Objective: Allow computer to play video games
 Objective2: perfect modeling
+abundance of old games
+home robot entertaunnent(kinetics) join the family
 Approach:
 Input: Screen and Reward function
 1. Video Analysis 
@@ -156,7 +158,7 @@ Input: Screen and Reward function
 3. Modeling dynamics(the agent needs to explore the game to get enough information)
 
 Comparison to previous work:
-1. Nonintrusive gaming
+1. Nonintrusive gaming(compared to NIPS 2008)
 2. Modeling the game
 Chanllenge:
 1. Real-Time Video Anaylysis
@@ -172,11 +174,47 @@ Example:
   Fireball vs Soccer ball
   In one game, it's necesart to intercept the soccer ball.
   In another game, it's lethal to touch any ball.
-4. Huge game states
+4. Huge game states(640X480X30X(256) per seconds), highly redudunet
 5. Little training time (the game has 30fps), cant increase that
 6. Dynamic number of agents(avoid ball)(different from soccer)
 
 Motivation for reinforcement learning
+
+
+
+Articial Intelligence algorithms that can play classic or video games have been studied ex-
+tensively. Research in classic games has resulted in Deep Thought for chess [Campbell et al., 2002],
+Chinook for checkers [Schaeer et al., 2005], TD-Gammon for backgammon [Tesauro, 1994],
+and Polaris for poker [Bowling et al., 2009]. For AI researchers who work on solving vari-
+ous games, there is a recurring question that needs to be addressed: why dedicate limited
+resources to solving games instead of tackling the real-world problems in which the eld of
+Articial Intelligence can contribute to the daily quality of human lives? In other words,
+why spend resources on solving chess, if what we need is self-driving cars with near zero
+collision rates? Why play checkers, if what we want is an intelligent maid robot that can
+cook, vacuum, and wash the dishes?
+The motivation for developing AI agents that can play games is threefold. First, games
+oer controlled, well-understood, and easily abstracted environments, with well-dened mea-
+sures of success and failure. These properties make games suitable platforms for developing
+and testing AI algorithms. The methods developed and the knowledge gained from work-
+ing in these controlled environments can later be applied to the real-world problems which
+are generally messier and harder to measure performances, but still require the same AI
+sophistication.
+Additionally, games are excellent platforms for showcasing the capabilities of the latest
+AI techniques to the public. In 1997, when Deep Blue defeated Garry Kasparov, a great
+wave of excitement was generated among regular, non-academic people about Articial
+Intelligence. This is because people understand chess, and respect the complexity involved
+in playing it well. Back in 1997, the AI community was not able to develop collision-free
+autonomous cars or achieve many other longer-term goals of the eld. Showcasing an agent
+that mastered chess helped the public understand what the AI community was capable of
+at the time.
+Finally, with the recent growth of commercial video games into a multibillion-dollar
+industry, there is now even more motivation for studying agents that can learn to act intelli-
+gently in games [Lucas, 2009, Laird and Lent, 2000]. Non-repetitive, adaptive, interesting,
+and in summary intelligent behavior oers a competitive edge for commercial games. As
+the game graphics peak at image-like quality, and as the game consoles oer more and more
+computational power that can be spent on complex learning algorithms, the importance of
+3
+
 
 Application:
 1. desktop (sort the data row??)
@@ -185,6 +223,7 @@ Application:
 22. simulatioin env forj robot
 4. agent in online gaming (need to go to toilet)
 5. General in game AI
+6. General in computer sceice (viki, robot soccer simulated)
 
 high level editing
 4. game synthesys (chane the protagonist in game, add monsters)
@@ -195,6 +234,95 @@ and the program needs to decide which action to take.
 The modeling of the video games allows us to extract the graphics, the dynamics
 and the AI in video games. It enables the possibility to reconstruct the game in 
 a high level way. 
+
+Problem Statement
+The aim of this thesis is to develop AI agents that play Atari 2600 console games. We
+are particularly interested in game-independent agents, i.e., agents that are able to play
+in at least a large set of Atari 2600 games. As such, no game-specic assumption or prior
+knowledge is used in their design or ne-tuning beyond that which is expected to be common
+across a diverse set of games. For instance, knowledge that the PC is yellow in a given game
+will not generalize to other games and so is not used. However, assumptions that hold true
+in a large set of games are permitted. For example, while designing an agent we may assume
+that the important game entities have distinct colors.
+We consider two types of AI agents: learning based and search based. The learning
+based agents use the Sarsa() algorithm and features generated from the game screens and
+the console RAM to learn to play an arbitrary game. The search based agents use the
+Atari 2600 emulator as a generative model to generate a state-action for any given game.
+Full-tree search as well as UCT is applied to this tree with the goal to play as well as
+possible by only exploring a small subset of the large state-space. We acknowledge that our
+current experiments are limited to one or two specic methods from a large body of possible
+approaches, and as such the observations will be limited to these specic methods.
+
+
+Why video games?
+Go beyond Chess and robot soccer:
+Over the past decade, substantial research has been made to teach computer play classic games such
+as Deep Thought for chess [Campbell et al., 2002],
+Chinook for checkers [Schaeer et al., 2005], TD-Gammon for backgammon [Tesauro, 1994],
+go (Silver, Sutton, and Muller 2007).
+and Polaris for poker [Bowling et al., 2009].
+performed on reinforcement learning (RL) for the robotics
+There are substantial amount wh
+The AI community has been 
+Can we go beyond the classic games and robot soccer to investigate the more general, more diverse
+video games? 
+Articial Intelligence algorithms that can play classic or video games have been studied ex-
+tensively. Research in classic games has resulted in  For AI researchers who work on solving vari-
+ous games, there is a recurring question that needs to be addressed: why dedicate limited
+resources to solving games instead of tackling the real-world problems in which the eld of
+Articial Intelligence can contribute to the daily quality of human lives? In other words,
+why spend resources on solving chess, if what we need is self-driving cars with near zero
+collision rates? Why play checkers, if what we want is an intelligent maid robot that can
+cook, vacuum, and wash the dishes?
+The motivation for developing AI agents that can play games is threefold. First, games
+oer controlled, well-understood, and easily abstracted environments, with well-dened mea-
+sures of success and failure. These properties make games suitable platforms for developing
+and testing AI algorithms. The methods developed and the knowledge gained from work-
+ing in these controlled environments can later be applied to the real-world problems which
+are generally messier and harder to measure performances, but still require the same AI
+sophistication.
+Additionally, games are excellent platforms for showcasing the capabilities of the latest
+AI techniques to the public. In 1997, when Deep Blue defeated Garry Kasparov, a great
+wave of excitement was generated among regular, non-academic people about Articial
+Intelligence. This is because people understand chess, and respect the complexity involved
+in playing it well. Back in 1997, the AI community was not able to develop collision-free
+autonomous cars or achieve many other longer-term goals of the eld. Showcasing an agent
+that mastered chess helped the public understand what the AI community was capable of
+at the time.
+Finally, with the recent growth of commercial video games into a multibillion-dollar
+industry, there is now even more motivation for studying agents that can learn to act intelli-
+gently in games [Lucas, 2009, Laird and Lent, 2000]. Non-repetitive, adaptive, interesting,
+and in summary intelligent behavior oers a competitive edge for commercial games. As
+the game graphics peak at image-like quality, and as the game consoles oer more and more
+computational power that can be spent on complex learning algorithms, the importance of
+3
+Over the past decade substantial research has been
+performed on reinforcement learning (RL) for the robotics
+and multi-agent systems (MAS) fields. In addition, many
+researchers have successfully used RL to teach a computer
+how to play classic strategy games such as backgammon
+(Tesauro 1995) and go (Silver, Sutton, and Muller 2007).
+However, there has been little research in the application of
+RL to modern computer games. First person shooter (FPS)
+games have common features to the fields of robotics and
+MAS, such as agents equipped to sense and act in their
+environment, and complex continuous movement spaces.
+Therefore, investigating the affects of RL in an FPS
+environment is an applicable and interesting area to
+research.
+
+Why vision on video games?
+
+1. no source code
+Modding
+Remodoling
+Nonintrusive AI (in different computer)
+Gaming robot(Teach people use computer family member, play with people, home robot not chores)
+2. have source code, but hard to modify
+A general way to manupulate program
+3. 
+
+
 
 Beyond Soccer and chess. A new oppourtunituy.
 
@@ -220,7 +348,7 @@ Why RL doesn't work:
 dimension
 example:
 A MDP example with random object for each episode
-(sol: Using pairwise Q function to model the Q value between agent and the object)
+(sol: Using pairwise Q function to model the Q value between agent and the object, the Q value is centered at the object and we sum it up to get the final Q function for the player)
 
 Future:
 A robot can understand how to use computer program in HCI approach
@@ -264,3 +392,7 @@ It is better to apply it to Andrej's work on virtual avatar walking(human joint 
 of actions)
 24. collision detection as a prior information is still a way to go (pair-wise relationship modeling)
 25. David: Model the transition matrix and immediate reward and use MDP instead.
+26. Use convoltition to generate pairwise relationship to multiple objects--> A Q function which centered at a block which contains 
+3 objects. (spatial hierachy)
+27. Fictitous gameplay with convolution. If I have pairwise model, I can simulated the game by put the player in a 
+small block which contains 3 or five objects and simulated the real Q function using pairwise model.
