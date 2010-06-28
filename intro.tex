@@ -1,6 +1,155 @@
 %% The following is a directive for TeXShop to indicate the main file
 %%!TEX root = diss.tex
 
+\chapter{Introduction}
+\label{ch:intro}
+
+\section{Problem Statement}
+The objective of this project is to build a software which can play a wide range 
+of video games. To achieve this goal, the software shall not possess any game-specific 
+information. Besides, the software shall be able to play the games in a non-intrusive approach.
+That is, the software shall be able to extract the necessary information 
+from the screenshot of the games and control the games from standard input devices such as keyboard.
+Since most of video games use graphical display as the primary interface, this requirement allows
+the software to be applied to different video games.
+
+\section{Why video games?}
+Over the past decade, substantial research has been conducted to teach computer play classic strategy games such
+as Deep Thought\cite{DeepBlue}, TD-Gammon\cite{Gammon}, and GO\cite{Go}.
+On the other hand, little research has been made\cite{FPS}\cite{Mario} to extend the effort to other genres of video games.
+The genres of video games include not only classic strategy games, but also action, first-person shooter, role-player, adventure, simulation, etc.
+Video games introduce a new challenge to the AI community.
+
+The challenge includes:
+\begin{itemize}{}
+
+\item A generic algorithm which can adapt to different types of games:
+Unlike previous work, the objective is not to design a good AI for a specific game, the objective is
+to design a good and generic AI to play different games successfully.
+
+\item Little prior knowledge on the games: Unlike keep away, it's not possible to design heiracial action
+for (Pong). It must be able to play the game from primitive actions or construct the complex actions by itself.
+Volleyball
+Example: 
+  Fireball vs Soccer ball
+  In one game, it's necesart to intercept the soccer ball.
+  In another game, it's lethal to touch any ball.
+
+\item Large but highly structured states:
+For a 256 color video game with resolution $640 \times 480$, it has 78,643,200 states.
+The number states are large, however, a video game often consists of small number of objects.
+If we can figure out a way to represent the relationship of these objects, the number of states
+can be reduced.
+
+\item Dynamic number of agents:
+Unlike classic strategy games, the number of agents in video games is highly dynamic.
+The number of agents may increase over time and decrease if killed.
+
+\end{itemize}
+
+Video games can be viewed as a abstract representation of the real world. Often can we find the 
+correspondence between such an artificial world to a real-world problem<robot soccer, viki>.
+Video games allow us to attack a real-world problem without tackling uncessary details, while maintaing enough 
+level of abstraction.
+Video games are well-understood, custimizable environments. They allow us to work test an AI algorithm
+and justify if the result is correct. \cite{Yavar}
+
+Another application is the game industry.
+Nowadays, the AI engineers usually need to craft the behavior of the AI by hand. 
+The process are time-consuming and it will produce unrealistic charactor behavior.
+If we can design a generic agent 
+
+\section{Why vision on video games?}
+
+The reason behind is the reality that most of the video games do not have source codes which are publicly available.
+If a researcher needs to test his algorithm on Super Mario Bros., all he can do is to apply it on Infinite Mario Bros.,
+since it's the only Mario Bros. which goes open source. He cannot test his algorithm on Mario Bros. 1 or 2, which are available
+on binary format. If a researcher does not have source codes, he cannot extract the game states like the location
+of Koopa Troopas which are mandatory for any AI algorithm. 
+
+Using computer vision techniques to extract the information from the game screen is a way to solve this problem.
+Because most of the video games uses graphics as the primary interface to interact with the player, it contains
+the necessary information for the player to play. The use of computer vision allows us to test the algorithm
+non-intrusively, without the effort to hack the game engine or reimplement the game.
+
+Besides, the vision allows a more generic way for a computer to play a video game. It creates 
+new applications which cannot be done by intrusive approaches.
+
+Nontrusive and generic AI:
+Have you ever experience a good game with poor AI.
+
+--------------High level modeling---------------------
+Modding: 
+Game modding becomes popular in recent years [modding], 
+Modding allows users to customize the video games to suite their personal tastes.
+The modding usually includes the introduce new content, modification of oringinal ones, remove the unsatisfactory elements.
+The process is usually can be done by the support of game developement kit released by the game company.
+It can also be done without the support from the game company. The players need to hacking the game engine,
+to decode the data format and develope their own developlment kit. 
+Eductional part: --> put the education effort to the game without engine support
+It enables the possibility of Nonintrusive modding.
+Reuse the AI module in other games. Reuse the content from other games
+
+One engine rules all
+In previous, video games are built from scratch. A game company first decides the types of the game,
+then then developed the game engine and the content of the game. Later, people starts to figure out 
+that the game engine and the content of the game can be separated. The content of the game mostly consist of
+artistic materials, dialogs and simple scripte, while the game engines handle the most programming part.
+To the game engine, the content is nothing but a set of data. It's more efficient to reuse the same enging
+to create multiple games. The reconigction creates the game company which specialized in content, while other
+focused on the content. I 
+The game companies usually .
+Is it possible to use one engine to run all video games?
+It is a distinct dream, and cannot be done by policital force.
+The modeling of video games also allows us to convert abitrary game into
+some unified represention such UML. 
+With the universial representation,
+it creates the possibility to use one game engine, which serve as the interpret of the content, to run all video games.
+
+It is a dream
+The modeling of video games also create the possibility to use 
+Platform indepent description of a video game:
+There are abunadnt of old games which can 
+One simulator for all games
+mobile platform: iphone, gphone
+web appl: play it on line flash
+
+The modeling of the video games allows us to extract the graphics, the dynamics
+and the AI in video games. It enables the possibility to reconstruct the game in 
+a high level way. 
+--------------High level modeling---------------------
+
+
+allows the users to modify the 
+
+There has been a recent increase in the number of game environments or engines
+that allow users to customize their gaming experiences by building and
+expanding game behavior. This article describes the use of modifying, or
+modding, existing games as a means to learn computer science, mathematics,
+physics, and aesthetic principles. We describe two exploratory case studies of
+game modding in classroom settings to illustrate skills learned by students as
+a result of modding existing games. We also discuss the benefits of learning
+computer sciences skills
+
+
+Entertainment and Educational Robot:
+In the future, 
+The robots are not only for chores, it will become a part of the family.
+It can listen, and speak with people. 
+It won't be a machine which can only execute the instruction from people.
+It will give feedback to the poeple. Tell poeple the solution.
+It will have be emotionally connected with people.
+Teach the young generation how to use computers. 
+A future that human and robot can work together and play together.
+The possbility shall not be limited to physical games, but also video games.
+How can a computer learns how to use another computer.
+
+There will be emotional connection with the robots and people. 
+
+It can play with child,
+teach people how to use computer, or even play video games. 
+production or domestic services
+
 \chapter{Related Work}
 \label{ch:Related}
 
@@ -143,6 +292,7 @@ Algorithm: minmax Q-learning\\
 \end{tabular}
 \end{center}
 
+
 \endinput
 Any text after an \endinput is ignored.
 You could put scraps here or things in progress.
@@ -176,11 +326,9 @@ Example:
   In another game, it's lethal to touch any ball.
 4. Huge game states(640X480X30X(256) per seconds), highly redudunet
 5. Little training time (the game has 30fps), cant increase that
-6. Dynamic number of agents(avoid ball)(different from soccer)
+6. Dynamic number of agents(avoid ball)(different from soccer)(the number of player is dynamics (unlike game theory))
 
 Motivation for reinforcement learning
-
-
 
 Articial Intelligence algorithms that can play classic or video games have been studied ex-
 tensively. Research in classic games has resulted in Deep Thought for chess [Campbell et al., 2002],
@@ -220,7 +368,7 @@ Application:
 1. desktop (sort the data row??)
 2. gaming ( a alternative of in game AI) can act as opponent or friends (human and computer cooperation)( with 2 different computers)
 3. game modeling ( convert to another platform)
-22. simulatioin env forj robot
+2. simulatioin env forj robot
 4. agent in online gaming (need to go to toilet)
 5. General in game AI
 6. General in computer sceice (viki, robot soccer simulated)
@@ -228,44 +376,154 @@ Application:
 high level editing
 4. game synthesys (chane the protagonist in game, add monsters)
 
-The objective of this project is to build a program which can play video games 
-in a non-intrusive way. The input of the program is the screenshot of a game, a reward,
-and the program needs to decide which action to take.
-The modeling of the video games allows us to extract the graphics, the dynamics
-and the AI in video games. It enables the possibility to reconstruct the game in 
-a high level way. 
-
 Problem Statement
-The aim of this thesis is to develop AI agents that play Atari 2600 console games. We
-are particularly interested in game-independent agents, i.e., agents that are able to play
-in at least a large set of Atari 2600 games. As such, no game-specic assumption or prior
-knowledge is used in their design or ne-tuning beyond that which is expected to be common
-across a diverse set of games. For instance, knowledge that the PC is yellow in a given game
-will not generalize to other games and so is not used. However, assumptions that hold true
-in a large set of games are permitted. For example, while designing an agent we may assume
-that the important game entities have distinct colors.
-We consider two types of AI agents: learning based and search based. The learning
-based agents use the Sarsa() algorithm and features generated from the game screens and
-the console RAM to learn to play an arbitrary game. The search based agents use the
-Atari 2600 emulator as a generative model to generate a state-action for any given game.
-Full-tree search as well as UCT is applied to this tree with the goal to play as well as
-possible by only exploring a small subset of the large state-space. We acknowledge that our
-current experiments are limited to one or two specic methods from a large body of possible
-approaches, and as such the observations will be limited to these specic methods.
-
+The objective of this project is to build a software which can play a wide range 
+of video games. To achieve this goal, the software shall not possess any game-specific 
+information. Besides, the software shall be able to play the games in a non-intrusive approach.
+That is, the software shall be able to extract the necessary information 
+from the screenshot of the games and control the games from standard input devices such as keyboard.
+Since most of video games use graphic display as the primary interface, this requirement allows
+the software to be applied to different video games.
 
 Why video games?
 Go beyond Chess and robot soccer:
-Over the past decade, substantial research has been made to teach computer play classic games such
+Over the past decade, substantial research has been conducted to teach computer play classic strategy games such
 as Deep Thought for chess [Campbell et al., 2002],
 Chinook for checkers [Schaeer et al., 2005], TD-Gammon for backgammon [Tesauro, 1994],
 go (Silver, Sutton, and Muller 2007).
 and Polaris for poker [Bowling et al., 2009].
-performed on reinforcement learning (RL) for the robotics
-There are substantial amount wh
-The AI community has been 
-Can we go beyond the classic games and robot soccer to investigate the more general, more diverse
-video games? 
+On the other hand, little research has been made [cite here] to extend the effort to other genres of video games.
+The genres of video games include not only classic strategy games, but also action, first-person shooter, role-player, adventure, simulation, etc\ldots
+These games introduce the new challendge to AI community
+Complex, can have really large, continuous state and
+action spaces.
+
+Can we go beyond the classic ones to investigate the more diversifying video games? 
+
+But why do we need to study suce a topic?
+Nowadys, it's quite normal for game company to 
+Video games can be viewed as a abstract representation of the real world. Often can we find the 
+correspondence between such an ariticial world to a real-world problem<robot soccer, viki>.
+Video games allow us to attack a real-world problem without tackling uncessary details, while maintaing enough 
+level of abstraction.
+Video games are well-understood, custimizable environments. They allow us to work test an AI algorithm
+and justify if the result is correct. <alberta, Namir>
+
+Another application is the game industry.
+Nowadys, the AI engineers usually need to craft the behavior of the AI by hand. 
+The process are time-comsuing and it will produce unrealistic charactor behavior.
+If we can design 
+
+Educational
+
+
+Why vision on video games?
+
+The reason behind is based on the reality that most of the video games do not have source codes publicly available.
+If a researcher needs to test his RL alogrithm on Super Mario Bros., all he can do is to apply it on (infinity mario),
+since it's the only Mario which goes open source. He cannot test his alrogithm on Mario 1 or 2, which are availbel
+on binary. If a researher does not have a source code, he cannot extract the game state like the locaiton
+of scoobma which are mandatory for any AI alogrithm. 
+
+Using computer vision techniques to extract the information from the game screen is a way to solve this problem,
+since most of the video games uses graphics as the primary interface to interact with the player, it contains
+the necessary information for the player to play. The use of computer vision allows us to test the algorithm
+non-intrusively, without the effort to hack the game engine or reimplement the game.
+
+Besides, the vision allows a more generic way for a computer to play a video game. It creates 
+new applications which cannot be done by intrusive approaches.
+
+Nontrusive and generic AI:
+Have you ever experience a good game with poor AI.
+
+--------------High level modeling---------------------
+Modding: 
+Game modding becomes popular in recent years [modding], 
+Modding allows users to customize the video games to suite their personal tastes.
+The modding usually includes the introduce new content, modification of oringinal ones, remove the unsatisfactory elements.
+The process is usually can be done by the support of game developement kit released by the game company.
+It can also be done without the support from the game company. The players need to hacking the game engine,
+to decode the data format and develope their own developlment kit. 
+Eductional part: --> put the education effort to the game without engine support
+It enables the possibility of Nonintrusive modding.
+Reuse the AI module in other games. Reuse the content from other games
+
+One engine rules all
+In previous, video games are built from scratch. A game company first decides the types of the game,
+then then developed the game engine and the content of the game. Later, people starts to figure out 
+that the game engine and the content of the game can be separated. The content of the game mostly consist of
+artistic materials, dialogs and simple scripte, while the game engines handle the most programming part.
+To the game engine, the content is nothing but a set of data. It's more efficient to reuse the same enging
+to create multiple games. The reconigction creates the game company which specialized in content, while other
+focused on the content. I 
+The game companies usually .
+Is it possible to use one engine to run all video games?
+It is a distinct dream, and cannot be done by policital force.
+The modeling of video games also allows us to convert abitrary game into
+some unified represention such UML. 
+With the universial representation,
+it creates the possibility to use one game engine, which serve as the interpret of the content, to run all video games.
+
+It is a dream
+The modeling of video games also create the possibility to use 
+Platform indepent description of a video game:
+There are abunadnt of old games which can 
+One simulator for all games
+mobile platform: iphone, gphone
+web appl: play it on line flash
+
+The modeling of the video games allows us to extract the graphics, the dynamics
+and the AI in video games. It enables the possibility to reconstruct the game in 
+a high level way. 
+--------------High level modeling---------------------
+
+
+allows the users to modify the 
+
+There has been a recent increase in the number of game environments or engines
+that allow users to customize their gaming experiences by building and
+expanding game behavior. This article describes the use of modifying, or
+modding, existing games as a means to learn computer science, mathematics,
+physics, and aesthetic principles. We describe two exploratory case studies of
+game modding in classroom settings to illustrate skills learned by students as
+a result of modding existing games. We also discuss the benefits of learning
+computer sciences skills
+
+
+Entertainment and Educational Robot:
+In the future, 
+The robots are not only for chores, it will become a part of the family.
+It can listen, and speak with people. 
+It won't be a machine which can only execute the instruction from people.
+It will give feedback to the poeple. Tell poeple the solution.
+It will have be emotionally connected with people.
+Teach the young generation how to use computers. 
+A future that human and robot can work together and play together.
+The possbility shall not be limited to physical games, but also video games.
+How can a computer learns how to use another computer.
+
+There will be emotional connection with the robots and people. 
+
+It can play with child,
+teach people how to use computer, or even play video games. 
+production or domestic services
+
+
+
+
+
+Computer vision 
+1. no source code
+Modding
+Remodoling
+Nonintrusive AI (in different computer)
+Gaming robot(Teach people use computer family member, play with people, home robot not chores)
+2. have source code, but hard to modify
+A general way to manupulate program
+3. 
+
+
+
 Articial Intelligence algorithms that can play classic or video games have been studied ex-
 tensively. Research in classic games has resulted in  For AI researchers who work on solving vari-
 ous games, there is a recurring question that needs to be addressed: why dedicate limited
@@ -281,14 +539,6 @@ and testing AI algorithms. The methods developed and the knowledge gained from w
 ing in these controlled environments can later be applied to the real-world problems which
 are generally messier and harder to measure performances, but still require the same AI
 sophistication.
-Additionally, games are excellent platforms for showcasing the capabilities of the latest
-AI techniques to the public. In 1997, when Deep Blue defeated Garry Kasparov, a great
-wave of excitement was generated among regular, non-academic people about Articial
-Intelligence. This is because people understand chess, and respect the complexity involved
-in playing it well. Back in 1997, the AI community was not able to develop collision-free
-autonomous cars or achieve many other longer-term goals of the eld. Showcasing an agent
-that mastered chess helped the public understand what the AI community was capable of
-at the time.
 Finally, with the recent growth of commercial video games into a multibillion-dollar
 industry, there is now even more motivation for studying agents that can learn to act intelli-
 gently in games [Lucas, 2009, Laird and Lent, 2000]. Non-repetitive, adaptive, interesting,
@@ -311,16 +561,6 @@ Therefore, investigating the affects of RL in an FPS
 environment is an applicable and interesting area to
 research.
 
-Why vision on video games?
-
-1. no source code
-Modding
-Remodoling
-Nonintrusive AI (in different computer)
-Gaming robot(Teach people use computer family member, play with people, home robot not chores)
-2. have source code, but hard to modify
-A general way to manupulate program
-3. 
 
 
 
@@ -366,7 +606,13 @@ If I can make it work, then the jitter problem of an user agent can be solved(ac
 How to form a hierachical action policy?
 Can use a supervised soccer video to train an agent? therefore the agent can learn the complex action automatically. (keep away soccer)
 use a prior to penalize the jitter of an agent's action
+
+
+
 6. order the objects from near to far and include the objects action in previous frame
+
+
+
 7. the relationship between SOM
 8. use different level to quantize the location of the ball and the opponent(use the past 100 frame to predict the future)
 9. use different level to model the action of the players(intuition: the dim of the optimal policy is very small)
@@ -396,3 +642,7 @@ of actions)
 3 objects. (spatial hierachy)
 27. Fictitous gameplay with convolution. If I have pairwise model, I can simulated the game by put the player in a 
 small block which contains 3 or five objects and simulated the real Q function using pairwise model.
+28. The answer of taxi driver problem shall be HMM. It is nothing but first order temporal model. (each temporal
+state has different task and therefore has different Q function(a function of time))
+29. Convert 2D Atari games to 3D automatically (it should not be hard since you have model)(use GameMaker or 3D game studio)
+
