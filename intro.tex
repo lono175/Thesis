@@ -27,14 +27,6 @@ The challenge includes:
 Unlike previous work, the objective is not to design a good AI for a specific game, the objective is
 to design a good and generic AI to play different games successfully.
 
-\item Little prior knowledge on the games: Unlike keep away, it's not possible to design heiracial action
-for (Pong). It must be able to play the game from primitive actions or construct the complex actions by itself.
-Volleyball
-Example: 
-  Fireball vs Soccer ball
-  In one game, it's necesart to intercept the soccer ball.
-  In another game, it's lethal to touch any ball.
-
 \item Large but highly structured states:
 For a 256 color video game with resolution $640 \times 480$, it has 78,643,200 states.
 The number states are large, however, a video game often consists of small number of objects.
@@ -44,22 +36,22 @@ can be reduced.
 \item Dynamic number of agents:
 Unlike classic strategy games, the number of agents in video games is highly dynamic.
 The number of agents may increase over time and decrease if killed.
-
+It is a challenge which doesn't exist in classic strategy games.
 \end{itemize}
 
 Video games can be viewed as a abstract representation of the real world. Often can we find the 
-correspondence between such an artificial world to a real-world problem<robot soccer, viki>.
-Video games allow us to attack a real-world problem without tackling uncessary details, while maintaing enough 
-level of abstraction.
-Video games are well-understood, custimizable environments. They allow us to work test an AI algorithm
-and justify if the result is correct. \cite{Yavar}
+correspondence between such an artificial world to a real-world problem\cite{KeepAway}.
+Focusing on Video games allows us to attack a real-world problem without tackling unnecessary details, while maintaining sufficient 
+level of abstraction. In addition, video games are well-understood and customizable environments. 
+It allows us to test an AI algorithm and justify if the result is correct\cite{Yavar}.
 
-Another application is the game industry.
-Nowadays, the AI engineers usually need to craft the behavior of the AI by hand. 
-The process are time-consuming and it will produce unrealistic charactor behavior.
-If we can design a generic agent 
+Another possible application is the AI of video games.
+Nowadays, the AI engineers usually need to craft the behavior of AI by hand. 
+The process are time-consuming and the hard-coded behavior would produce unrealistic AI behavior.
+If we can design a generic agent and let it act reactively with the environment, it can produce 
+more various and unpredictable behaviors.
 
-\section{Why vision on video games?}
+\section{Why applying computer vision to video games?}
 
 The reason behind is the reality that most of the video games do not have source codes which are publicly available.
 If a researcher needs to test his algorithm on Super Mario Bros., all he can do is to apply it on Infinite Mario Bros.,
@@ -75,80 +67,25 @@ non-intrusively, without the effort to hack the game engine or reimplement the g
 Besides, the vision allows a more generic way for a computer to play a video game. It creates 
 new applications which cannot be done by intrusive approaches.
 
-Nontrusive and generic AI:
-Have you ever experience a good game with poor AI.
+\begin{itemize}{}
+\item Non-intrusive and generic AI:
+Have you ever played a good game with poor AI? Can you change it with a better one?
+Without the source codes of the game or the engine support, the answer is usually "No".
+Nevertheless, if we could design a software which can learn to play any video game, 
+the answer can be changed to "Yes".
 
---------------High level modeling---------------------
-Modding: 
-Game modding becomes popular in recent years [modding], 
+\item Modding: 
+Game modding becomes popular in recent years \cite{Modding}. 
 Modding allows users to customize the video games to suite their personal tastes.
-The modding usually includes the introduce new content, modification of oringinal ones, remove the unsatisfactory elements.
-The process is usually can be done by the support of game developement kit released by the game company.
-It can also be done without the support from the game company. The players need to hacking the game engine,
-to decode the data format and develope their own developlment kit. 
-Eductional part: --> put the education effort to the game without engine support
-It enables the possibility of Nonintrusive modding.
-Reuse the AI module in other games. Reuse the content from other games
+The modding usually includes the introduce new content, modification of original one, or remove the unsatisfactory elements.
+The process can be done by the support of game development kit released by the game company.
+It can also be done without the support from the game company. However, the modders need to hack the game engine,
+decode the data format and implement their own development kit. 
+The process can be time-consuming and tedious.
+If we could automate the process by having a software which can 
+traverse the game and extract the in-game elements for us, it could save a lot of time.
 
-One engine rules all
-In previous, video games are built from scratch. A game company first decides the types of the game,
-then then developed the game engine and the content of the game. Later, people starts to figure out 
-that the game engine and the content of the game can be separated. The content of the game mostly consist of
-artistic materials, dialogs and simple scripte, while the game engines handle the most programming part.
-To the game engine, the content is nothing but a set of data. It's more efficient to reuse the same enging
-to create multiple games. The reconigction creates the game company which specialized in content, while other
-focused on the content. I 
-The game companies usually .
-Is it possible to use one engine to run all video games?
-It is a distinct dream, and cannot be done by policital force.
-The modeling of video games also allows us to convert abitrary game into
-some unified represention such UML. 
-With the universial representation,
-it creates the possibility to use one game engine, which serve as the interpret of the content, to run all video games.
-
-It is a dream
-The modeling of video games also create the possibility to use 
-Platform indepent description of a video game:
-There are abunadnt of old games which can 
-One simulator for all games
-mobile platform: iphone, gphone
-web appl: play it on line flash
-
-The modeling of the video games allows us to extract the graphics, the dynamics
-and the AI in video games. It enables the possibility to reconstruct the game in 
-a high level way. 
---------------High level modeling---------------------
-
-
-allows the users to modify the 
-
-There has been a recent increase in the number of game environments or engines
-that allow users to customize their gaming experiences by building and
-expanding game behavior. This article describes the use of modifying, or
-modding, existing games as a means to learn computer science, mathematics,
-physics, and aesthetic principles. We describe two exploratory case studies of
-game modding in classroom settings to illustrate skills learned by students as
-a result of modding existing games. We also discuss the benefits of learning
-computer sciences skills
-
-
-Entertainment and Educational Robot:
-In the future, 
-The robots are not only for chores, it will become a part of the family.
-It can listen, and speak with people. 
-It won't be a machine which can only execute the instruction from people.
-It will give feedback to the poeple. Tell poeple the solution.
-It will have be emotionally connected with people.
-Teach the young generation how to use computers. 
-A future that human and robot can work together and play together.
-The possbility shall not be limited to physical games, but also video games.
-How can a computer learns how to use another computer.
-
-There will be emotional connection with the robots and people. 
-
-It can play with child,
-teach people how to use computer, or even play video games. 
-production or domestic services
+\end{itemize}
 
 \chapter{Related Work}
 \label{ch:Related}
@@ -645,4 +582,6 @@ small block which contains 3 or five objects and simulated the real Q function u
 28. The answer of taxi driver problem shall be HMM. It is nothing but first order temporal model. (each temporal
 state has different task and therefore has different Q function(a function of time))
 29. Convert 2D Atari games to 3D automatically (it should not be hard since you have model)(use GameMaker or 3D game studio)
-
+30. Use spatial temporal gassian filter to distribute the rewards. The objects which are near the previous location of mario
+will also get high rewards (think spatial and temporal as the same cube)(spatial and temporal proximity)
+31. Use internal reward system to teach mario how to jump (if mario move to new Y loc, it gets some rewards)
