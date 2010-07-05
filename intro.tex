@@ -24,12 +24,12 @@ The challenge includes:
 \begin{itemize}{}
 
 \item A generic algorithm which can adapt to different types of games:
-Unlike previous work, the objective is not to design a good AI for a specific game, the objective is
-to design a good and generic AI to play different games successfully.
+Following the paradigm of \cite{GGP} and \cite{Yavar}, the objective is not to design a good AI for
+a specific game. Instead, the objective is to design a good and generic AI to play different games successfully.
 
 \item Large but highly structured states:
-For a 256 color video game with resolution $640 \times 480$, it has 78,643,200 states.
-The number states are large, however, a video game often consists of small number of objects.
+For a 256 color video game with resolution $640 \times 480$, it has $256^(640 \times 480)$ states.
+The number states are too big to be tractable. However, a video game often consists of small number of objects.
 If we can figure out a way to represent the relationship of these objects, the number of states
 can be reduced.
 
@@ -55,9 +55,9 @@ more various and unpredictable behaviors.
 
 The reason behind is the reality that most of the video games do not have source codes which are publicly available.
 If a researcher needs to test his algorithm on Super Mario Bros., all he can do is to apply it on Infinite Mario Bros.,
-since it's the only Mario Bros. which goes open source. He cannot test his algorithm on Mario Bros. 1 or 2, which are available
+which is an open source clone of original Super Mario Bros. He cannot test his algorithm on Mario Bros. 1 or 2, which are available
 on binary format. If a researcher does not have source codes, he cannot extract the game states like the location
-of Koopa Troopas which are mandatory for any AI algorithm. 
+of Koopa Troopas which are mandatory for any AI algorithm to work. 
 
 Using computer vision techniques to extract the information from the game screen is a way to solve this problem.
 Because most of the video games uses graphics as the primary interface to interact with the player, it contains
@@ -72,7 +72,8 @@ new applications which cannot be done by intrusive approaches.
 Have you ever played a good game with poor AI? Can you change it with a better one?
 Without the source codes of the game or the engine support, the answer is usually "No".
 Nevertheless, if we could design a software which can learn to play any video game, 
-the answer can be changed to "Yes".
+the answer can be changed to "Yes". The non-intrusive and generic agents can be 
+applied to any video games with/without the support from the game company.
 
 \item Modding: 
 Game modding becomes popular in recent years \cite{Modding}. 
@@ -90,6 +91,44 @@ traverse the game and extract the in-game elements for us, it could save a lot o
 \chapter{Related Work}
 \label{ch:Related}
 
+There are several works which address how to design a good AI for certain type of video games.
+McPartland et al. proposed a approach to allow bots in First-Person Shooter (FPS)
+games to learn how to navigate the maze and handle combat. Ponsen et al. proposed a coordination 
+framework to allow the bots adapt to different strategy by reinforcement learning. 
+Michael et al. proposed a Monte Carlo planning approach for Real-Time Strategy (RTS) gmaes to handle
+the Rush-the-Flag game. Ponsen et al. used a hierarchical relational learning to learn how to play
+the Battle of Survival game. For arcade-style games, \cite{Mario} uses a RL agent to learn
+how to play Infinite Mario Bro. Driessens et al. proposed a relational RL to learn how to play the Digger
+game. In \cite{OO}, a object-oriented representation is proposed to play pitfall.
+
+The previous works rely on the intrusive approach to provide the states of games for the agents to play.
+The agents need to know the information such as the number of objects, the types of objects,
+or the health level of players to play the games. The intrusive approach makes it difficult to generalize
+to a large number of video games. And the game-specific representation prevents these approaches
+to be applied to arbitrary video games.
+
+With the objective to play general video games, our work is most related to 
+General Game Playing\cite{GGP} (GGP) and Playing Atari 2600 \cite{Yavar}. 
+The objective of GGP is to develop a software agent which can play unspecific games if the rules
+are given. Our work follows the same objective. However, due to the complexity of video games, 
+it is not clear that how to precisely describe the rules of video games.
+
+Y. Naddaf\cite{Yavar} proposed A.L.E. (Atari 2600 Learning Environment) as the platform to test AI algorithms.
+A.L.E. supports fast emulation and generic interface. Fast emulation allows the emulator to run 
+games without rendering or sound generation. It can increase the speed in the learning phase.
+The generic interface provides AI agents the screenshot and scores in games. It allows us
+to build the agents in a game independent way.
+
+Our work is built on A.L.E. However, our work differs from Y. Naddaf in the following perspective:
+
+\begin{itemize}{}
+Our work features object-based representation. We argue that objects are the fundamental elements
+in video games. The representation allows the agent to develop appropriate policy against specific 
+objects. And it also enables the possibility to reuse the knowledge in different stages.
+\end{itemize}
+
+\chapter{Reinforcement Learning}
+\label{ch:RL}
 The objective of reinforcement learning algorithm is to build an learning agent. The learning agent will take
 actions based on the current state. In the beginning, the agent does not know anything about 
 the environment, therefore the agent has to choose the first action randomly. After the environment
@@ -585,3 +624,4 @@ state has different task and therefore has different Q function(a function of ti
 30. Use spatial temporal gassian filter to distribute the rewards. The objects which are near the previous location of mario
 will also get high rewards (think spatial and temporal as the same cube)(spatial and temporal proximity)
 31. Use internal reward system to teach mario how to jump (if mario move to new Y loc, it gets some rewards)
+32. Show the capbility to generalize the object knowledge into different stages
