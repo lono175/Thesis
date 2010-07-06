@@ -88,20 +88,21 @@ traverse the game and extract the in-game elements for us, it could save a lot o
 
 \end{itemize}
 
-\chapter{Related Work}
-\label{ch:Related}
+%\chapter{Related Work}
+%\label{ch:Related}
+\section{Related Work}
 
 There are several works which address how to design a good AI for certain type of video games.
 McPartland et al. proposed a approach to allow bots in First-Person Shooter (FPS)
-games to learn how to navigate the maze and handle combat. Ponsen et al. proposed a coordination 
-framework to allow the bots adapt to different strategy by reinforcement learning. 
-Michael et al. proposed a Monte Carlo planning approach for Real-Time Strategy (RTS) gmaes to handle
-the Rush-the-Flag game. Ponsen et al. used a hierarchical relational learning to learn how to play
-the Battle of Survival game. For arcade-style games, \cite{Mario} uses a RL agent to learn
+games to learn how to navigate the maze and handle combat \cite{FPS}. M. Smith et al. proposed a coordination 
+framework to allow the bots to adapt to different strategy by reinforcement learning \cite{FPS_TEAM}. 
+Michael et al. applied a Monte Carlo planning approach for Real-Time Strategy (RTS) gmaes to 
+the Rush-the-Flag game \cite{RTS}. Ponsen et al. proposed hierarchical relational learning to learn how to play
+the Battle of Survival game \cite{HRRL}. For arcade-style games, \cite{Mario} uses a RL agent to learn
 how to play Infinite Mario Bro. Driessens et al. proposed a relational RL to learn how to play the Digger
 game. In \cite{OO}, a object-oriented representation is proposed to play pitfall.
 
-The previous works rely on the intrusive approach to provide the states of games for the agents to play.
+Previous works rely on the intrusive approach to provide the states of games for the agents to play.
 The agents need to know the information such as the number of objects, the types of objects,
 or the health level of players to play the games. The intrusive approach makes it difficult to generalize
 to a large number of video games. And the game-specific representation prevents these approaches
