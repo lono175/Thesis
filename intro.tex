@@ -120,10 +120,10 @@ games without rendering or sound generation. It can increase the speed in the le
 The generic interface provides AI agents the screenshot and scores in games. It allows us
 to build the agents in a game independent way.
 
-Our work is built on A.L.E. However, our work differs from Y. Naddaf in the following perspective:
+Our work is built on A.L.E. However, our work differs from \cite{Yavar} in the following perspective:
 
 \begin{itemize}{}
-Our work features object-based representation. We argue that objects are the fundamental elements
+\item Our work features object-based representation. We argue that objects are the fundamental elements
 in video games. The representation allows the agent to develop appropriate policy against specific 
 objects. And it also enables the possibility to reuse the knowledge in different stages.
 \end{itemize}
@@ -268,6 +268,334 @@ Algorithm: minmax Q-learning\\
 \hline  
 \end{tabular}
 \end{center}
+
+
+\chapter{Relational Learning}
+
+Dynamic number of objects
+No fixed representation
+Dependency with samples. (intrinsic to reinforcement learning, since consective states has similar
+Q-value, there are not independent all)
+
+Video games involves objects: things like monsters, treasures, or princess.
+But the most current machine learning algorithms requires the world to be represented 
+by a vector of attributes. The vector representation has several drawbacks when applied to objects.
+
+
+The vector representation is ordered. However, it's not clear how to assign a fixed for the objects.
+
+The length of vector representation is fixed. However, the number of objects might vary.
+
+The relationship between objects are lost in the vector representation. 
+
+Motivation
+Consider a typical questionanswering task on the
+web 	BernersLee et alí¯€í°€  Fensel et alí¯€í°€ 
+í¯€í°€
+which might involve accessing and integrating semi
+structured information from the web to answer a com
+plex queryí¯€í°€ egí¯€í°€ nd a graduate school on the west
+coast that has aordable housingí¯€í°€ multiple faculty and
+funded research in Articial Intelligence Even if the
+query is posed in a formal query languageí¯€í°€ answer
+ing it requires several skills such as query planningí¯€í°€
+optimizationí¯€í°€ information extractioní¯€í°€ and information
+integration in a relational language Or consider what
+is involved in learning to cook a meal While certainly
+not an exhaustive listí¯€í°€ one needs to reason about peo
+ples tastes and preferencesí¯€í°€ ones own knowledge of
+recipes and skillsí¯€í°€ availability of ingredientsí¯€í°€ their lo
+cationsí¯€í°€ and procedures to access themí¯€í°€ the capacities
+of utensils and cooking rangesí¯€í°€ and the eects of dif
+ferent proportions of ingredientsí¯€í°€ of cooking temper
+aturesí¯€í°€ and of dierent kinds of cooking processes on
+the taste and quality of the nal product
+It is easy to pose both of these problems as reinforce
+ment learning problems In both tasksí¯€í°€ we might pe
+nalize the system for the time spent and other costsí¯€í°€
+and reward it for the quality of the nal product
+What is problematicí¯€í°€ howeverí¯€í°€ is that the structure
+of the web and the reasoning involved in the cooking
+task are most naturally represented using relational
+representations This poses several challenges to the
+success of RL in these domains
+Function Approximationí¯€í°€ The valuefunction ap
+proximation typically used in RLí¯€í°€ egí¯€í°€ neural net
+works or regression treesí¯€í°€ does not generalize well
+when applied to relational domains This is partly
+because these representations are illsuited to the
+task of representing relational knowledge When
+they are successfulí¯€í°€ they require a careful choice of
+propositional features or basis functions which are
+handcrafted specically to a particular task at
+hand Designing functionapproximation schemes
+that exploit relational structure when present is a
+critical challenge
+Generalization across Objectsí¯€í°€ RL methods that
+do not explicitly represent objects and relation
+ships between them are fundamentally limited in
+their ability to transfer learning about one object
+to similar related objects Critical challenges here
+are identifying classes of objects that are to be
+considered similarí¯€í°€ across which such general
+ization is justiedí¯€í°€ and identifying and represent
+ing knowledge suitable for transfer
+Transfer across Tasksí¯€í°€ RL programs are usually
+tested on a single task and do not exhibit transfer
+of knowledge across tasks Each task in a given
+domainí¯€í°€ egí¯€í°€ each query in information retrievalí¯€í°€
+may look quite dierent when formulated propo
+sitionallyí¯€í°€ and thus may require separate training
+to learn to answer it Relational representations
+facilitate formulating broad collections of related
+tasks as a single domainí¯€í°€ yielding natural gener
+alization between these related tasks
+Runtime Planning and Reasoningí¯€í°€ In most re
+inforcement learning workí¯€í°€ there is no deliberate
+planning and reasoning at runtime It is tac
+itly assumed that either all planning occurs of
+ine or the system relies completely on explo
+ration and learning to construct good plansí¯€í°€ re
+ducing the runtime execution to reactive behav
+ior Howeverí¯€í°€ complex dynamic domains require
+both deliberation and reactivityí¯€í°€ as is demon
+strated by successful gameplaying programs It
+appears that the approximate nature of the value
+function demands a more rened search at the run
+time to compensate for its errors Reasoning may
+also be important in constructing new features for
+an improved valuefunction approximation
+Prior Knowledgeí¯€í°€ RL deemphasizes the role of
+prior knowledge in learning and reasoningí¯€í°€ thus
+relying on trial and error learning which can be
+very inecient and often does not scale to more
+complex tasks such as the above
+Relational reinforcement learning 	RRL
+ seeks to ad
+dress all the above problems by generalizing RL to re
+lationally represented states and actions In factí¯€í°€ both
+reinforcement learning and relational learning have a
+long history The study of reinforcement learning be
+gan with Samuels pioneering  work on checkers
+	Samuelí¯€í°€ 
+ Work on relational learning started
+with Winstons work on blocks world learning 	Win
+stoní¯€í°€ 
+ In recent timesí¯€í°€ relational learning is stud
+ied under dierent namesí¯€í°€ including inductive logic
+programmingí¯€í°€ relational data mining and probabilis
+tic relational modeling Reinforcement learning is also
+studied under multiple guises of which neurodynamic
+programming and decision theoretic planning are the
+most recognizable
+
+%\section{Object-Oriented Relational Reinforcement Learning}
+\section{Relational Markov Decision Processes}
+
+Following the definition in \cite{RelationalMDP}, we define 
+a relational MDP as follows:
+
+Definition: Relational Markov decision process is formalized as a tuple $<C, S, O, D, A, T, R>$, where
+\begin{itemize}{}
+\item $C$ is a set of object classes $C={C_1, \dots, C_c}$. Each
+class is associated with a set of state variables $S[C]={C.S_1, \dots, C.S_k}
+    \item 
+\end{itemize}
+the system dynamics and rewards
+at the level of a template for a task domain. Given a particular
+environment within that domain, it defines a specific MDP
+instantiated for that environment. The domain is specified by a schema,
+which specifies a set of object classes $C = fC1; : : : ;Ccg. Each class
+C is also associated with a set of state variables S[C] =
+fC:S1; : : : ;C:Skg, which describe the state of an object in
+that class. Each state variable C:S has a domain of possible
+values Dom[C:S]. We define SC to be the set of possible
+states for an object in C, i.e., the possible assignments to the
+state variables of C.
+For example, our Freecraft domain might
+have classes such as Peasant, Footman, Gold;
+the class Peasant may have a state variable
+Task whose domain is Dom[Peasant:Task] =
+fWaiting, Mining, Harvesting, Buildingg, and a state
+variable Health whose domain has three values. In this
+case, SPeasant would have 4  3 = 12 values, one for each
+combination of values for Task and Health.
+The schema also specifies a set of links L[C] =
+fL1; : : : ;Llg for each class representing links between objects
+in the domain. Each link C:L has a range [C:L] = C0.
+For example, Peasant objects might be linked to Barrack
+objects â€” [Peasant:BuildTarget] = Barrack, and to the
+global Gold and Wood resource objects. In a more complex
+situation, a link may relate C to many instances of a
+class C0, which we denote by [C:L] = fC0g, for example,
+[Enemy:My Footmen] = fFootmang indicates that an instance
+of the enemy class may be related to many footman instances.
+A particular instance of the schema is defined via a
+world !, specifying the set of objects of each class; we use
+O[!][C] to denote the objects in class C, and O[!] to denote
+the total set of objects in !. The world ! also specifies
+the links between objects, which we take to be fixed
+throughout time. Thus, for each link C:L, and for each
+o 2 O[!][C], ! specifies a set of objects o0 2 [C:L], denoted
+o:L. For example, in a world containing 2 peasants,
+we would have O[!][Peasant] = fPeasant1;Peasant2g;
+if Peasant1 is building a barracks, we would have that
+Peasant1:BuildTarget = Barrack1.
+The dynamics and rewards of an RMDP are also defined
+at the schema level. For each class, the schema
+specifies an action C:A, which can take on one of several
+values Dom[C:A]. For example, Dom[Peasant:A] =
+fWait, Mine, Harvest, Buildg. Each class C is also associated
+with a transition model PC, which specifies the probability
+distribution over the next state of an object o in class
+C, given the current state of o, the action taken on o, and the
+states and actions of all of the objects linked to o:
+PC(S0
+C j SC;C:A;SC:L1 ;C:L1:A; : : : ;SC:Ll ;C:Ll:A): (1)
+For example, the status of a barrack, Barrack:Status0,
+depends on its status in the previous time step, on
+the task performed by any peasant that could build it
+(Barrack:BuiltBy:Task), on the amount of wood and gold, etc.
+The transition model is conditioned on the state of C:Li,
+which is, in general, an entire set of objects (e.g., the set of
+peasants linked to a barrack). Thus we must now provide
+a compact specification of the transition model that can depend
+on the state of an unbounded number of variables. We
+can deal with this issue using the idea of aggregation [10].
+In Freecraft, our model uses the count aggregator ], where
+the probability that Barrack:Status transitions from Unbuilt to
+Built depends on ][Barrack:BuiltBy:Task = Built], the number
+of peasants in Barrack:BuiltBy whose Task is Build.
+Finally, we also define rewards at the class level. We assume
+for simplicity that rewards are associated only with the
+states of individual objects; adding more global dependencies
+is possible, but complicates planning significantly. We define
+a reward function RC(SC;C:A), which represents the contribution
+to the reward of any object in C. For example, we
+may have a reward function associated with the Enemy class,
+which specifies a reward of 10 if the state of an enemy object
+is Dead: REnemy(Enemy:State = Dead) = 10. We assume
+that the reward for each object is bounded by Rmax.
+Given a world, the RMDP uniquely defines a ground factored
+MDP !, whose transition model is specified (as usual)
+as a dynamic Bayesian network (DBN) [3]. The random variables
+in this factored MDP are the state variables of the individual
+objects o:S, for each o 2 O[!][C] and for each
+S 2 S[C]. Thus, the state s of the system at a given point in
+time is a vector defining the states of the individual objects in
+the world. For any subset of variablesX in the model, we define
+s[X] to be the part of the instantiation s that corresponds
+to the variables X. The ground DBN for the transition dynamics
+specifies the dependence of the variables at time t+1
+on the variables at time t. The parents of a variable o:S are
+the state variables of the objects o0 that are linked to o. In our
+example with the two peasants, we might have the random
+variables Peasant1:Task, Peasant2:Task, Barrack1:Status,
+etc. The parents of the time t + 1 variable Barrack1:Status0
+are the time t variables Barrack1:Status0, Peasant1:Task,
+Peasant2:Task, Gold1:Amount andWood1:Amount.
+The transition model is the same for all instances in the
+same class, as in (1). Thus, all of the o:Status variables for
+
+Health Hâ€™
+
+Count
+   	 
+Health Hâ€™
+AFootman
+
+ 
+F1.Health
+F1.A
+F1.Hâ€™
+E1.Health E1.Hâ€™
+F2.Health
+F2.A
+F2.Hâ€™
+E2.Health E2.Hâ€™
+
+í¯€í°€
+
+
+
+ 	 
+ 
+ 	 
+ 
+
+Time   
+(a) (b)
+Figure 2: Freecraft tactical domain: (a) Schema; (b) Resulting factored
+MDP for a world with 2 footmen and 2 enemies.
+barrack objects o share the same conditional probability distribution.
+Note, however, that each specific barrack depends
+on the particular peasants linked to it. Thus, the actual parents
+in the DBN of the status variables for two different barrack
+objects can be different.
+The reward function is simply the sum of the reward functions
+for the individual objects:
+R(s; a) = X
+C2C
+X
+o2O[!][C]
+R(s[So]; a[o:A]):
+Thus, for reward function for the Enemy class described
+above, our overall reward function in a given state will be
+10 times the number of dead enemies in that state.
+It remains to specify the actions in the ground MDP. The
+RMDP specifies a set of possible actions for every object in
+the world. In a setting where only a single action can be taken
+at any time step, the agent must choose both an object to
+act on, and which action to perform on that object. Here,
+the set of actions in the ground MDP is simply the union
+[o2!Dom[o:A]. In a setting where multiple actions can be
+performed in parallel (say, in a multiagent setting), it might
+be possible to perform an action on every object in the domain
+at every step. Here, the set of actions in the ground MDP is a
+vector specifying an action for every object: o2!Dom[o:A].
+Intermediate cases, allowing degrees of parallelism, are also
+possible. For simplicity of presentation, we focus on the multiagent
+case, such as Freecraft, where, an action is an assignment
+to the action of every unit.
+Example 2.1 (Freecraft tactical
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 \endinput
@@ -626,3 +954,18 @@ state has different task and therefore has different Q function(a function of ti
 will also get high rewards (think spatial and temporal as the same cube)(spatial and temporal proximity)
 31. Use internal reward system to teach mario how to jump (if mario move to new Y loc, it gets some rewards)
 32. Show the capbility to generalize the object knowledge into different stages
+33. Use statistical approach to estimate which object is mario
+34. Use statistical approach to estimate which objects are state object, and which objects are real world object (relieve the assumption of my work)
+35. Context Free property: Expected rewards are conditional independent for different objects. Can we learn the conditionally independent partial states?
+36. How to compose the different policy together?  Can â€œaddâ€ always work? Can we learn how to add?
+37. Feature selection for reinforcement learning: Select relevant objects
+38. Group lasso, how?
+39. Structure Learning to find which variable is dependent on which
+( use Mark Schimt approach, set weight to zero, and it remains for zero for all clusters)
+Weight 0 means irrelevant. Weight 1 means disjoint, and it is default!!??
+
+40. Group the hierachy based on sptial proximity and temporal proximity, group them toghether.
+41. How to learn transition model?
+42. Example of Pong in RRL, show that what RRL can do better than RL and Grid World.
+43. Generalize the existing policy into unknown objects
+44. Discover the same object with different appearance
