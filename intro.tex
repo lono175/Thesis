@@ -270,23 +270,66 @@ Algorithm: minmax Q-learning\\
 \end{center}
 
 
-\chapter{Relational Learning}
-
-Dynamic number of objects
-No fixed representation
-Dependency with samples. (intrinsic to reinforcement learning, since consective states has similar
-Q-value, there are not independent all)
+\chapter{Relational Reinforcement Learning}
 
 Video games involves objects: things like monsters, treasures, or princess.
-But the most current machine learning algorithms requires the world to be represented 
-by a vector of attributes. The vector representation has several drawbacks when applied to objects.
+The game world can be described by the relation of objects: there is a
+beautiful princess who is prisoned in a castle which is guarded by a horde of
+monsters.  When playing the game, it is more nature to consider an action in a
+relational form. Are there any monsters near the treasure?  How many monsters
+are in the castle?  The states and actions in video games can be more
+effectively to be represented in these forms. 
+
+Reinforcement learning provides a general approach to construct an intelligent
+agent with minimal supervision. Nevertheless, most work in reinforcement
+learning focuses on propositional representations. This representation requires
+human expert to construct a fixed-length feature vector to represent the world.
+It is difficult to construct a fixed-length feature vector to represent varying
+number of monsters in video games. It is also not easy to assign each monster
+of the same appearance to the corresponding feature. In addition, the
+relationships between objects are lost in the propositional representation,
+unless it is hand-crafted into the feature vector by the human expert. The lack
+of object information makes it hard to transfer the knowledge against one class
+of objects to against another similar one. 
+
+The insufficient power of propositional representation motivates the relational
+reinforcement learning algorithms. 
+
+%It ignores that objects are the essential elements of video games. 
 
 
-The vector representation is ordered. However, it's not clear how to assign a fixed for the objects.
+Reinforcement learning oers a general framework and
+a battery of methods for constructing intelligent agents
+that optimize their behavior in stochastic environ
+ments with minimal supervision Unfortunatelyí¯€í°€ how
+everí¯€í°€ most current work in RL is based on proposi
+tional representationsí¯€í°€ which makes it dicult to ap
+ply it to complex realworld tasks such as information
+retrieval from the Webí¯€í°€ natural language processingí¯€í°€
+or planning in a rich realworld domain like cooking
+Successful applications of propositional RL in such ar
+eas is typically possible only with expert human con
+struction of the propositional features used The states
+and actions in these domains are more naturally rep
+resented in relational formí¯€í°€ and it appears that people
+routinely take advantage of rich relational structure in
+learning and generalization The question naturally
+arises how is this doneí¯€í°€
 
-The length of vector representation is fixed. However, the number of objects might vary.
+%Dynamic number of objects
+%No fixed representation
+%Dependency with samples. (intrinsic to reinforcement learning, since consective states has similar
+%Q-value, there are not independent all)
 
-The relationship between objects are lost in the vector representation. 
+%But the most current machine learning algorithms requires the world to be represented 
+%by a vector of attributes. The vector representation has several drawbacks when applied to objects.
+
+
+%The vector representation is ordered. However, it's not clear how to assign a fixed for the objects.
+
+%The length of vector representation is fixed. However, the number of objects might vary.
+
+%The relationship between objects are lost in the vector representation. 
 
 Motivation
 Consider a typical questionanswering task on the
@@ -969,3 +1012,4 @@ Weight 0 means irrelevant. Weight 1 means disjoint, and it is default!!??
 42. Example of Pong in RRL, show that what RRL can do better than RL and Grid World.
 43. Generalize the existing policy into unknown objects
 44. Discover the same object with different appearance
+45. Find the temporal proximity of a configuration.
