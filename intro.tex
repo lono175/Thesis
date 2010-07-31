@@ -130,7 +130,7 @@ objects. And it also enables the possibility to reuse the knowledge in different
 
 \chapter{Reinforcement Learning}
 \label{ch:RL}
-The objective of reinforcement learning algorithm is to build an learning agent. The learning agent will take
+The objective of reinforcement learning algorithm is to build a learning agent. The learning agent will take
 actions based on the current state. In the beginning, the agent does not know anything about 
 the environment, therefore the agent has to choose the first action randomly. After the environment
 receives the action, it will provide a reward to the agent as a feedback. The reward can be either
@@ -293,28 +293,9 @@ of object information makes it hard to transfer the knowledge against one class
 of objects to against another similar one. 
 
 The insufficient power of propositional representation motivates the relational
-reinforcement learning algorithms. 
+reinforcement learning algorithms.  
+The relational reinforcement learning can be formulated as Relational Markov Decision Process (RMDP).
 
-%It ignores that objects are the essential elements of video games. 
-
-
-Reinforcement learning oers a general framework and
-a battery of methods for constructing intelligent agents
-that optimize their behavior in stochastic environ
-ments with minimal supervision Unfortunatelyí¯€í°€ how
-everí¯€í°€ most current work in RL is based on proposi
-tional representationsí¯€í°€ which makes it dicult to ap
-ply it to complex realworld tasks such as information
-retrieval from the Webí¯€í°€ natural language processingí¯€í°€
-or planning in a rich realworld domain like cooking
-Successful applications of propositional RL in such ar
-eas is typically possible only with expert human con
-struction of the propositional features used The states
-and actions in these domains are more naturally rep
-resented in relational formí¯€í°€ and it appears that people
-routinely take advantage of rich relational structure in
-learning and generalization The question naturally
-arises how is this doneí¯€í°€
 
 %Dynamic number of objects
 %No fixed representation
@@ -331,124 +312,40 @@ arises how is this doneí¯€í°€
 
 %The relationship between objects are lost in the vector representation. 
 
-Motivation
-Consider a typical questionanswering task on the
-web 	BernersLee et alí¯€í°€  Fensel et alí¯€í°€ 
-í¯€í°€
-which might involve accessing and integrating semi
-structured information from the web to answer a com
-plex queryí¯€í°€ egí¯€í°€ nd a graduate school on the west
-coast that has aordable housingí¯€í°€ multiple faculty and
-funded research in Articial Intelligence Even if the
-query is posed in a formal query languageí¯€í°€ answer
-ing it requires several skills such as query planningí¯€í°€
-optimizationí¯€í°€ information extractioní¯€í°€ and information
-integration in a relational language Or consider what
-is involved in learning to cook a meal While certainly
-not an exhaustive listí¯€í°€ one needs to reason about peo
-ples tastes and preferencesí¯€í°€ ones own knowledge of
-recipes and skillsí¯€í°€ availability of ingredientsí¯€í°€ their lo
-cationsí¯€í°€ and procedures to access themí¯€í°€ the capacities
-of utensils and cooking rangesí¯€í°€ and the eects of dif
-ferent proportions of ingredientsí¯€í°€ of cooking temper
-aturesí¯€í°€ and of dierent kinds of cooking processes on
-the taste and quality of the nal product
-It is easy to pose both of these problems as reinforce
-ment learning problems In both tasksí¯€í°€ we might pe
-nalize the system for the time spent and other costsí¯€í°€
-and reward it for the quality of the nal product
-What is problematicí¯€í°€ howeverí¯€í°€ is that the structure
-of the web and the reasoning involved in the cooking
-task are most naturally represented using relational
-representations This poses several challenges to the
-success of RL in these domains
-Function Approximationí¯€í°€ The valuefunction ap
-proximation typically used in RLí¯€í°€ egí¯€í°€ neural net
-works or regression treesí¯€í°€ does not generalize well
-when applied to relational domains This is partly
-because these representations are illsuited to the
-task of representing relational knowledge When
-they are successfulí¯€í°€ they require a careful choice of
-propositional features or basis functions which are
-handcrafted specically to a particular task at
-hand Designing functionapproximation schemes
-that exploit relational structure when present is a
-critical challenge
-Generalization across Objectsí¯€í°€ RL methods that
-do not explicitly represent objects and relation
-ships between them are fundamentally limited in
-their ability to transfer learning about one object
-to similar related objects Critical challenges here
-are identifying classes of objects that are to be
-considered similarí¯€í°€ across which such general
-ization is justiedí¯€í°€ and identifying and represent
-ing knowledge suitable for transfer
-Transfer across Tasksí¯€í°€ RL programs are usually
-tested on a single task and do not exhibit transfer
-of knowledge across tasks Each task in a given
-domainí¯€í°€ egí¯€í°€ each query in information retrievalí¯€í°€
-may look quite dierent when formulated propo
-sitionallyí¯€í°€ and thus may require separate training
-to learn to answer it Relational representations
-facilitate formulating broad collections of related
-tasks as a single domainí¯€í°€ yielding natural gener
-alization between these related tasks
-Runtime Planning and Reasoningí¯€í°€ In most re
-inforcement learning workí¯€í°€ there is no deliberate
-planning and reasoning at runtime It is tac
-itly assumed that either all planning occurs of
-ine or the system relies completely on explo
-ration and learning to construct good plansí¯€í°€ re
-ducing the runtime execution to reactive behav
-ior Howeverí¯€í°€ complex dynamic domains require
-both deliberation and reactivityí¯€í°€ as is demon
-strated by successful gameplaying programs It
-appears that the approximate nature of the value
-function demands a more rened search at the run
-time to compensate for its errors Reasoning may
-also be important in constructing new features for
-an improved valuefunction approximation
-Prior Knowledgeí¯€í°€ RL deemphasizes the role of
-prior knowledge in learning and reasoningí¯€í°€ thus
-relying on trial and error learning which can be
-very inecient and often does not scale to more
-complex tasks such as the above
-Relational reinforcement learning 	RRL
- seeks to ad
-dress all the above problems by generalizing RL to re
-lationally represented states and actions In factí¯€í°€ both
-reinforcement learning and relational learning have a
-long history The study of reinforcement learning be
-gan with Samuels pioneering  work on checkers
-	Samuelí¯€í°€ 
- Work on relational learning started
-with Winstons work on blocks world learning 	Win
-stoní¯€í°€ 
- In recent timesí¯€í°€ relational learning is stud
-ied under dierent namesí¯€í°€ including inductive logic
-programmingí¯€í°€ relational data mining and probabilis
-tic relational modeling Reinforcement learning is also
-studied under multiple guises of which neurodynamic
-programming and decision theoretic planning are the
-most recognizable
-
 %\section{Object-Oriented Relational Reinforcement Learning}
 \section{Relational Markov Decision Processes}
 
 Following the definition in \cite{RelationalMDP}, we define 
 a relational MDP as follows:
 
-Definition: Relational Markov decision process is formalized as a tuple $<C, S, O, D, A, T, R>$, where
+%TODO: Add normal Definition here
+Definition: Relational Markov decision process is formalized as a tuple $<P_S, P_A, O, T, R>$, where
 \begin{itemize}{}
-\item $C$ is a set of object classes $C={C_1, \dots, C_c}$. Each
-class is associated with a set of state variables $S[C]={C.S_1, \dots, C.S_k}
-    \item 
+\item $P_S$ is a set of state predicates.
+\item $P_A$ is a set of action predicates.
+\item $\bigO$ is a set of objects. 
+\item A state $S$ in state space $\bigS$ is a set of state predicates.
+\item A action $S$ in state space $\bigS$ is a set of state predicates.
+\item The transition function $T:S \cross A \cross S \arrow [0, 1]$ defines
+    a probability distribution over the possible next states. 
 \end{itemize}
+
+One way to solve 
+Feature Based Function Approximation
+
+%input is a tuple
+%The common approach to solve the RMDP problem
+%Feature Engineering
+%Relational Regression
+%Approximate Policy Iteration
+
+
+
 the system dynamics and rewards
 at the level of a template for a task domain. Given a particular
 environment within that domain, it defines a specific MDP
 instantiated for that environment. The domain is specified by a schema,
-which specifies a set of object classes $C = fC1; : : : ;Ccg. Each class
+which specifies a set of object classes C = fC1; : : : ;Ccg. Each class
 C is also associated with a set of state variables S[C] =
 fC:S1; : : : ;C:Skg, which describe the state of an object in
 that class. Each state variable C:S has a domain of possible
