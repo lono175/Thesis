@@ -277,16 +277,16 @@ The game world can be described by the relation of objects: there is a
 beautiful princess who is prisoned in a castle which is guarded by a horde of
 monsters.  When playing the game, it is more nature to consider an action in a
 relational form. Are there any monsters near the treasure?  How many monsters
-are in the castle?  The states and actions in video games can be more
-effectively to be represented in these forms. 
+are in the next room?  The states and actions in video games can be more
+effectively to be represented in the relational forms. 
 
 Reinforcement learning provides a general approach to construct an intelligent
 agent with minimal supervision. Nevertheless, most work in reinforcement
 learning focuses on propositional representations. This representation requires
-human expert to construct a fixed-length feature vector to represent the world.
-It is difficult to construct a fixed-length feature vector to represent varying
-number of monsters in video games. It is also not easy to assign each monster
-of the same appearance to the corresponding feature. In addition, the
+some human expert to construct a fixed-length feature vector to represent the world.
+However, it is difficult to construct a fixed-length feature vector to
+represent varying number of monsters in video games. It is also not clear how
+to assign each monster to the corresponding feature. In addition, the
 relationships between objects are lost in the propositional representation,
 unless it is hand-crafted into the feature vector by the human expert. The lack
 of object information makes it hard to transfer the knowledge against one class
@@ -319,19 +319,21 @@ Following the definition in \cite{RelationalMDP}, we define
 a relational MDP as follows:
 
 %TODO: Add normal Definition here
-Definition: Relational Markov decision process is formalized as a tuple $<P_S, P_A, O, T, R>$, where
+Definition: Relational Markov decision process (RMDP) is formalized as a tuple $<P_S, P_A, C, T, R>$, where
 \begin{itemize}{}
 \item $P_S$ is a set of state predicates.
 \item $P_A$ is a set of action predicates.
-\item $\bigO$ is a set of objects. 
+\item $C$ is a set of object classes. 
 \item A state $S$ in state space $\bigS$ is a set of state predicates.
 \item A action $S$ in state space $\bigS$ is a set of state predicates.
-\item The transition function $T:S \cross A \cross S \arrow [0, 1]$ defines
-    a probability distribution over the possible next states. 
+\item The transition function $T:S \cross A \cross S \arrow [0, 1]$ defines a probability distribution over the possible next states. 
 \end{itemize}
 
-One way to solve 
-Feature Based Function Approximation
+To solve the RMDP, common approaches involve relational regression and approximate policy iteration.
+
+%Example: Mario Coin Monster world
+%The example state, action, 
+%The propositional representation {(1, 24, 3), (2, 35, 6)}
 
 %input is a tuple
 %The common approach to solve the RMDP problem
@@ -341,7 +343,50 @@ Feature Based Function Approximation
 
 
 
+
+Motivated by \cite{RelationalTemplate} and \cite{RelationalMDP}, we decompose the value function into
+into the summation of several local functions, which are defined over templates.
+A template $\theta_i$ 
+%My solution
+\begin{center}
+\begin{tabular}{@{}lp{6cm}@{}}
+\hline
+Algorithm: relational template Q-Learning\\
+\hline
+Initialize $Q(s, a)$ arbitrarily\\
+Repeat (for each episode)\\
+\ \ \ \ \ \ Initialize $s$\\
+\ \ \ \ \ \ Repeat (for each step of episode):\\
+\ \ \ \ \ \ \ \ \ \ \ \ Choose $a$ based on $s$ using policy derived from $Q$ (e.g., $\epsilon$-greedy method)\\
+\ \ \ \ \ \ \ \ \ \ \ \ Take action $a$, obtain reward $r$ and next state $s'$ from the environment\\
+\ \ \ \ \ \ \ \ \ \ \ \ For each template $\theta_i$:\\
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ $\theta_i \leftarrow \theta_i$
+\ \ \ \ \ \ \ \ \ \ \ \ $Q(s, a) \leftarrow Q(s, a) + \alpha [r + \gamma max_{a'} Q(s', a')-Q(s, a)]$\\
+\ \ \ \ \ \ \ \ \ \ \ \ $s \leftarrow s'$\\
+\ \ \ \ \ \ Until $s$ is terminal\\
+\hline  
+\end{tabular}
+\end{center}
+
+%update by Q by local value function or the global one? (which one will converge faster?)
+%context independent ??
+
+%Weakness of current approach
+%TG uses a big classification tree to learn all policy of the agent in its lifetime, we need a new way to find the policy against local structure, for transfer
+%
+Handle dynamic number of objects (what if a class is missing?) what is the regression tree work?
+Learn simple scenario from complex one--
+Peter Stone's soccer need a simple scenario to transfer
+But in video games we cannot do it
+Current approach cannot transfer from complex one to simple one, how can it be done? From two block to three blocks
+Hanlde real value relations
+Implement the current approach
 the system dynamics and rewards
+
+%spatial proximity
+%temporal proximity
+%structure learning, group small number of objects into bigger one (CVPR 2010, Yu Pen Fei's project)
+
 at the level of a template for a task domain. Given a particular
 environment within that domain, it defines a specific MDP
 instantiated for that environment. The domain is specified by a schema,
@@ -910,3 +955,7 @@ Weight 0 means irrelevant. Weight 1 means disjoint, and it is default!!??
 43. Generalize the existing policy into unknown objects
 44. Discover the same object with different appearance
 45. Find the temporal proximity of a configuration.
+46. Model-Based vs Model-Free approach
+47. Reward distribution problem
+48. Learning a policy against certain type of objects from a complex world
+49. Find correct cause of the reward
