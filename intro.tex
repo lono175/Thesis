@@ -275,18 +275,19 @@ Algorithm: minmax Q-learning\\
 Video games involves objects: things like monsters, treasures, or princess.
 The game world can be described by the relation of objects: there is a
 beautiful princess who is prisoned in a castle which is guarded by a horde of
-monsters.  When playing the game, it is more nature to consider an action in a
+monsters.  When we play the game, it is more nature to consider an action in a
 relational form. Are there any monsters near the treasure?  How many monsters
 are in the next room?  The states and actions in video games can be more
-effectively to be represented in the relational forms. 
+effectively to be represented in relational forms. 
 
 Reinforcement learning provides a general approach to construct an intelligent
 agent with minimal supervision. Nevertheless, most work in reinforcement
-learning focuses on propositional representations. This representation requires
+learning focuses on propositional representations. Such representation requires
 some human expert to construct a fixed-length feature vector to represent the world.
 However, it is difficult to construct a fixed-length feature vector to
-represent varying number of monsters in video games. It is also not clear how
-to assign each monster to the corresponding feature. In addition, the
+represent varying number of monsters in video games.
+%It is also not clear how to assign each monster to the corresponding feature.
+In addition, the
 relationships between objects are lost in the propositional representation,
 unless it is hand-crafted into the feature vector by the human expert. The lack
 of object information makes it hard to transfer the knowledge against one class
@@ -324,29 +325,52 @@ Definition: Relational Markov decision process (RMDP) is formalized as a tuple $
 \item $P_S$ is a set of state predicates.
 \item $P_A$ is a set of action predicates.
 \item $C$ is a set of object classes. 
-\item A state $S$ in state space $\bigS$ is a set of state predicates.
-\item A action $S$ in state space $\bigS$ is a set of state predicates.
-\item The transition function $T:S \cross A \cross S \arrow [0, 1]$ defines a probability distribution over the possible next states. 
+\item A state $S$ in state space $\mathbb{S}$ is a set of state predicates.
+\item A action $S$ in state space $\mathbb{S}$ is a set of state predicates.
+\item The transition function $T:S \times A \times S \rightarrow [0, 1]$ defines a probability distribution over the possible next states. 
 \end{itemize}
 
-To solve the RMDP, common approaches involve relational regression and approximate policy iteration.
-
+%To solve the RMDP, common approaches involve relational regression and approximate policy iteration.
 %Example: Mario Coin Monster world
 %The example state, action, 
 %The propositional representation {(1, 24, 3), (2, 35, 6)}
-
 %input is a tuple
 %The common approach to solve the RMDP problem
 %Feature Engineering
 %Relational Regression
 %Approximate Policy Iteration
 
-
+\begin{figure}[h]
+    \centering
+    \begin{minipage}[t]{0.6\linewidth}
+        \centering
+        \includegraphics[width=\textwidth] {./figures/MarioWorld.eps}
+        \caption{The world with two monsters $M1$ and $M2$. A coin and a agent.}
+    \label{fig:MarioWorld}
+    \end{minipage}
+\end{figure}
 
 
 Motivated by \cite{RelationalTemplate} and \cite{RelationalMDP}, we decompose the value function into
-into the summation of several local functions, which are defined over templates.
-A template $\theta_i$ 
+into the summation of several local functions, which are defined over some templates. 
+Each template represents a policy against a certain type of object.
+
+For example, the world in fig. \ref{fig:MarioWorld} consists of an agent, a
+coin and two monsters.  The agent gets +10 reward when he picks a coin and
+receives -10 reward if he encounters a monster.  The value function of the
+agent can be represented as $V = V_{monster}(A, M1) + V_{monster}(A, M2) +
+V_{coin}(A, C)$.  The location functions $V_{monster}$ and $V_{coin}$ indicates
+the expected rewards when there is one such object in the world. The
+decomposition of value function allows us to handle varying number of objects
+by summation over local functions. The class-specific location function also
+allows to share the knowledge from different objects of the same type. 
+The agent knows how to handle a new entity if the agent has experience of the same type
+before. In other worlds, the location functions enable knowledge transfer with in the 
+same class.
+
+%To learn the local value function, we 
+
+It motivates the following relational template Q-Learning algorithm:
 %My solution
 \begin{center}
 \begin{tabular}{@{}lp{6cm}@{}}
@@ -359,9 +383,9 @@ Repeat (for each episode)\\
 \ \ \ \ \ \ Repeat (for each step of episode):\\
 \ \ \ \ \ \ \ \ \ \ \ \ Choose $a$ based on $s$ using policy derived from $Q$ (e.g., $\epsilon$-greedy method)\\
 \ \ \ \ \ \ \ \ \ \ \ \ Take action $a$, obtain reward $r$ and next state $s'$ from the environment\\
-\ \ \ \ \ \ \ \ \ \ \ \ For each template $\theta_i$:\\
-\ \ \ \ \ \ \ \ \ \ \ \ \ \ $\theta_i \leftarrow \theta_i$
-\ \ \ \ \ \ \ \ \ \ \ \ $Q(s, a) \leftarrow Q(s, a) + \alpha [r + \gamma max_{a'} Q(s', a')-Q(s, a)]$\\
+\ \ \ \ \ \ \ \ \ \ \ \ For each object $O_i$:\\
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \  $Q_{C_i}(s, a) \leftarrow Q_{C_i}(s, a) + \alpha [r + \displaystyle\gamma \  max_{a'} Q_{C_i}(s', a')-Q_{C_i}(s, a)]$\\
+\ \ \ \ \ \ \ \ \ \ \ \ $Q(s, a) = \displaystyle\sum_{i} Q_{C_i}(s, a)$\\
 \ \ \ \ \ \ \ \ \ \ \ \ $s \leftarrow s'$\\
 \ \ \ \ \ \ Until $s$ is terminal\\
 \hline  
@@ -374,19 +398,61 @@ Repeat (for each episode)\\
 %Weakness of current approach
 %TG uses a big classification tree to learn all policy of the agent in its lifetime, we need a new way to find the policy against local structure, for transfer
 %
-Handle dynamic number of objects (what if a class is missing?) what is the regression tree work?
-Learn simple scenario from complex one--
-Peter Stone's soccer need a simple scenario to transfer
-But in video games we cannot do it
-Current approach cannot transfer from complex one to simple one, how can it be done? From two block to three blocks
-Hanlde real value relations
-Implement the current approach
-the system dynamics and rewards
+
+%Handle dynamic number of objects (what if a class is missing?) what is the regression tree work?
+%Learn simple scenario from complex one--
+%Peter Stone's soccer need a simple scenario to transfer
+%But in video games we cannot do it
+%Current approach cannot transfer from complex one to simple one, how can it be done? From two block to three blocks
+%Hanlde real value relations
+%Implement the current approach
+%the system dynamics and rewards
 
 %spatial proximity
 %temporal proximity
 %structure learning, group small number of objects into bigger one (CVPR 2010, Yu Pen Fei's project)
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\endinput
 at the level of a template for a task domain. Given a particular
 environment within that domain, it defines a specific MDP
 instantiated for that environment. The domain is specified by a schema,
@@ -543,47 +609,6 @@ possible. For simplicity of presentation, we focus on the multiagent
 case, such as Freecraft, where, an action is an assignment
 to the action of every unit.
 Example 2.1 (Freecraft tactical
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\endinput
 Any text after an \endinput is ignored.
 You could put scraps here or things in progress.
 
