@@ -969,3 +969,13 @@ Weight 0 means irrelevant. Weight 1 means disjoint, and it is default!!??
 42. Example of Pong in RRL, show that what RRL can do better than RL and Grid World.
 43. Generalize the existing policy into unknown objects
 44. Discover the same object with different appearance
+45. Show how to solve MDP with model free and model-based approach. In
+model-based appraoch, how to estimate the reward function.  A possible way is
+to use Tzu Kuo's Master thesis to do L1 regression when some of the variables
+are missing. (sol: just make it 0 for missing variables, it allows the weight
+to be anything) For the constant -1 reward which does not depend on anything,
+it can be regressed by Y = AX + B + e. B is the constant reward.
+You can also do policy iteration by regression trees. Construct the regression tree 
+by observing the neareast objects only and gradually expand the tree by adding more objects from near to far.
+When there is a missing branch, it means the relation does not exists, which will also provide a value.
+It is possible to have multiple branches (more than 2) for a node.
