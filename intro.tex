@@ -28,8 +28,8 @@ Following the paradigm of \cite{GGP} and \cite{Yavar}, the objective is not to d
 a specific game. Instead, the objective is to design a good and generic AI to play different games successfully.
 
 \item Large but highly structured states:
-For a 256 color video game with resolution $640 \times 480$, it has $256^(640 \times 480)$ states.
-The number states are too big to be tractable. However, a video game often consists of small number of objects.
+For a 256 color video game with resolution $640 \times 480$, it has $256^{640 \times 480}$ states.
+The number of states is too big to be tractable. However, a video game often consists of small number of objects.
 If we can figure out a way to represent the relationship of these objects, the number of states
 can be reduced.
 
@@ -51,7 +51,7 @@ The process are time-consuming and the hard-coded behavior would produce unreali
 If we can design a generic agent and let it act reactively with the environment, it can produce 
 more various and unpredictable behaviors.
 
-\section{Why applying computer vision to video games?}
+\section{Why apply computer vision to video games?}
 
 The reason behind is the reality that most of the video games do not have source codes which are publicly available.
 If a researcher needs to test his algorithm on Super Mario Bros., all he can do is to apply it on Infinite Mario Bros.,
@@ -130,7 +130,12 @@ objects. And it also enables the possibility to reuse the knowledge in different
 
 \chapter{Reinforcement Learning}
 \label{ch:RL}
-The objective of reinforcement learning algorithm is to build an learning agent. The learning agent will take
+
+We briefly introduce the basic concept of reinforcement learning in this chapter. 
+For a more completed introduction of reinforcement learning, please refer to
+\cite{SuttonIntro} and \cite{KevinIntro}.
+
+The objective of reinforcement learning algorithm is to build a learning agent. The learning agent will take
 actions based on the current state. In the beginning, the agent does not know anything about 
 the environment, therefore the agent has to choose the first action randomly. After the environment
 receives the action, it will provide a reward to the agent as a feedback. The reward can be either
@@ -270,124 +275,48 @@ Algorithm: minmax Q-learning\\
 \end{center}
 
 
-\chapter{Relational Learning}
-
-Dynamic number of objects
-No fixed representation
-Dependency with samples. (intrinsic to reinforcement learning, since consective states has similar
-Q-value, there are not independent all)
+\chapter{Relational Reinforcement Learning}
 
 Video games involves objects: things like monsters, treasures, or princess.
-But the most current machine learning algorithms requires the world to be represented 
-by a vector of attributes. The vector representation has several drawbacks when applied to objects.
+The game world can be described by the relation of objects: there is a
+beautiful princess who is prisoned in a castle which is guarded by a horde of
+monsters.  When we play the game, it is more nature to consider an action in a
+relational form. Are there any monsters near the treasure?  How many monsters
+are in the next room?  The states and actions in video games can be more
+effectively to be represented in relational forms. 
+
+Reinforcement learning provides a general approach to construct an intelligent
+agent with minimal supervision. Nevertheless, most work in reinforcement
+learning focuses on propositional representations. Such representation requires
+some human expert to construct a fixed-length feature vector to represent the world.
+However, it is difficult to construct a fixed-length feature vector to
+represent varying number of monsters in video games.
+%It is also not clear how to assign each monster to the corresponding feature.
+In addition, the
+relationships between objects are lost in the propositional representation,
+unless it is hand-crafted into the feature vector by the human expert. The lack
+of object information makes it hard to transfer the knowledge against one class
+of objects to against another similar one. 
+
+The insufficient power of propositional representation motivates the relational
+reinforcement learning algorithms.  
+The relational reinforcement learning can be formulated as Relational Markov Decision Process (RMDP).
 
 
-The vector representation is ordered. However, it's not clear how to assign a fixed for the objects.
+%Dynamic number of objects
+%No fixed representation
+%Dependency with samples. (intrinsic to reinforcement learning, since consective states has similar
+%Q-value, there are not independent all)
 
-The length of vector representation is fixed. However, the number of objects might vary.
+%But the most current machine learning algorithms requires the world to be represented 
+%by a vector of attributes. The vector representation has several drawbacks when applied to objects.
 
-The relationship between objects are lost in the vector representation. 
 
-Motivation
-Consider a typical questionanswering task on the
-web 	BernersLee et alí¯€í°€  Fensel et alí¯€í°€ 
-í¯€í°€
-which might involve accessing and integrating semi
-structured information from the web to answer a com
-plex queryí¯€í°€ egí¯€í°€ nd a graduate school on the west
-coast that has aordable housingí¯€í°€ multiple faculty and
-funded research in Articial Intelligence Even if the
-query is posed in a formal query languageí¯€í°€ answer
-ing it requires several skills such as query planningí¯€í°€
-optimizationí¯€í°€ information extractioní¯€í°€ and information
-integration in a relational language Or consider what
-is involved in learning to cook a meal While certainly
-not an exhaustive listí¯€í°€ one needs to reason about peo
-ples tastes and preferencesí¯€í°€ ones own knowledge of
-recipes and skillsí¯€í°€ availability of ingredientsí¯€í°€ their lo
-cationsí¯€í°€ and procedures to access themí¯€í°€ the capacities
-of utensils and cooking rangesí¯€í°€ and the eects of dif
-ferent proportions of ingredientsí¯€í°€ of cooking temper
-aturesí¯€í°€ and of dierent kinds of cooking processes on
-the taste and quality of the nal product
-It is easy to pose both of these problems as reinforce
-ment learning problems In both tasksí¯€í°€ we might pe
-nalize the system for the time spent and other costsí¯€í°€
-and reward it for the quality of the nal product
-What is problematicí¯€í°€ howeverí¯€í°€ is that the structure
-of the web and the reasoning involved in the cooking
-task are most naturally represented using relational
-representations This poses several challenges to the
-success of RL in these domains
-Function Approximationí¯€í°€ The valuefunction ap
-proximation typically used in RLí¯€í°€ egí¯€í°€ neural net
-works or regression treesí¯€í°€ does not generalize well
-when applied to relational domains This is partly
-because these representations are illsuited to the
-task of representing relational knowledge When
-they are successfulí¯€í°€ they require a careful choice of
-propositional features or basis functions which are
-handcrafted specically to a particular task at
-hand Designing functionapproximation schemes
-that exploit relational structure when present is a
-critical challenge
-Generalization across Objectsí¯€í°€ RL methods that
-do not explicitly represent objects and relation
-ships between them are fundamentally limited in
-their ability to transfer learning about one object
-to similar related objects Critical challenges here
-are identifying classes of objects that are to be
-considered similarí¯€í°€ across which such general
-ization is justiedí¯€í°€ and identifying and represent
-ing knowledge suitable for transfer
-Transfer across Tasksí¯€í°€ RL programs are usually
-tested on a single task and do not exhibit transfer
-of knowledge across tasks Each task in a given
-domainí¯€í°€ egí¯€í°€ each query in information retrievalí¯€í°€
-may look quite dierent when formulated propo
-sitionallyí¯€í°€ and thus may require separate training
-to learn to answer it Relational representations
-facilitate formulating broad collections of related
-tasks as a single domainí¯€í°€ yielding natural gener
-alization between these related tasks
-Runtime Planning and Reasoningí¯€í°€ In most re
-inforcement learning workí¯€í°€ there is no deliberate
-planning and reasoning at runtime It is tac
-itly assumed that either all planning occurs of
-ine or the system relies completely on explo
-ration and learning to construct good plansí¯€í°€ re
-ducing the runtime execution to reactive behav
-ior Howeverí¯€í°€ complex dynamic domains require
-both deliberation and reactivityí¯€í°€ as is demon
-strated by successful gameplaying programs It
-appears that the approximate nature of the value
-function demands a more rened search at the run
-time to compensate for its errors Reasoning may
-also be important in constructing new features for
-an improved valuefunction approximation
-Prior Knowledgeí¯€í°€ RL deemphasizes the role of
-prior knowledge in learning and reasoningí¯€í°€ thus
-relying on trial and error learning which can be
-very inecient and often does not scale to more
-complex tasks such as the above
-Relational reinforcement learning 	RRL
- seeks to ad
-dress all the above problems by generalizing RL to re
-lationally represented states and actions In factí¯€í°€ both
-reinforcement learning and relational learning have a
-long history The study of reinforcement learning be
-gan with Samuels pioneering  work on checkers
-	Samuelí¯€í°€ 
- Work on relational learning started
-with Winstons work on blocks world learning 	Win
-stoní¯€í°€ 
- In recent timesí¯€í°€ relational learning is stud
-ied under dierent namesí¯€í°€ including inductive logic
-programmingí¯€í°€ relational data mining and probabilis
-tic relational modeling Reinforcement learning is also
-studied under multiple guises of which neurodynamic
-programming and decision theoretic planning are the
-most recognizable
+%The vector representation is ordered. However, it's not clear how to assign a fixed for the objects.
+
+%The length of vector representation is fixed. However, the number of objects might vary.
+
+%The relationship between objects are lost in the vector representation. 
 
 %\section{Object-Oriented Relational Reinforcement Learning}
 \section{Relational Markov Decision Processes}
@@ -395,17 +324,435 @@ most recognizable
 Following the definition in \cite{RelationalMDP}, we define 
 a relational MDP as follows:
 
-Definition: Relational Markov decision process is formalized as a tuple $<C, S, O, D, A, T, R>$, where
+%TODO: Add normal Definition here
+Definition: Relational Markov decision process (RMDP) is formalized as a tuple $<\mathbb{P}, \mathbb{A}, \mathbb{D}, \mathbb{T}, \mathbb{R}>$, where
 \begin{itemize}{}
-\item $C$ is a set of object classes $C={C_1, \dots, C_c}$. Each
-class is associated with a set of state variables $S[C]={C.S_1, \dots, C.S_k}
-    \item 
+    \item $\mathbb{P}$ is a set of predicates.
+    \item $\mathbb{A}$ is a set of actions.
+    \item $\mathbb{D}$ is a domain of objects.
+\item A state $S$ in state space $\mathbb{S}$ is a set of state predicates.
+\item The transition function $T:\mathbb{S} \times \mathbb{A} \times \mathbb{S} \rightarrow [0, 1]$ defines a probability distribution over the possible next states. 
+\item The reward function $R:\mathbb{S}\times \mathbb{A} \rightarrow \mathbb{R}$ defines the reward after executing a certain action at a certain state.
 \end{itemize}
-the system dynamics and rewards
+
+%The task of relational reinforcement learning is to find an optimal policy for a RMDP with unknown transition
+%function and reward function. As in chapter \ref{ch:RL}, our objective is to find a policy $\pi:\mathbb{S} \rightarrow \mathbb{A}$ 
+%which maximizes the value function $V^{\pi}(s) = E_{\pi}[\sum^{\infty}_{t=0} \gamma^{i}R(s_t, \pi(s_t))]$, where $\gamma$ is the discount factor.
+
+Theorem: If the state transition probability can be factorized as $P(S'|S, A) = P(x_1'|x_1, A)P(x_2'|x_2, A)\dots P(x_k'|x_k, A)$
+and $R(S) = R(x_1) + R(x_2) + \dots + R(x_k)$, where $x_i$ is a subset of $S$ and $S = x_1 \cup x_2 \cup \dots \cup x_k$,
+then the value function can be decomposed into $V(S, A) = V_1(x_1, A) + V_2(x_2, A) + \dots + V_k(x_k, A)$.
+
+Proof: 
+\begin{equation}
+    V(S, A) = \sum_{S'}P(S'|S, A)R(S') \\
+    = \sum_{x_1} \sum_{x_2} \dots \sum_{x_k} P(x_1'|x_1, A)P(x_2'|x_2, A)\dots P(x_k'|x_k, A) (R(x_1') + R(x_2') + \dots + R(x_k')) \\
+    = \sum_{x_1} P(x_1'|x_1, A)R(x_1') \sum_{x_2} \dots \sum_{x_k} P(x_2'|x_2, A)\dots P(x_k'|x_k, A) \\
+    + \sum_{x_2} P(x_2'|x_2, A)R(x_2') \sum_{x_1} \sum_{x_3}\dots \sum_{x_k} P(x_1'|x_1, A)P(x_3'|x_3, A)\dots P(x_k'|x_k, A) \\
+    + \dots \\
+    + \sum_{x_k} P(x_k'|x_k, A)R(x_k') \sum_{x_1} \dots \sum_{x_{k-1}} P(x_1'|x_1, A)\dots P(x_{k-1}'|x_{k-1}, A) \\
+    = \sum_{x_1} P(x_1'|x_1, A)R(x_1') +\sum_{x_2} P(x_2'|x_2, A)R(x_2') + \dots + \sum_{x_k} P(x_k'|x_k, A)R(x_k') \\
+    = V_1(x_1, A) + V_2(x_2, A) + \dots + V_k(x_k, A)
+\end{equation}
+
+The value function decomposition allows us to estimate the value function without exploring the 
+exponential state space. What we need is to estimate the individual local value function. It can 
+be done by solving the following equations. 
+
+\begin{equation}
+    S_1 = |x_1(S_1)|V_1(x_1(S_1)) + |x_2(S_1)|V_2(x_2(S_1)) + \dots + |x_k(S_1)|V_2(x_k(S_1)) \\
+    S_2 = |x_1(S_2)|V_1(x_1(S_2)) + |x_2(S_2)|V_2(x_2(S_2)) + \dots + |x_k(S_2)|V_k(x_k(S_2)) \\
+    \dots
+    S_N = |x_1(S_N)|V_1(x_1(S_N)) + |x_2(S_N)|V_2(x_2(S_N)) + \dots + |x_k(S_N)|V_k(x_k(S_N)) \\
+\end{equation}
+
+%To solve the RMDP, common approaches involve relational regression and approximate policy iteration.
+%Example: Mario Coin Monster world
+%The example state, action, 
+%The propositional representation {(1, 24, 3), (2, 35, 6)}
+%input is a tuple
+%The common approach to solve the RMDP problem
+%Feature Engineering
+%Relational Regression
+%Approximate Policy Iteration
+
+\begin{figure}[h]
+    \centering
+    \begin{minipage}[t]{0.6\linewidth}
+        \centering
+        \includegraphics[width=\textwidth] {./figures/MarioWorld.eps}
+        \caption{The world with two monsters $M1$ and $M2$. A coin and a agent.}
+    \label{fig:MarioWorld}
+    \end{minipage}
+\end{figure}
+
+Motivated by \cite{RelationalTemplate} and \cite{RelationalMDP}, we decompose the value function into
+into the summation of several local functions, which are defined over some templates. 
+Each template represents a policy against a certain type of object.
+
+For example, the world in fig. \ref{fig:MarioWorld} consists of an agent, a
+coin and two monsters.  The agent gets +10 reward when he picks a coin and
+receives -10 reward if he encounters a monster.  The value function of the
+agent can be represented as $V = V_{monster}(A, M1) + V_{monster}(A, M2) +
+V_{coin}(A, C)$.  The local functions $V_{monster}$ and $V_{coin}$ indicates
+the expected rewards when there is one such object in the world. The
+decomposition of value function allows us to handle varying number of objects
+by summation over local functions. The class-specific local function also
+allows to share the knowledge from different objects of the same type. 
+The agent knows how to handle a new entity if the agent has experience of the same type
+before. In other worlds, the local functions enable knowledge transfer with in the 
+same class.
+
+%There are several challenges arised from this problem.
+%First, we don't know the true reward function. An agent may receive a reward because
+%he picks up a coin, or he moves into the right of a monster (Fig. ?). There are many 
+%ways to explain why the agent receives the reward, but we don't know which one is the real cause.
+%Second, we approximate the value function by the summation of several local functions. Yet the potential 
+%local functions are many. It's important to choose to the correct local functions to approximate the value function.
+
+
+
+%Chanllenge:
+%1. The reward function estimation: we don't know which object introduce the reward
+%2. What is the correct partition of the value function
+%3. The complex transistion: An action may create more objects. A wall may make certain objects unaccessible
+%4. object based reward function (the number of reward functions changes over time)
+%5. The reason why we can use additive Q function
+%6. The problem of Additive Q (failed in highly interactive environment) and Additive SARSA (slow convergence, wrong estimation)
+%7. The grid world cahnges every episode (need transfer learning)
+%8. Unclear relationship (what is above, what is adjacent, what is mid-range attack, what is touch, what is absorb). for touch, father, it's clear
+
+%To learn the local value function, we 
+
+%It motivates the following relational template Q-Learning algorithm:
+%%My solution
+%\begin{center}
+%\begin{tabular}{@{}lp{6cm}@{}}
+%\hline
+%Algorithm: relational template Q-Learning\\
+%\hline
+%Initialize $Q(s, a)$ arbitrarily\\
+%Repeat (for each episode)\\
+%\ \ \ \ \ \ Initialize $s$\\
+%\ \ \ \ \ \ Repeat (for each step of episode):\\
+%\ \ \ \ \ \ \ \ \ \ \ \ Choose $a$ based on $s$ using policy derived from $Q$ (e.g., $\epsilon$-greedy method)\\
+%\ \ \ \ \ \ \ \ \ \ \ \ Take action $a$, obtain reward $r$ and next state $s'$ from the environment\\
+%\ \ \ \ \ \ \ \ \ \ \ \ For each object $O_i$:\\
+%\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \  $Q_{C_i}(s, a) \leftarrow Q_{C_i}(s, a) + \alpha [r + \displaystyle\gamma \  max_{a'} Q_{C_i}(s', a')-Q_{C_i}(s, a)]$\\
+%\ \ \ \ \ \ \ \ \ \ \ \ $Q(s, a) = \displaystyle\sum_{i} Q_{C_i}(s, a)$\\
+%\ \ \ \ \ \ \ \ \ \ \ \ $s \leftarrow s'$\\
+%\ \ \ \ \ \ Until $s$ is terminal\\
+%\hline  
+%\end{tabular}
+%\end{center}
+
+\section{Experiment}
+We conduct our experiment in $8 \times 8$ grid world. 
+The world consists of an agent, indefinite number of coins and monsters. 
+The location and the number of coins and monsters are decided at the beginning of each episode.
+The goal of the agent is to collect as much coins as possible. Each coin contributes $+10$ reward to the agent.
+After all coins have been collected, the episode ends. If the agent encounters a monster, it will receive
+$-30$ reward and the episode ends immediately. The agent will receive $-1$ reward for each step. 
+
+Unlike the grid world in previous literature, this game is more challenging because
+the agent faces different scenarios for each episode. It is unlikely that
+an episode will ever repeat itself. The success of the agent lies in how
+to learn from the previous episode and transfer it into the new one.
+
+The discounted reward factor $\gamma$ is 0.9 and $\alpha$ is 0.2.
+The exploration strategy is $\epsilon-greedy$ with $\epsilon$ equal to 0.2.
+Fig. \ref{fig:AvgReward} shows the average reward per step for the agent.
+Fig. \ref{fig:Policy} shows the learned policy of individual object class after 2,000,000 steps.
+%It indicates that 
+
+\begin{figure}[h]
+    \centering
+    \begin{minipage}[t]{0.6\linewidth}
+        \centering
+        \includegraphics[width=\textwidth] {./figures/AvgReward.eps}
+        \caption{The average rewards acquired by relational template Q-Learning}
+    \label{fig:AvgReward}
+    \end{minipage}
+\end{figure}
+\begin{figure}[h]
+    \centering
+    \begin{minipage}[t]{0.48\linewidth}
+        \centering
+        \includegraphics[width=\textwidth] {./figures/PolicyCoin.eps}
+    \end{minipage}
+    \begin{minipage}[t]{0.48\linewidth}
+        \centering
+        \includegraphics[width=\textwidth] {./figures/PolicyMonster.eps}
+    \end{minipage}
+    \begin{minipage}[b]{0.48\linewidth} \centering (a) \end{minipage}
+    \begin{minipage}[b]{0.48\linewidth} \centering (b) \end{minipage}
+    \caption{(a)The learned policy for a coin (b)The learned policy against a monster}
+    \label{fig:Policy}
+\end{figure}
+
+
+\section{Related Work}
+The relational reinforcement learning is one of the recent research direction for RL community. 
+We provide brief review here. More complete review can be found in \cite{TadSurveyRRL} and \cite{OtterSurveyRRL}.
+The relational representation allows us to generalize the existing policy into complex world, transfer
+the knowledge to similar scenarios and handle problems with varying number of objects.
+Driessens et al.\cite{TG} combined the Tilde algorithm and the G-algorithm to construct a
+relational regression tree to predict Q values. 
+%TODO: the approach discovers a huge regression tree for every scenario, which forbids the knowledge transfer
+The instance based regression approach \cite{KNN_RRL} computes the weighted average of Q values from the stored
+examples. The weights are determined by the distance between the examples.
+Gartner et al. \cite{GraphKernel} adopted Gaussian processes to approximate Q-functions. Since
+Gaussian processes require positive definite covariance function to work, they regards the relations as graphs and
+use graph kernels as the covariance function.
+
+
+There are several works which decompose the value function into several local functions. 
+Russel et al.\cite{RessellDecompose} proposed to build a RL agent from simpler subagents. Each subagent has its own
+reward function. The value function is the sum of local functions which are learned by each
+subagent individually. Guestrin et al.\cite{RelationalMDP} approximates the value function by
+linear combination of local functions which are defined for each class of objects.
+
+%TODO: vision perspective-->How to use policy to recognize objects.
+%TODO: strength: I found a way to decompose the value function of factoerized MDP into sum of local functions of primitive predicates
+% I can change it to sum of composite predicate as well like Relational Temporal Difference Learning by Nima
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\endinput
+%Another closely related line of work comes from
+%Guestrin et al. (2003), who report a system that di-
+%rectly approximates the value function by additively
+%decomposing it into local functions for each class of
+%objects, then calculating weights for the combina-
+%tion by solving a linear program using constraint-
+%sampling methods. Their approach assumes that re-
+%lations among objects do not change over time. Our
+%method does not make that assumption, as our learned
+%value function is defined over relational predicates
+%rather than classes of objects. Less closely related
+%Relational Temporal Difference Learning
+%approaches include approximate policy iteration (e.g.,
+%Fern et al., 2004) and explanation-based reinforcement
+%learning (e.g., Boutilier et al., 2001).
+
+%There are many implicit and explicit formalizations of relational versions of MDPs.
+%Implicit formalizations (see for example (Guestrin et al., 2003a; Guestrin, 2003; Kersting
+%and De Raedt, 2004; Kersting et al., 2004; Fern et al., 2003, 2004; Yoon et al., 2002; Boutilier
+%et al., 2001)) use a (fragment of a) first-order language to specify abstract definitions of
+%e.g. transition functions and as a consequence, â€“ in an implicit way â€“ an underlying,
+%ground relational MDP is specified; i.e. it consists of the semantic level of the language
+%used. Explicit formalizations (see for example (Mausam and Weld, 2003; van Otterlo and
+%Kersting, 2004; Roncagliolo and Tadepalli, 2004; van Otterlo, 2004)) explicitly define new
+%versions of MDPs where the states and actions are defined using ground relational atoms;
+%a first-order language is then typically used for abstraction over this MDP definition. Both
+%types of formalizations are clearly interchangeable and the main important aspect is the
+%relation between the logical abstraction language and the underlying MDP it models. In
+%this paper we use a simple definition of an RMDP (van Otterlo, 2004):
+
+
+%In model-free relational RL, one has studied different
+%relational learners for function approximation
+%(DÂ·zeroski et al., 2001; Lecoeuche, 2001; Driessens &
+%Ramon, 2003; GÃ„artner et al., 2003). Others have applied
+%Q-learning based on pre-speciÂ¯ed abstract state
+%spaces: Kersting and De Raedt (2003) investigate pure
+%Q-learning, Van Otterlo (2004) learns the Q-function
+%via learning the underlying transition model. Fern
+%et al. (2003) extended previous work on upgrading
+%learned policies for small relational MDPS (RMDPs)
+%with approximated policy iteration. Finally, Guestrin
+%et al. (2003) recently reported on class-based, approximate
+%value functions for RMDPs.
+
+%By contrast, previous work on relational reinforce-
+%ment learning has focused on different responses to
+%the above challenges. Dzeroski et al. (2001) adapted
+%relational regression algorithms to take advantage of
+%relational structure in describing Q values. For ex-
+%ample, the TG algorithm (Driessens et al., 2001) in-
+%duces a relational regression tree that predicts Q val-
+%ues. However, our system relies on state values so
+%that the learning algorithm makes explicit use of the
+%domain description.
+%Another closely related line of work comes from
+%Guestrin et al. (2003), who report a system that di-
+%rectly approximates the value function by additively
+%decomposing it into local functions for each class of
+%objects, then calculating weights for the combina-
+%tion by solving a linear program using constraint-
+%sampling methods. Their approach assumes that re-
+%lations among objects do not change over time. Our
+%method does not make that assumption, as our learned
+%value function is defined over relational predicates
+%rather than classes of objects. Less closely related
+%Relational Temporal Difference Learning
+%approaches include approximate policy iteration (e.g.,
+%Fern et al., 2004) and explanation-based reinforcement
+%learning (e.g., Boutilier et al., 2001).
+
+
+%Through the use of relational regressioní¯€í°€ the RRL sys
+%tem 	Dzeroski et alí¯€í°€ 
+ %allows the application of
+%almost standard Qlearning to reinforcement learning
+%problems in environments that are characterized by
+%their relational nature
+%The use of relational representations of states and
+%actions combined with relational regression for Q
+%function generalization allows the use of structural in
+%formation such as the existence of objects with the
+%right properties or relations between objects in the de
+%scription of the Qvaluesí¯€í°€ and as a consequence in the
+%description of the derived policy This enables the re
+%use of experience on smaller but related problems when
+%confronted with more elaborate or simply larger tasks
+%Three regression algorithms have been developed for
+%use in this RRL system the TG algorithmí¯€í°€ which in
+%crementally builds rst order regression treesí¯€í°€ an in
+%stance based algorithm called RIB and a kernel based
+%algorithm KBR that uses Gaussian processes as the
+%regression technique
+%The TG algorithm 	Driessens et alí¯€í°€ 
+ %is a combi
+%nation of the Tilde algorithm 	Blockeel  De Raedtí¯€í°€
+%
+ %that builds rst order classication and regres
+%sion trees and the Galgorithm 	Chapman  Kael
+%blingí¯€í°€ 
+ %that uses a number of statistical values
+%concerning the performance of each possible extension
+%in each leaf of the tree to build the tree incrementally
+%The relational regression trees used by the TG algo
+%rithm use conjunctions of rst order literals as tests in
+%the internal leafs The test corresponding to a certain
+%leaf is the conjunction of the tests appearing on the
+%path from the root of the tree to the leafí¯€í°€ in which any
+%appearing variable is existentially quantied The TG
+%algorithm employs a userdened renement operator
+%that originated in the Tilde system to generate the
+%possible rst order tests that can be used to replace
+%a leaf The statistics stored by the TG algorithm al
+%gorithm in each leaf of the tree consist of the number
+%of examples classied positively or negatively by each
+%possible test and the sum of the Qvalues and squared
+%Qvalues in each of these cases This allows the use
+%of an Ftest to decide which test to select For nowí¯€í°€
+%no tree restructuring is done by TG All decisions that
+%the algorithm makes are nal
+%The instance based algorithm RIB 	Driessens  Ra
+%moní¯€í°€ 
+ %uses knearestneighbor prediction as the
+%regression techniqueí¯€í°€ ieí¯€í°€ it computes a weighted av
+%erage of the Qvalues of the examples stored in mem
+%ory where the weight is inversely proportional to the
+%distance between the examples The distance used
+%needs to be able to cope with relational representa
+%tions of states and actions and can be either a gen
+%eral purpose rst order distance 	Sebagí¯€í°€  Ra
+%mon  Bruynoogheí¯€í°€ 
+ %or an applicationspecic
+%oneí¯€í°€ which can usually be computed more eciently
+%Because Qlearning generates a continuous stream of
+%learning examplesí¯€í°€ a number of example selection
+%methods were developed to reduce both the memory
+%and the computational requirements These selection
+%criteria are based on those used in IB and IB 	Aha
+%et alí¯€í°€ 
+ %and look at the inuence of individual
+%examples on the overall prediction error
+%The third algorithm is called KBR 	Gartner et alí¯€í°€
+%a
+ %and uses Gaussian processes as the regression
+%technique Gaussian processes 	MacKayí¯€í°€ 
+ %require
+%a positive denite covariance function to be dened
+%between the example descriptions Because of the use
+%of relational representations in the RRL systemí¯€í°€ ker
+%nels for structured data have to be used to fulll this
+%task Possible candidates here are the convolution
+%kernel 	Hausslerí¯€í°€ 
+ %or kernels dened on graphs
+    %Gartner et alí¯€í°€ b
+% Because Gaussian processes
+%are a Bayesian techniqueí¯€í°€ the KBR algorithm oers
+%more than just a basic prediction of the Qvalue of a
+%new unseen example It can also give an indication of
+%the expected accuracy of this estimateí¯€í°€ which in turn
+%can be usedí¯€í°€ for exampleí¯€í°€ by the Qlearning algorithm
+%to guide exploration
+%One of the major problems that reduces the applica
+%bility of Qlearning with relational function abstrac
+%tion stems from the nature of Qvalues themselvesí¯€í°€ ieí¯€í°€
+%their implicit encoding of both the distance to and the
+%size of the next reward These can be very hard to
+%predict in stochastic and highly chaotic tasks Other
+%approaches such as advantage learning or policy itera
+%tion seem more appropriate in such cases
+
+%update by Q by local value function or the global one? (which one will converge faster?)
+%context independent ??
+
+%Weakness of current approach
+%TG uses a big classification tree to learn all policy of the agent in its lifetime, we need a new way to find the policy against local structure, for transfer
+%
+
+%Handle dynamic number of objects (what if a class is missing?) what is the regression tree work?
+%Learn simple scenario from complex one--
+%Peter Stone's soccer need a simple scenario to transfer
+%But in video games we cannot do it
+%Current approach cannot transfer from complex one to simple one, how can it be done? From two block to three blocks
+%Hanlde real value relations
+%Implement the current approach
+%the system dynamics and rewards
+
+%spatial proximity
+%temporal proximity
+%structure learning, group small number of objects into bigger one (CVPR 2010, Yu Pen Fei's project)
+
+
+
 at the level of a template for a task domain. Given a particular
 environment within that domain, it defines a specific MDP
 instantiated for that environment. The domain is specified by a schema,
-which specifies a set of object classes $C = fC1; : : : ;Ccg. Each class
+which specifies a set of object classes C = fC1; : : : ;Ccg. Each class
 C is also associated with a set of state variables S[C] =
 fC:S1; : : : ;C:Skg, which describe the state of an object in
 that class. Each state variable C:S has a domain of possible
@@ -514,7 +861,7 @@ F2.A
 F2.Hâ€™
 E2.Health E2.Hâ€™
 
-í¯€í°€
+ï¿½ï¿½ï¿½ï¿½
 
 
 
@@ -558,47 +905,6 @@ possible. For simplicity of presentation, we focus on the multiagent
 case, such as Freecraft, where, an action is an assignment
 to the action of every unit.
 Example 2.1 (Freecraft tactical
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\endinput
 Any text after an \endinput is ignored.
 You could put scraps here or things in progress.
 
@@ -969,6 +1275,11 @@ Weight 0 means irrelevant. Weight 1 means disjoint, and it is default!!??
 42. Example of Pong in RRL, show that what RRL can do better than RL and Grid World.
 43. Generalize the existing policy into unknown objects
 44. Discover the same object with different appearance
+45. Find the temporal proximity of a configuration.
+46. Model-Based vs Model-Free approach
+47. Reward distribution problem
+48. Learning a policy against certain type of objects from a complex world
+49. Find correct cause of the reward
 45. Show how to solve MDP with model free and model-based approach. In
 model-based appraoch, how to estimate the reward function.  A possible way is
 to use Tzu Kuo's Master thesis to do L1 regression when some of the variables
@@ -979,3 +1290,7 @@ You can also do policy iteration by regression trees. Construct the regression t
 by observing the neareast objects only and gradually expand the tree by adding more objects from near to far.
 When there is a missing branch, it means the relation does not exists, which will also provide a value.
 It is possible to have multiple branches (more than 2) for a node.
+
+46. Init all unknown state (especiall the location of chicken)to maxV so it will encourge the chicken to walk to the other side (we don't need heirachical RL)
+47. the regression approach will learn optimal state (when bullet hits a target). Any action which leads to this state will get high reward
+48. RLTD, Gustrin 2003, MaxQ 2003, Russel value decomposition

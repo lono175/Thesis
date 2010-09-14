@@ -38,6 +38,7 @@
 
 % add by lono
 \RequirePackage{tabbing}
+\RequirePackage{amsfonts}
 
 %% Useful command stolen from Forbes' genthesis.cls
 \newcommand{\@addto}[2]{
