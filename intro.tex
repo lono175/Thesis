@@ -325,46 +325,48 @@ Following the definition in \cite{RelationalMDP}, we define
 a relational MDP as follows:
 
 %TODO: Add normal Definition here
-Definition: Relational Markov decision process (RMDP) is formalized as a tuple $<\mathbb{P}, \mathbb{A}, \mathbb{D}, \mathbb{T}, \mathbb{R}>$, where
+\begin{definition} Relational Markov decision process (RMDP) is formalized as a tuple $<\mathbb{P}, \mathbb{A}, \mathbb{D}, \mathbb{T}, \mathbb{R}>$, where
 \begin{itemize}{}
     \item $\mathbb{P}$ is a set of predicates.
     \item $\mathbb{A}$ is a set of actions.
     \item $\mathbb{D}$ is a domain of objects.
 \item A state $S$ in state space $\mathbb{S}$ is a set of state predicates.
 \item The transition function $T:\mathbb{S} \times \mathbb{A} \times \mathbb{S} \rightarrow [0, 1]$ defines a probability distribution over the possible next states. 
-\item The reward function $R:\mathbb{S}\times \mathbb{A} \rightarrow \mathbb{R}$ defines the reward after executing a certain action at a certain state.
+\item The reward function $\mathbb{R}:\mathbb{S}\times \mathbb{A} \rightarrow {R}$ defines the reward after executing a certain action at a certain state.
 \end{itemize}
+\end{definition}
 
 %The task of relational reinforcement learning is to find an optimal policy for a RMDP with unknown transition
 %function and reward function. As in chapter \ref{ch:RL}, our objective is to find a policy $\pi:\mathbb{S} \rightarrow \mathbb{A}$ 
 %which maximizes the value function $V^{\pi}(s) = E_{\pi}[\sum^{\infty}_{t=0} \gamma^{i}R(s_t, \pi(s_t))]$, where $\gamma$ is the discount factor.
 
-Theorem: If the state transition probability can be factorized as $P(S'|S, A) = P(x_1'|x_1, A)P(x_2'|x_2, A)\dots P(x_k'|x_k, A)$
+\begin{theorem} If the state transition probability can be factorized as $P(S'|S, A) = P(x_1'|x_1, A)P(x_2'|x_2, A)\dots P(x_k'|x_k, A)$
 and $R(S) = R(x_1) + R(x_2) + \dots + R(x_k)$, where $x_i$ is a subset of $S$ and $S = x_1 \cup x_2 \cup \dots \cup x_k$,
 then the value function can be decomposed into $V(S, A) = V_1(x_1, A) + V_2(x_2, A) + \dots + V_k(x_k, A)$.
+\end{theorem}
 
-Proof: 
-\begin{equation}
-    V(S, A) = \sum_{S'}P(S'|S, A)R(S') \\
-    = \sum_{x_1} \sum_{x_2} \dots \sum_{x_k} P(x_1'|x_1, A)P(x_2'|x_2, A)\dots P(x_k'|x_k, A) (R(x_1') + R(x_2') + \dots + R(x_k')) \\
-    = \sum_{x_1} P(x_1'|x_1, A)R(x_1') \sum_{x_2} \dots \sum_{x_k} P(x_2'|x_2, A)\dots P(x_k'|x_k, A) \\
-    + \sum_{x_2} P(x_2'|x_2, A)R(x_2') \sum_{x_1} \sum_{x_3}\dots \sum_{x_k} P(x_1'|x_1, A)P(x_3'|x_3, A)\dots P(x_k'|x_k, A) \\
-    + \dots \\
-    + \sum_{x_k} P(x_k'|x_k, A)R(x_k') \sum_{x_1} \dots \sum_{x_{k-1}} P(x_1'|x_1, A)\dots P(x_{k-1}'|x_{k-1}, A) \\
-    = \sum_{x_1} P(x_1'|x_1, A)R(x_1') +\sum_{x_2} P(x_2'|x_2, A)R(x_2') + \dots + \sum_{x_k} P(x_k'|x_k, A)R(x_k') \\
-    = V_1(x_1, A) + V_2(x_2, A) + \dots + V_k(x_k, A)
-\end{equation}
+\begin{align*}
+Proof:
+V(S, A) =& \sum_{S'}P(S'|S, A)R(S') \\
+=& \sum_{x_1'} \sum_{x_2'} \dots \sum_{x_k'} P(x_1'|x_1, A)P(x_2'|x_2, A)\dots P(x_k'|x_k, A) [R(x_1') + R(x_2') + \dots + R(x_k')] \\
+=& \sum_{x_1'} P(x_1'|x_1, A)R(x_1') \sum_{x_2'} \dots \sum_{x_k'} P(x_2'|x_2, A)\dots P(x_k'|x_k, A) \\
+&+ \sum_{x_2'} P(x_2'|x_2, A)R(x_2') \sum_{x_1'} \sum_{x_3'}\dots \sum_{x_k'} P(x_1'|x_1, A)P(x_3'|x_3, A)\dots P(x_k'|x_k, A) \\
+&+ \dots \\
+&+ \sum_{x_k'} P(x_k'|x_k, A)R(x_k') \sum_{x_1'} \dots \sum_{x_{k-1}'} P(x_1'|x_1, A)\dots P(x_{k-1}'|x_{k-1}, A) \\
+=& \sum_{x_1'} P(x_1'|x_1, A)R(x_1') +\sum_{x_2'} P(x_2'|x_2, A)R(x_2') + \dots + \sum_{x_k'} P(x_k'|x_k, A)R(x_k') \\
+=& V_1(x_1, A) + V_2(x_2, A) + \dots + V_k(x_k, A)
+\end{align*}
 
 The value function decomposition allows us to estimate the value function without exploring the 
 exponential state space. What we need is to estimate the individual local value function. It can 
 be done by solving the following equations. 
 
-\begin{equation}
-    S_1 = |x_1(S_1)|V_1(x_1(S_1)) + |x_2(S_1)|V_2(x_2(S_1)) + \dots + |x_k(S_1)|V_2(x_k(S_1)) \\
-    S_2 = |x_1(S_2)|V_1(x_1(S_2)) + |x_2(S_2)|V_2(x_2(S_2)) + \dots + |x_k(S_2)|V_k(x_k(S_2)) \\
-    \dots
-    S_N = |x_1(S_N)|V_1(x_1(S_N)) + |x_2(S_N)|V_2(x_2(S_N)) + \dots + |x_k(S_N)|V_k(x_k(S_N)) \\
-\end{equation}
+\begin{align*}
+    V(S_1) &= |x_1(S_1)|\cdot V_1(x_1(S_1)) + |x_2(S_1)|\cdot V_2(x_2(S_1)) + \dots + |x_k(S_1)|\cdot V_k(x_k(S_1)) \\
+    V(S_2) &= |x_1(S_2)|\cdot V_1(x_1(S_2)) + |x_2(S_2)|\cdot V_2(x_2(S_2)) + \dots + |x_k(S_2)|\cdot V_k(x_k(S_2)) \\
+    &\vdots\\
+    V(S_N) &= |x_1(S_N)|\cdot V_1(x_1(S_N)) + |x_2(S_N)|\cdot V_2(x_2(S_N)) + \dots + |x_k(S_N)|\cdot V_k(x_k(S_N)) \\
+\end{align*}
 
 %To solve the RMDP, common approaches involve relational regression and approximate policy iteration.
 %Example: Mario Coin Monster world
@@ -386,15 +388,18 @@ be done by solving the following equations.
     \end{minipage}
 \end{figure}
 
-Motivated by \cite{RelationalTemplate} and \cite{RelationalMDP}, we decompose the value function into
-into the summation of several local functions, which are defined over some templates. 
-Each template represents a policy against a certain type of object.
+%Motivated by \cite{RelationalTemplate} and \cite{RelationalMDP}, we decompose the value function into
+%into the summation of several local functions, which are defined over some templates. 
+%Each template represents a policy against a certain type of object.
 
-For example, the world in fig. \ref{fig:MarioWorld} consists of an agent, a
+The world in fig. \ref{fig:MarioWorld} consists of an agent, a
 coin and two monsters.  The agent gets +10 reward when he picks a coin and
-receives -10 reward if he encounters a monster.  The value function of the
-agent can be represented as $V = V_{monster}(A, M1) + V_{monster}(A, M2) +
-V_{coin}(A, C)$.  The local functions $V_{monster}$ and $V_{coin}$ indicates
+receives -10 reward if he encounters a monster. The relationship between 
+objects can be described by the distance between the them. $Dist(O_1, O_2, d)$ is true
+when the distance between object $O_1$ and $O_2$ is $d$ and false otherwise. 
+The value function of the
+agent can be represented as $V(S) = V_{monster}(Dist(A, M_1, 1)) + V_{monster}(Dist(A, M_2, 1.4) +
+V_{coin}(Dist(A, C, 1.4))$. The local functions $V_{monster}$ and $V_{coin}$ indicates
 the expected rewards when there is one such object in the world. The
 decomposition of value function allows us to handle varying number of objects
 by summation over local functions. The class-specific local function also
@@ -446,49 +451,49 @@ same class.
 %\end{tabular}
 %\end{center}
 
-\section{Experiment}
-We conduct our experiment in $8 \times 8$ grid world. 
-The world consists of an agent, indefinite number of coins and monsters. 
-The location and the number of coins and monsters are decided at the beginning of each episode.
-The goal of the agent is to collect as much coins as possible. Each coin contributes $+10$ reward to the agent.
-After all coins have been collected, the episode ends. If the agent encounters a monster, it will receive
-$-30$ reward and the episode ends immediately. The agent will receive $-1$ reward for each step. 
+%\section{Experiment}
+%We conduct our experiment in $8 \times 8$ grid world. 
+%The world consists of an agent, indefinite number of coins and monsters. 
+%The location and the number of coins and monsters are decided at the beginning of each episode.
+%The goal of the agent is to collect as much coins as possible. Each coin contributes $+10$ reward to the agent.
+%After all coins have been collected, the episode ends. If the agent encounters a monster, it will receive
+%$-30$ reward and the episode ends immediately. The agent will receive $-1$ reward for each step. 
 
-Unlike the grid world in previous literature, this game is more challenging because
-the agent faces different scenarios for each episode. It is unlikely that
-an episode will ever repeat itself. The success of the agent lies in how
-to learn from the previous episode and transfer it into the new one.
+%Unlike the grid world in previous literature, this game is more challenging because
+%the agent faces different scenarios for each episode. It is unlikely that
+%an episode will ever repeat itself. The success of the agent lies in how
+%to learn from the previous episode and transfer it into the new one.
 
-The discounted reward factor $\gamma$ is 0.9 and $\alpha$ is 0.2.
-The exploration strategy is $\epsilon-greedy$ with $\epsilon$ equal to 0.2.
-Fig. \ref{fig:AvgReward} shows the average reward per step for the agent.
-Fig. \ref{fig:Policy} shows the learned policy of individual object class after 2,000,000 steps.
-%It indicates that 
+%The discounted reward factor $\gamma$ is 0.9 and $\alpha$ is 0.2.
+%The exploration strategy is $\epsilon-greedy$ with $\epsilon$ equal to 0.2.
+%Fig. \ref{fig:AvgReward} shows the average reward per step for the agent.
+%Fig. \ref{fig:Policy} shows the learned policy of individual object class after 2,000,000 steps.
+%%It indicates that 
 
-\begin{figure}[h]
-    \centering
-    \begin{minipage}[t]{0.6\linewidth}
-        \centering
-        \includegraphics[width=\textwidth] {./figures/AvgReward.eps}
-        \caption{The average rewards acquired by relational template Q-Learning}
-    \label{fig:AvgReward}
-    \end{minipage}
-\end{figure}
-\begin{figure}[h]
-    \centering
-    \begin{minipage}[t]{0.48\linewidth}
-        \centering
-        \includegraphics[width=\textwidth] {./figures/PolicyCoin.eps}
-    \end{minipage}
-    \begin{minipage}[t]{0.48\linewidth}
-        \centering
-        \includegraphics[width=\textwidth] {./figures/PolicyMonster.eps}
-    \end{minipage}
-    \begin{minipage}[b]{0.48\linewidth} \centering (a) \end{minipage}
-    \begin{minipage}[b]{0.48\linewidth} \centering (b) \end{minipage}
-    \caption{(a)The learned policy for a coin (b)The learned policy against a monster}
-    \label{fig:Policy}
-\end{figure}
+%\begin{figure}[h]
+    %\centering
+    %\begin{minipage}[t]{0.6\linewidth}
+        %\centering
+        %\includegraphics[width=\textwidth] {./figures/AvgReward.eps}
+        %\caption{The average rewards acquired by relational template Q-Learning}
+    %\label{fig:AvgReward}
+    %\end{minipage}
+%\end{figure}
+%\begin{figure}[h]
+    %\centering
+    %\begin{minipage}[t]{0.48\linewidth}
+        %\centering
+        %\includegraphics[width=\textwidth] {./figures/PolicyCoin.eps}
+    %\end{minipage}
+    %\begin{minipage}[t]{0.48\linewidth}
+        %\centering
+        %\includegraphics[width=\textwidth] {./figures/PolicyMonster.eps}
+    %\end{minipage}
+    %\begin{minipage}[b]{0.48\linewidth} \centering (a) \end{minipage}
+    %\begin{minipage}[b]{0.48\linewidth} \centering (b) \end{minipage}
+    %\caption{(a)The learned policy for a coin (b)The learned policy against a monster}
+    %\label{fig:Policy}
+%\end{figure}
 
 
 \section{Related Work}
@@ -1294,3 +1299,4 @@ It is possible to have multiple branches (more than 2) for a node.
 46. Init all unknown state (especiall the location of chicken)to maxV so it will encourge the chicken to walk to the other side (we don't need heirachical RL)
 47. the regression approach will learn optimal state (when bullet hits a target). Any action which leads to this state will get high reward
 48. RLTD, Gustrin 2003, MaxQ 2003, Russel value decomposition
+49. Call this paper: relational template selection and claim novelty and effectiveness against TD-RRL
