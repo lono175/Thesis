@@ -39,6 +39,8 @@
 % add by lono
 \RequirePackage{tabbing}
 \RequirePackage{amsfonts}
+\newtheorem{definition}{Definition}
+\newtheorem{theorem}{Theorem}
 
 %% Useful command stolen from Forbes' genthesis.cls
 \newcommand{\@addto}[2]{
