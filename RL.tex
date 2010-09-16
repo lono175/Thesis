@@ -1,0 +1,148 @@
+
+\chapter{Reinforcement Learning}
+\label{ch:RL}
+
+We briefly introduce the basic concept of reinforcement learning in this chapter. 
+For a more completed introduction of reinforcement learning, please refer to
+\cite{SuttonIntro} and \cite{KevinIntro}.
+
+The objective of reinforcement learning algorithm is to build a learning agent. The learning agent will take
+actions based on the current state. In the beginning, the agent does not know anything about 
+the environment, therefore the agent has to choose the first action randomly. After the environment
+receives the action, it will provide a reward to the agent as a feedback. The reward can be either
+positive or negative.
+
+The agent adjusts the value function to maximize the expected reward in the future.
+The value function represent the expected reward when the agent takes certain action in the current
+state, and it is used to estimate the "quality" of an action. The initial value of value function is 
+usually 0, but it is possible to set it to some high enough value to encourage exploration.
+It is important to evaluate the value function 
+correctly. If some actions with low expected reward are estimated as high, it degrades the
+performance of agent.
+
+The agent can select an action which leads to the highest value of value function. However, 
+this strategy does not allow the agent to explore the states which are not visited before.
+A better approach is to use $\epsilon$-greedy method. The method allows the agent to abandon the
+best action and choose
+a random action with a very small probability $\epsilon$. The higher the probability, the more
+likely that the agent would explore the new actions. However, if the exploration probability 
+is too high, it will increase the time to converge.
+
+After the agent takes an action, the environment will provide a reward and a state to the
+agent. The agent then decides an new action for the new state. After several iterations
+, the agent will learn a correspondence between the action and state. The correspondence is called 
+"policy". 
+
+\section{Temporal Difference}
+\label{sec:TD}
+There are 3 types of reinforcement learning algorithms -- dynamic programming(DP), Monte Carlo 
+methods, and temporal-difference (TD). Dynamic programming can compute the optimal policy, but it 
+requires a precise model of the environment. In most of the cases, the environment
+is too complex to be modeled precisely, and it is not easy to get the complete information about
+the environment. On the other hand, it is usually possible to use Monte Carlo method to sample the environment to
+get the partial information. 
+Like Monte Carlo method, TD uses sampling, therefore it does not require the 
+complete model of the environment. TD method is a bootstrapping method, similar to the dynamic 
+programming approach, it updates the new value function based on the previous one.
+
+The equation to compute the value function in TD:
+\begin{displaymath}
+   V(S_t) \leftarrow V(S_t) + \alpha [r_{t+1} + \gamma V(S_{t+1}) - V(S_t)],
+\end{displaymath}
+
+where $V(s_t)$ is the value function of the state $s_t$. $V(s_t)$ is the expected reward when
+the agent reaches the state $s_t$. $r_{t+1}$ is the reward given to the agent when it chooses
+the action at state $s_t$.
+
+\section{SARSA}
+\label{sec:SARSA}
+SARSA is a on-policy TD approach. On-policy indicates that it learns from the current policy.
+Different from other TD approaches, SARSA updates the Q value of the current state-action from the next state-action.
+The Q value is updated by:
+\begin{displaymath}
+    Q(s_t, a_t) \leftarrow Q(s_t, a_t) + \alpha [r_{t+1} + \gamma Q(s_{t+1}, a_{t+1})-Q(s_t, a_t)],
+\end{displaymath}
+where $Q(s, a)$ is the value function for state-pair, and it is the expected reward when the agent takes
+the action $a$ at the state $s$. $\alpha$ is step-wise, which controls the learning rate. 
+$\gamma$ is the discount factor.
+
+
+\begin{center}
+\begin{tabular}{@{}lp{6cm}@{}}
+\hline
+Algorithm: SARSA\\
+\hline
+Initialize $Q(s, a)$ arbitrarily\\
+Repeat (for each episode)\\
+\ \ \ \ \ \ Initialize $s$\\
+\ \ \ \ \ \ Choose $a$ based on $s$ using policy derived from $Q$ (e.g., $\epsilon$-greedy method)\\
+\ \ \ \ \ \ Repeat (for each step of episode):\\
+\ \ \ \ \ \ \ \ \ \ \ \ Take action $a$, obtain reward $r$ and next state $s'$ from the environment\\
+\ \ \ \ \ \ \ \ \ \ \ \ Choose $a'$ based on $s'$ using policy derived from $Q$ (e.g., $\epsilon$-greedy method)\\
+\ \ \ \ \ \ \ \ \ \ \ \ $Q(s, a) \leftarrow Q(s, a) + \alpha [r + \gamma Q(s', a')-Q(s, a)]$\\
+\ \ \ \ \ \ \ \ \ \ \ \ $s \leftarrow s'$\\
+\ \ \ \ \ \ \ \ \ \ \ \ $a \leftarrow a'$\\
+\ \ \ \ \ \ Until $s$ is terminal\\
+\hline  
+\end{tabular}
+\end{center}
+
+\section{Q-Learning}
+\label{sec:Q-Learning}
+    Q-Learning is an off-policy TD approach. Compared to SARSA, Q-Learning updates
+the Q value by the highest value of the next possible state-action, rather than the 
+next state-action executed by the agent.  
+The Q value is updated by:
+\begin{displaymath}
+   Q(s_t, a_t) \leftarrow Q(s_t, a_t) + \alpha [r_{t+1}+\gamma \max_a Q(s_{t+1},a)-Q(s_t,a_t)],
+\end{displaymath}
+
+where $\max_a Q(s_{t+1},a)$ is the highest value of the next possible state-action. 
+
+
+\begin{center}
+\begin{tabular}{@{}lp{6cm}@{}}
+\hline
+Algorithm: Q-Learning\\
+\hline
+Initialize $Q(s, a)$ arbitrarily\\
+Repeat (for each episode)\\
+\ \ \ \ \ \ Initialize $s$\\
+\ \ \ \ \ \ Repeat (for each step of episode):\\
+\ \ \ \ \ \ \ \ \ \ \ \ Choose $a$ based on $s$ using policy derived from $Q$ (e.g., $\epsilon$-greedy method)\\
+\ \ \ \ \ \ \ \ \ \ \ \ Take action $a$, obtain reward $r$ and next state $s'$ from the environment\\
+\ \ \ \ \ \ \ \ \ \ \ \ $Q(s, a) \leftarrow Q(s, a) + \alpha [r + \gamma max_{a'} Q(s', a')-Q(s, a)]$\\
+\ \ \ \ \ \ \ \ \ \ \ \ $s \leftarrow s'$\\
+\ \ \ \ \ \ Until $s$ is terminal\\
+\hline  
+\end{tabular}
+\end{center}
+
+\section{minmax Q-Learning}
+\label{sec:minmax}
+
+    In two player zero-sum game, it's reasonable to take the action of the opponent into consideration.
+In minmax Q-learning, the Q value is a function of state, the action of player, and the action of opponent.
+The Q value is updated by:
+\begin{displaymath}
+    Q(s_t, a_t, o_t) \leftarrow Q(s_t, a_t, o_t) + \alpha [r_{t+1}+\gamma\max_a min_o Q(s_{t+1}, a, o)-Q(s_t, a_t, o_t)],
+\end{displaymath}
+
+\begin{center}
+\begin{tabular}{@{}lp{6cm}@{}}
+\hline
+Algorithm: minmax Q-learning\\
+\hline
+\ \ \ Initialize: $Q(s, a, o) \leftarrow 1, V(s) \leftarrow 1$
+\ \ \ Repeat (for each episode)\\
+\ \ \ \ \ \ Initialize $s$\\
+\ \ \ \ \ \ Repeat (for each step of episode):\\
+\ \ \ \ \ \ \ \ \ \ \ \ Choose $a$ based on $s$ using policy derived from $Q$ (e.g., $\epsilon$-greedy method)\\
+\ \ \ \ \ \ \ \ \ \ \ \ Take action $a$, obtain opponent action $o$, reward $r$ and next state $s'$ from the environment\\
+\ \ \ \ \ \ \ \ \ \ \ \ $Q(s, a, o) \leftarrow Q(s, a, o) + \alpha [r + \gamma max_{a'} min_{o'} Q(s', a', o')-Q(s, a, o)]$\\
+\ \ \ \ \ \ \ \ \ \ \ \ $s \leftarrow s'$\\
+\hline  
+\end{tabular}
+\end{center}
+
+
