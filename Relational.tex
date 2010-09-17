@@ -234,12 +234,26 @@ Gartner et al. \cite{GraphKernel} adopted Gaussian processes to approximate Q-fu
 Gaussian processes require positive definite covariance function to work, they regards the relations as graphs and
 use graph kernels as the covariance function.
 
-
 There are several works which decompose the value function into several local functions. 
 Russel et al.\cite{RessellDecompose} proposed to build a RL agent from simpler subagents. Each subagent has its own
 reward function. The value function is the sum of local functions which are learned by each
 subagent individually. Guestrin et al.\cite{RelationalMDP} approximates the value function by
 linear combination of local functions which are defined for each class of objects.
+
+Most recently, Asgharbeygi et al. \cite{RRLTD} proposed relational temporal difference learning 
+to learn a distributed value function represented over a conceptual hierarchy of relational predicates. 
+Proper et al. \cite{RelationalTemplate} uses relational templates to transfer the knowledge from 
+
+%hard to define good concepts "concept" -> feature selection, expert is not reliable
+%quote by Eric
+% Selection the relevent template of the value function
+%enable to differenciate the source of rewards -> regression, they heuristicly sum them up to get the value function
+%What is relational template? (capture the local property of a problem and ignore the rest)
+%coarse to fine template selection (why it will select coarse template first? because it appears more than complex templates)
+%why L1?
+%why use online L1?
+hich applies 
+Prop
 
 %TODO: vision perspective-->How to use policy to recognize objects.
 %TODO: strength: I found a way to decompose the value function of factoerized MDP into sum of local functions of primitive predicates
@@ -988,6 +1002,7 @@ It is possible to have multiple branches (more than 2) for a node.
 47. the regression approach will learn optimal state (when bullet hits a target). Any action which leads to this state will get high reward
 48. RLTD, Gustrin 2003, MaxQ 2003, Russel value decomposition
 49. Call this paper: relational template selection and claim novelty and effectiveness against TD-RRL
+50. the relationship with Peter Stone's Robot Soccer
 
 
 
