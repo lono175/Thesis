@@ -34,52 +34,105 @@ The relational reinforcement learning can be formulated as Relational Markov Dec
 
 %But the most current machine learning algorithms requires the world to be represented 
 %by a vector of attributes. The vector representation has several drawbacks when applied to objects.
-
-
 %The vector representation is ordered. However, it's not clear how to assign a fixed for the objects.
-
 %The length of vector representation is fixed. However, the number of objects might vary.
-
 %The relationship between objects are lost in the vector representation. 
 
-%\section{Object-Oriented Relational Reinforcement Learning}
 \section{Relational Markov Decision Processes}
 
 Following the definition in \cite{RelationalMDP}, we define 
 a relational MDP as follows:
 
 %TODO: Add normal Definition here
-\begin{definition} Relational Markov decision process (RMDP) is formalized as a tuple $<\mathbb{P}, \mathbb{A}, \mathbb{D}, \mathbb{T}, \mathbb{R}>$, where
+\begin{definition} Relational Markov decision process (RMDP) is formalized as a tuple $<\mathbb{P}, \mathbb{A}, \mathbb{D}, T, R>$, where
 \begin{itemize}{}
-    \item $\mathbb{P}$ is a set of predicates.
+    \item $\mathbb{P}$ is a set of first-order predicates. 
     \item $\mathbb{A}$ is a set of actions.
-    \item $\mathbb{D}$ is a domain of objects.
-\item A state $S$ in state space $\mathbb{S}$ is a set of state predicates.
+    \item $\mathbb{D}$ is a domain of constants.
+\item A state $S$ in state space $\mathbb{S}$ is a set of all ground literals.
 \item The transition function $T:\mathbb{S} \times \mathbb{A} \times \mathbb{S} \rightarrow [0, 1]$ defines a probability distribution over the possible next states. 
-\item The reward function $\mathbb{R}:\mathbb{S}\times \mathbb{A} \rightarrow {R}$ defines the reward after executing a certain action at a certain state.
+\item The reward function $R:\mathbb{S}\times \mathbb{A} \rightarrow \mathbb{R}$ defines the reward after executing a certain action at a certain state.
 \end{itemize}
 \end{definition}
+
+Assume a RMDP contains $n$ predicates: $\mathbb{P}={P_1, \dots, P_n}$. Each predicate $P_i$ has the form $\bold{Pname}(v_1, \dots, v_k)$.
+\bold{Pname} is the name of the predicate, and $v_i$ is a constant. Let $I_P_i(S)$ be the set of all positive ground literals
+produced by $P_i$ at state $S$. $S$ can be described as $S=I_P_1(S)\cup \dots \cup I_P_n(S)$. Thus, the predicates in $\mathbb{P}$
+provide a complete description of $S$.
+
+In this work, we are interested in the value function which has the following property:
+\[
+V(S) = sum_{L_i belong S}i V_L_i,
+\]
+in which $L_i$ is a positive literal at state $S$. $V_L_i$ is the utility which contributes to the whole 
+value function when $L_i$ is positive. The above equation indicates that the value function $V(S)$ can be described
+as the linear combination of the number of positive literals for each predicate. Each positive literal
+contributes a constant value to the value function.
+
+Let's us consider the example in fig. \ref{fig:MarioWorld}.
+The world in consists of an agent, a coin and two traps. The agent gets +10 reward when he picks a coin and
+receives -10 reward if he encounters a monster. The agent can choose to move up, down, left or right at
+each turn, but with 0.1 probability that he will choose a random action. The relationship between 
+objects can be described by the distance between the them. The set of positive ground literals are
+${Dist(Agent, Trap, 1), Dist(Agent, Trap, 1.4), Dist(Agent, Coin, 1.4)}$. 
+%$Dist(O_1, O_2, d)$ is true
+%when the distance between object $O_1$ and $O_2$ is $d$ and false otherwise. 
+The value function of the agent can be represented as $V(S) =
+V_{Dist(Agent, Trap, 1)} + V_{Dist(Agent, Trap, 1.4)} + V_{Dist(Agent, Coin, 1.4)}$.
+The decomposition of value function allows us to handle varying number of
+objects by summation over local functions. The class-specific local function
+also allows to share the knowledge from different objects of the same type.
+The agent knows how to handle a new entity if the agent has experience of the
+same type before. In other worlds, the local functions enable knowledge
+transfer with in the same class.
+
+\[ Diff(o_1, o_2, d) Template_{c, c_1, c_2}(o, o_1, d_1, o_2, d_2):
+Diff(o, o_1, d_1) and Diff(o, o_2, d_2) Agent(a, o, d, o_1, d_1, o_2, d_2):
+Diff(a, o, d and Template(o, o_1, d_1, o_2, d_2) Loc(a, l) -> captures the
+value which is relevent to the location of the agent.  \]
+
+
+%\begin{definition}
+%A factored value function is a linear combination of a set of basis functions. 
+%\end{definition}
+%TODO: use Literal here
+%We approximate the value function as the linear combination over the basis set $h_1, h_2, \dots, h_k$, 
+%where the scope of each function $h_i$ is defined by the relational features of template $t_i$.
+%\[
+%V(s) = sum_i w_i sum_\sigma belong I(i, s) h_i(f_{i, 1}(\sigma), \dots, f_{i, m_i}(\sigma))
+%\]
+
+$I(trap, s) = {(A, T_1), (A, T_2)}, I(food, s) = {(A, F)}$
+$V(S) = w_{trap}(Dist(A, M_1, 1)) + V_{monster}(Dist(A, M_2, 1.4) +
+V_{coin}(Dist(A, C, 1.4))$. The local functions $V_{monster}$ and $V_{coin}$ indicates
+the expected rewards when there is one such object in the world. The
+decomposition of value function allows us to handle varying number of objects
+by summation over local functions. The class-specific local function also
+allows to share the knowledge from different objects of the same type. 
+The agent knows how to handle a new entity if the agent has experience of the same type
+before. In other worlds, the local functions enable knowledge transfer with in the 
+same class.
 
 %The task of relational reinforcement learning is to find an optimal policy for a RMDP with unknown transition
 %function and reward function. As in chapter \ref{ch:RL}, our objective is to find a policy $\pi:\mathbb{S} \rightarrow \mathbb{A}$ 
 %which maximizes the value function $V^{\pi}(s) = E_{\pi}[\sum^{\infty}_{t=0} \gamma^{i}R(s_t, \pi(s_t))]$, where $\gamma$ is the discount factor.
 
-\begin{theorem} If the state transition probability can be factorized as $P(S'|S, A) = P(x_1'|x_1, A)P(x_2'|x_2, A)\dots P(x_k'|x_k, A)$
-and $R(S) = R(x_1) + R(x_2) + \dots + R(x_k)$, where $x_i$ is a subset of $S$ and $S = x_1 \cup x_2 \cup \dots \cup x_k$,
-then the value function can be decomposed into $V(S, A) = V_1(x_1, A) + V_2(x_2, A) + \dots + V_k(x_k, A)$.
-\end{theorem}
+%\begin{theorem} If the state transition probability can be factorized as $P(S'|S, A) = P(x_1'|x_1, A)P(x_2'|x_2, A)\dots P(x_k'|x_k, A)$
+%and $R(S) = R(x_1) + R(x_2) + \dots + R(x_k)$, where $x_i$ is a subset of $S$ and $S = x_1 \cup x_2 \cup \dots \cup x_k$,
+%then the value function can be decomposed into $V(S, A) = V_1(x_1, A) + V_2(x_2, A) + \dots + V_k(x_k, A)$.
+%\end{theorem}
 
-\begin{align*}
-Proof:
-V(S, A) =& \sum_{S'}P(S'|S, A)R(S') \\
-=& \sum_{x_1'} \sum_{x_2'} \dots \sum_{x_k'} P(x_1'|x_1, A)P(x_2'|x_2, A)\dots P(x_k'|x_k, A) [R(x_1') + R(x_2') + \dots + R(x_k')] \\
-=& \sum_{x_1'} P(x_1'|x_1, A)R(x_1') \sum_{x_2'} \dots \sum_{x_k'} P(x_2'|x_2, A)\dots P(x_k'|x_k, A) \\
-&+ \sum_{x_2'} P(x_2'|x_2, A)R(x_2') \sum_{x_1'} \sum_{x_3'}\dots \sum_{x_k'} P(x_1'|x_1, A)P(x_3'|x_3, A)\dots P(x_k'|x_k, A) \\
-&+ \dots \\
-&+ \sum_{x_k'} P(x_k'|x_k, A)R(x_k') \sum_{x_1'} \dots \sum_{x_{k-1}'} P(x_1'|x_1, A)\dots P(x_{k-1}'|x_{k-1}, A) \\
-=& \sum_{x_1'} P(x_1'|x_1, A)R(x_1') +\sum_{x_2'} P(x_2'|x_2, A)R(x_2') + \dots + \sum_{x_k'} P(x_k'|x_k, A)R(x_k') \\
-=& V_1(x_1, A) + V_2(x_2, A) + \dots + V_k(x_k, A)
-\end{align*}
+%\begin{align*}
+%Proof:
+%V(S, A) =& \sum_{S'}P(S'|S, A)R(S') \\
+%=& \sum_{x_1'} \sum_{x_2'} \dots \sum_{x_k'} P(x_1'|x_1, A)P(x_2'|x_2, A)\dots P(x_k'|x_k, A) [R(x_1') + R(x_2') + \dots + R(x_k')] \\
+%=& \sum_{x_1'} P(x_1'|x_1, A)R(x_1') \sum_{x_2'} \dots \sum_{x_k'} P(x_2'|x_2, A)\dots P(x_k'|x_k, A) \\
+%&+ \sum_{x_2'} P(x_2'|x_2, A)R(x_2') \sum_{x_1'} \sum_{x_3'}\dots \sum_{x_k'} P(x_1'|x_1, A)P(x_3'|x_3, A)\dots P(x_k'|x_k, A) \\
+%&+ \dots \\
+%&+ \sum_{x_k'} P(x_k'|x_k, A)R(x_k') \sum_{x_1'} \dots \sum_{x_{k-1}'} P(x_1'|x_1, A)\dots P(x_{k-1}'|x_{k-1}, A) \\
+%=& \sum_{x_1'} P(x_1'|x_1, A)R(x_1') +\sum_{x_2'} P(x_2'|x_2, A)R(x_2') + \dots + \sum_{x_k'} P(x_k'|x_k, A)R(x_k') \\
+%=& V_1(x_1, A) + V_2(x_2, A) + \dots + V_k(x_k, A)
+%\end{align*}
 
 The value function decomposition allows us to estimate the value function without exploring the 
 exponential state space. What we need is to estimate the individual local value function. It can 
@@ -277,24 +330,24 @@ using first-order features and regression to learn the value function.
 Nevertheless, in our relational setting, the number of features as well as basis functions are not fixed, but 
 may vary over time.
 
-\section{Value Function Approximation}
-%TODO: use Literal here
-We approximate the value function as the linear combination over the basis set $h_1, h_2, \dots, h_k$, 
-where the scope of each function $h_i$ is defined by the relational features of template $t_i$.
-\[
-V(s) = sum_i w_i sum_\sigma belong I(i, s) h_i(f_{i, 1}(\sigma), \dots, f_{i, m_i}(\sigma))
-\]
+%\section{Value Function Approximation}
+%%TODO: use Literal here
+%We approximate the value function as the linear combination over the basis set $h_1, h_2, \dots, h_k$, 
+%where the scope of each function $h_i$ is defined by the relational features of template $t_i$.
+%\[
+%V(s) = sum_i w_i sum_\sigma belong I(i, s) h_i(f_{i, 1}(\sigma), \dots, f_{i, m_i}(\sigma))
+%\]
 
-$I(trap, s) = {(A, T_1), (A, T_2)}, I(food, s) = {(A, F)}$
-$V(S) = w_{trap}(Dist(A, M_1, 1)) + V_{monster}(Dist(A, M_2, 1.4) +
-V_{coin}(Dist(A, C, 1.4))$. The local functions $V_{monster}$ and $V_{coin}$ indicates
-the expected rewards when there is one such object in the world. The
-decomposition of value function allows us to handle varying number of objects
-by summation over local functions. The class-specific local function also
-allows to share the knowledge from different objects of the same type. 
-The agent knows how to handle a new entity if the agent has experience of the same type
-before. In other worlds, the local functions enable knowledge transfer with in the 
-same class.
+%$I(trap, s) = {(A, T_1), (A, T_2)}, I(food, s) = {(A, F)}$
+%$V(S) = w_{trap}(Dist(A, M_1, 1)) + V_{monster}(Dist(A, M_2, 1.4) +
+%V_{coin}(Dist(A, C, 1.4))$. The local functions $V_{monster}$ and $V_{coin}$ indicates
+%the expected rewards when there is one such object in the world. The
+%decomposition of value function allows us to handle varying number of objects
+%by summation over local functions. The class-specific local function also
+%allows to share the knowledge from different objects of the same type. 
+%The agent knows how to handle a new entity if the agent has experience of the same type
+%before. In other worlds, the local functions enable knowledge transfer with in the 
+%same class.
 
 \section{Relational Templates}
 
@@ -316,6 +369,7 @@ Loc(a, l) -> captures the value which is relevent to the location of the agent.
 %why use online L1?
 %Biased Estimation (if not regression, and slower (require a lot of sampling)
 %how to update the value V by regressed Vhat
+%find the relevant template
 
 \section{Experiment}
 
