@@ -55,19 +55,44 @@ a relational MDP as follows:
 \end{itemize}
 \end{definition}
 
-Assume a RMDP contains $n$ predicates: $\mathbb{P}={P_1, \dots, P_n}$. Each predicate $P_i$ has the form $\bold{Pname}(v_1, \dots, v_k)$.
-\bold{Pname} is the name of the predicate, and $v_i$ is a constant. Let $I_P_i(S)$ be the set of all positive ground literals
-produced by $P_i$ at state $S$. $S$ can be described as $S=I_P_1(S)\cup \dots \cup I_P_n(S)$. Thus, the predicates in $\mathbb{P}$
+Assume a RMDP contains $n$ predicates: $\mathbb{P}=\{P_1, \dots, P_n\}$. Each predicate $P_i$ has the form $\bold{Pname}(v_1, \dots, v_k)$.
+{\bf Pname} is the name of the predicate, and $v_i$ is a constant. Let $I_{P_i}(S)$ be the set of all positive ground literals
+produced by $P_i$ at state $S$. $S$ can be described as $S=I_{P_1}(S)\cup \dots \cup I_{P_n}(S)$. Thus, the predicates in $\mathbb{P}$
 provide a complete description of $S$.
 
 In this work, we are interested in the value function which has the following property:
 \[
-V(S) = sum_{L_i belong S}i V_L_i,
+V(S) = \sum_{L_i \in S} V_{L_i},
+\label{eq:relV}
 \]
-in which $L_i$ is a positive literal at state $S$. $V_L_i$ is the utility which contributes to the whole 
-value function when $L_i$ is positive. The above equation indicates that the value function $V(S)$ can be described
+in which $L_i$ is a positive literal at state $S$. $V_{L_i}$ is the utility which contributes to the whole 
+value function when $L_i$ is positive. The above equation indicates that the value function $V(S)$ can be factorized
 as the linear combination of the number of positive literals for each predicate. Each positive literal
-contributes a constant value to the value function.
+contributes a constant value to the value function. 
+
+
+To estimate the utility of each literal, we can use regression 
+For each step, the agent will receive a new value $V(S_t)$ based on the TD formula:
+\[
+\hat{V}(S_t) \leftarrow \hat{V}(S_t) + \alpha [r_{t+1} + \gamma \hat{V}(S_{t+1}) - \hat{V}(S_t)],
+\]
+However, the utility of each positive literal cannot be observed directly. From equation (\ref{eq:relV}), 
+we know the value is the sum of each utility, therefore we can use linear regression to estimate 
+each utility $V_{L_i}$. 
+
+To incorporate our prior knowledge that the value function should be simple and depend on small number of variables, 
+we use L1-regularized regression to ensure the sparsity. 
+
+The value function factorization allows us to estimate the value function without exploring the 
+exponential state space. What we need is to estimate the individual local value function. It can 
+be done by solving the following equations. 
+
+\begin{align*}
+    V(S_1) &= |x_1(S_1)|\cdot V_1(x_1(S_1)) + |x_2(S_1)|\cdot V_2(x_2(S_1)) + \dots + |x_k(S_1)|\cdot V_k(x_k(S_1)) \\
+    V(S_2) &= |x_1(S_2)|\cdot V_1(x_1(S_2)) + |x_2(S_2)|\cdot V_2(x_2(S_2)) + \dots + |x_k(S_2)|\cdot V_k(x_k(S_2)) \\
+    &\vdots\\
+    V(S_N) &= |x_1(S_N)|\cdot V_1(x_1(S_N)) + |x_2(S_N)|\cdot V_2(x_2(S_N)) + \dots + |x_k(S_N)|\cdot V_k(x_k(S_N)) \\
+\end{align*}
 
 Let's us consider the example in fig. \ref{fig:MarioWorld}.
 The world in consists of an agent, a coin and two traps. The agent gets +10 reward when he picks a coin and
@@ -90,17 +115,6 @@ transfer with in the same class.
 Diff(o, o_1, d_1) and Diff(o, o_2, d_2) Agent(a, o, d, o_1, d_1, o_2, d_2):
 Diff(a, o, d and Template(o, o_1, d_1, o_2, d_2) Loc(a, l) -> captures the
 value which is relevent to the location of the agent.  \]
-
-
-%\begin{definition}
-%A factored value function is a linear combination of a set of basis functions. 
-%\end{definition}
-%TODO: use Literal here
-%We approximate the value function as the linear combination over the basis set $h_1, h_2, \dots, h_k$, 
-%where the scope of each function $h_i$ is defined by the relational features of template $t_i$.
-%\[
-%V(s) = sum_i w_i sum_\sigma belong I(i, s) h_i(f_{i, 1}(\sigma), \dots, f_{i, m_i}(\sigma))
-%\]
 
 $I(trap, s) = {(A, T_1), (A, T_2)}, I(food, s) = {(A, F)}$
 $V(S) = w_{trap}(Dist(A, M_1, 1)) + V_{monster}(Dist(A, M_2, 1.4) +
@@ -206,27 +220,31 @@ same class.
 
 %To learn the local value function, we 
 
-%It motivates the following relational template Q-Learning algorithm:
-%%My solution
-%\begin{center}
-%\begin{tabular}{@{}lp{6cm}@{}}
-%\hline
-%Algorithm: relational template Q-Learning\\
-%\hline
-%Initialize $Q(s, a)$ arbitrarily\\
-%Repeat (for each episode)\\
-%\ \ \ \ \ \ Initialize $s$\\
-%\ \ \ \ \ \ Repeat (for each step of episode):\\
-%\ \ \ \ \ \ \ \ \ \ \ \ Choose $a$ based on $s$ using policy derived from $Q$ (e.g., $\epsilon$-greedy method)\\
-%\ \ \ \ \ \ \ \ \ \ \ \ Take action $a$, obtain reward $r$ and next state $s'$ from the environment\\
-%\ \ \ \ \ \ \ \ \ \ \ \ For each object $O_i$:\\
-%\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \  $Q_{C_i}(s, a) \leftarrow Q_{C_i}(s, a) + \alpha [r + \displaystyle\gamma \  max_{a'} Q_{C_i}(s', a')-Q_{C_i}(s, a)]$\\
-%\ \ \ \ \ \ \ \ \ \ \ \ $Q(s, a) = \displaystyle\sum_{i} Q_{C_i}(s, a)$\\
-%\ \ \ \ \ \ \ \ \ \ \ \ $s \leftarrow s'$\\
-%\ \ \ \ \ \ Until $s$ is terminal\\
-%\hline  
-%\end{tabular}
-%\end{center}
+
+It motivates the following relational SARSA algorithm:
+\begin{center}
+\begin{tabular}{@{}lp{6cm}@{}}
+\hline
+Algorithm: relational SARSA\\
+\hline
+Initialize $\hat{Q_0}$ arbitrarily\\
+$t \leftarrow 0$\\
+Repeat (for each episode)\\
+\ \ \ \ \ \ Initialize $s$\\
+\ \ \ \ \ \ Choose $a$ based on $s$ using policy derived from $\hat{Q_t}$ (e.g., $\epsilon$-greedy method)\\
+\ \ \ \ \ \ Repeat (for each step of episode):\\
+\ \ \ \ \ \ \ \ \ \ \ \ Take action $a$, obtain reward $r$ and next state $s'$ from the environment\\
+\ \ \ \ \ \ \ \ \ \ \ \ Choose $a'$ based on $s'$ using policy derived from $\hat{Q_t}$ (e.g., $\epsilon$-greedy method)\\
+\ \ \ \ \ \ \ \ \ \ \ \ $\hat{q_t} \leftarrow \hat{Q_t}(s, a) + \alpha [r + \gamma \hat{Q_t}(s', a')-\hat{Q_t}(s, a)]$ \\
+\ \ \ \ \ \ \ \ \ \ \ \ Update $\hat{Q_t}$ with $(s, a, \hat{q_t})$ by online L1 regression to produce $\hat{Q_{t+1}}$\\
+\ \ \ \ \ \ \ \ \ \ \ \ $s \leftarrow s'$\\
+\ \ \ \ \ \ \ \ \ \ \ \ $a \leftarrow a'$\\
+\ \ \ \ \ \ \ \ \ \ \ \ $t \leftarrow t+1$\\
+\ \ \ \ \ \ Until $s$ is terminal\\
+\hline  
+\end{tabular}
+\end{center}
+
 
 %\section{Experiment}
 %We conduct our experiment in $8 \times 8$ grid world. 
@@ -367,8 +385,9 @@ Loc(a, l) -> captures the value which is relevent to the location of the agent.
 %coarse to fine template selection (why it will select coarse template first? because it appears more than complex templates)
 %why L1?
 %why use online L1?
-%Biased Estimation (if not regression, and slower (require a lot of sampling)
 %how to update the value V by regressed Vhat
+%model free
+%unknown transition and reward
 %find the relevant template
 
 \section{Experiment}
@@ -376,8 +395,12 @@ Loc(a, l) -> captures the value which is relevent to the location of the agent.
 %TODO: the template in this experiment
 %TODO: show the difference of the regressed V and the optimal V for a scenario. It indicates our method
 % can estimate the unencountered scenario without sample through it. (work on non-repeating scenario).
+%Show the effectiveness of reward explanation
+%Show the effectiveness of template selection
+%Biased Estimation (if not regression, and slower (require a lot of sampling)
+%state it's impossible to do with non-relational approach
 We show the effectiveness of our algorithm on a simple avoid-trap-and-eat-food problem, which is shown
-in Fig. ?. The world consists of one agent, 5 food and 5 traps.
+in Fig. ?. The world consists of one agent, ? food and ? traps. The size of the state space is $8 \times 8 \times 3 ^ (64 - 1)$
 The agent moves within 8 by 8 grid. It gets a reward of 10 when it gets a food and -10 if it gets into
 a trap. A penalty term -0.1 would apply for each step. If the agent walks out of the world, it will
 be reset into its original position and receive -1 reward. Each episode ends when all food are consumed or the agent gets into a trap. 
@@ -1182,7 +1205,9 @@ It is possible to have multiple branches (more than 2) for a node.
 47. the regression approach will learn optimal state (when bullet hits a target). Any action which leads to this state will get high reward
 48. RLTD, Gustrin 2003, MaxQ 2003, Russel value decomposition
 49. Call this paper: relational template selection and claim novelty and effectiveness against TD-RRL
-50. the relationship with Peter Stone's Robot Soccer
+50. the relationship with Peter Stone's Robot Soccer, experiment on Robot Soccer
+51. Experiment on L2 regularization and L1 and no regularization
+
 
 
 
