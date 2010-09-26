@@ -84,6 +84,49 @@ each utility $V_{L_i}$.
 To incorporate our prior knowledge that the value function should be simple and depend on small number of variables, 
 we use L1-regularized regression to ensure the sparsity. 
 
+\[
+\min_w \norm{Aw-b}^2 + \beta \norm{w}_1
+\]
+
+For this task, the
+Temporal Difference (TD) family of algorithms (Sutton,
+1988), and more specifically the Least-Squares TD
+Appearing in Proceedings of the 26 th International Conference
+on Machine Learning, Montreal, Canada, 2009. Copyright
+2009 by the author(s)/owner(s).
+(LSTD) algorithms (Bradtke & Barto, 1996; Boyan,
+2002; Lagoudakis & Parr, 2003), provide a method for
+learning the value function using only trajectories generated
+by the system. However, when the number of
+features is large compared to the number of training
+samples, these methods are prone to over-fitting and
+are computationally expensive.
+In this paper we propose a regularization framework
+for the LSTD family of algorithms that allows us to
+avoid these problems. We specifically focus on the
+case of l1 regularization, which results in sparse solutions
+and therefore serves as a method for feature
+selection in value function approximation. Our framework
+differs from typical applications of l1 regularization
+in that solving the l1 regularized LSTD problem
+cannot be formulated as a convex optimization problem;
+despite this, we show that a procedure similar to
+the Least Angle Regression (LARS) algorithm (Efron
+et al., 2004) is able to efficiently compute the optimal
+solution.
+
+
+Online learning for L2 
+Though are many batch learning algorithms available, they are not suitable for reinforcement learning
+tasks. The batch learning requires a full pass through the data, which not only increase the time
+to update the value function for each step, but also increases the memory storage because 
+the value for each time step needs to be stored and it becomses impractical as it will eventually
+exhausts all available memory resource. Thus, Online learning is the only viable option 
+for reinforcement learning. 
+
+Online learning for regression and classification, including L2 regularization is a well-studeied
+problem
+
 The value function factorization allows us to estimate the value function without exploring the 
 exponential state space. What we need is to estimate the individual local value function. It can 
 be done by solving the following equations. 
@@ -218,6 +261,9 @@ same class.
 %6. The problem of Additive Q (failed in highly interactive environment) and Additive SARSA (slow convergence, wrong estimation)
 %7. The grid world cahnges every episode (need transfer learning)
 %8. Unclear relationship (what is above, what is adjacent, what is mid-range attack, what is touch, what is absorb). for touch, father, it's clear
+%9. unknown transition function
+%10. unknown reward function, see L1LSTD talk
+%11. the curse of dimensionality
 
 %To learn the local value function, we 
 
@@ -348,6 +394,8 @@ Our method resembles standard function approximation methods for RL (Guestrin),
 using first-order features and regression to learn the value function. 
 Nevertheless, in our relational setting, the number of features as well as basis functions are not fixed, but 
 may vary over time.
+
+Our work is the first who adopts L1 regression on relational reinforcement learning.
 
 %\section{Value Function Approximation}
 %%TODO: use Literal here
