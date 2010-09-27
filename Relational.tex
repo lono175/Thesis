@@ -87,7 +87,7 @@ the value for each time step needs to be stored and it becomes impractical as it
 exhausts all available memory resource. Thus, online learning is the only viable option 
 for reinforcement learning. 
 
-There are several Least-Squares Temporal Difference (LSTD) algorithms (\cite{LSTD} and \cite{LSPI} which are proposed for 
+There are several Least-Squares Temporal Difference (LSTD) algorithms (\cite{OldLSTD}, \cite{LSTD} and \cite{LSPI}) which are proposed for 
 learning the value function by basis function approximation for non-relational MDP problems. 
 These algorithms conduct linear regression in an online fashion, however, they are not suitable for our 
 relational setting. Because we don't prior knowledge about which relation is relevant to the value function, 
@@ -108,67 +108,38 @@ and can be used as a method for relational template selection.
 %\min_w \norm{Aw-b}^2 + \beta \norm{w}_1
 %\]
 
-%Online learning for L2 
-
-%Online learning for regression and classification, including L2 regularization is a well-studeied
-%problem
-
-%For this task, the
-%Temporal Difference (TD) family of algorithms (Sutton,
-%1988), and more specifically the Least-Squares TD
-%(LSTD) algorithms (Bradtke & Barto, 1996; Boyan,
-%2002; Lagoudakis & Parr, 2003), provide a method for
-%learning the value function using only trajectories generated
-%by the system. However, when the number of
-%features is large compared to the number of training
-%samples, these methods are prone to over-fitting and
-%are computationally expensive.
-
-
-
-%The value function factorization allows us to estimate the value function without exploring the 
-%exponential state space. What we need is to estimate the individual local value function. It can 
-%be done by solving the following equations. 
-
-%\begin{align*}
-    %V(S_1) &= |x_1(S_1)|\cdot V_1(x_1(S_1)) + |x_2(S_1)|\cdot V_2(x_2(S_1)) + \dots + |x_k(S_1)|\cdot V_k(x_k(S_1)) \\
-    %V(S_2) &= |x_1(S_2)|\cdot V_1(x_1(S_2)) + |x_2(S_2)|\cdot V_2(x_2(S_2)) + \dots + |x_k(S_2)|\cdot V_k(x_k(S_2)) \\
-    %&\vdots\\
-    %V(S_N) &= |x_1(S_N)|\cdot V_1(x_1(S_N)) + |x_2(S_N)|\cdot V_2(x_2(S_N)) + \dots + |x_k(S_N)|\cdot V_k(x_k(S_N)) \\
-%\end{align*}
-
-Let's us consider the example in fig. \ref{fig:MarioWorld}.
-The world in consists of an agent, a coin and two traps. The agent gets +10 reward when he picks a coin and
-receives -10 reward if he encounters a monster. The agent can choose to move up, down, left or right at
-each turn, but with 0.1 probability that he will choose a random action. The relationship between 
-objects can be described by the distance between the them. The set of positive ground literals are
-${Dist(Agent, Trap, 1), Dist(Agent, Trap, 1.4), Dist(Agent, Coin, 1.4)}$. 
+%Let's us consider the example in fig. \ref{fig:MarioWorld}.
+%The world in consists of an agent, a coin and two traps. The agent gets +10 reward when he picks a coin and
+%receives -10 reward if he encounters a monster. The agent can choose to move up, down, left or right at
+%each turn, but with 0.1 probability that he will choose a random action. The relationship between 
+%objects can be described by the distance between the them. The set of positive ground literals are
+%${Dist(Agent, Trap, 1), Dist(Agent, Trap, 1.4), Dist(Agent, Coin, 1.4)}$. 
 %$Dist(O_1, O_2, d)$ is true
 %when the distance between object $O_1$ and $O_2$ is $d$ and false otherwise. 
-The value function of the agent can be represented as $V(S) =
-V_{Dist(Agent, Trap, 1)} + V_{Dist(Agent, Trap, 1.4)} + V_{Dist(Agent, Coin, 1.4)}$.
-The decomposition of value function allows us to handle varying number of
-objects by summation over local functions. The class-specific local function
-also allows to share the knowledge from different objects of the same type.
-The agent knows how to handle a new entity if the agent has experience of the
-same type before. In other worlds, the local functions enable knowledge
-transfer with in the same class.
+%The value function of the agent can be represented as $V(S) =
+%V_{Dist(Agent, Trap, 1)} + V_{Dist(Agent, Trap, 1.4)} + V_{Dist(Agent, Coin, 1.4)}$.
+%The decomposition of value function allows us to handle varying number of
+%objects by summation over local functions. The class-specific local function
+%also allows to share the knowledge from different objects of the same type.
+%The agent knows how to handle a new entity if the agent has experience of the
+%same type before. In other worlds, the local functions enable knowledge
+%transfer with in the same class.
 
-\[ Diff(o_1, o_2, d) Template_{c, c_1, c_2}(o, o_1, d_1, o_2, d_2):
-Diff(o, o_1, d_1) and Diff(o, o_2, d_2) Agent(a, o, d, o_1, d_1, o_2, d_2):
-Diff(a, o, d and Template(o, o_1, d_1, o_2, d_2) Loc(a, l) -> captures the
-value which is relevent to the location of the agent.  \]
+%\[ Diff(o_1, o_2, d) Template_{c, c_1, c_2}(o, o_1, d_1, o_2, d_2):
+%Diff(o, o_1, d_1) and Diff(o, o_2, d_2) Agent(a, o, d, o_1, d_1, o_2, d_2):
+%Diff(a, o, d and Template(o, o_1, d_1, o_2, d_2) Loc(a, l) -> captures the
+%value which is relevent to the location of the agent.  \]
 
-$I(trap, s) = {(A, T_1), (A, T_2)}, I(food, s) = {(A, F)}$
-$V(S) = w_{trap}(Dist(A, M_1, 1)) + V_{monster}(Dist(A, M_2, 1.4) +
-V_{coin}(Dist(A, C, 1.4))$. The local functions $V_{monster}$ and $V_{coin}$ indicates
-the expected rewards when there is one such object in the world. The
-decomposition of value function allows us to handle varying number of objects
-by summation over local functions. The class-specific local function also
-allows to share the knowledge from different objects of the same type. 
-The agent knows how to handle a new entity if the agent has experience of the same type
-before. In other worlds, the local functions enable knowledge transfer with in the 
-same class.
+%$I(trap, s) = {(A, T_1), (A, T_2)}, I(food, s) = {(A, F)}$
+%$V(S) = w_{trap}(Dist(A, M_1, 1)) + V_{monster}(Dist(A, M_2, 1.4) +
+%V_{coin}(Dist(A, C, 1.4))$. The local functions $V_{monster}$ and $V_{coin}$ indicates
+%the expected rewards when there is one such object in the world. The
+%decomposition of value function allows us to handle varying number of objects
+%by summation over local functions. The class-specific local function also
+%allows to share the knowledge from different objects of the same type. 
+%The agent knows how to handle a new entity if the agent has experience of the same type
+%before. In other worlds, the local functions enable knowledge transfer with in the 
+%same class.
 
 %The task of relational reinforcement learning is to find an optimal policy for a RMDP with unknown transition
 %function and reward function. As in chapter \ref{ch:RL}, our objective is to find a policy $\pi:\mathbb{S} \rightarrow \mathbb{A}$ 
@@ -226,21 +197,21 @@ same class.
 %into the summation of several local functions, which are defined over some templates. 
 %Each template represents a policy against a certain type of object.
 
-The world in fig. \ref{fig:MarioWorld} consists of an agent, a
-coin and two monsters.  The agent gets +10 reward when he picks a coin and
-receives -10 reward if he encounters a monster. The relationship between 
-objects can be described by the distance between the them. $Dist(O_1, O_2, d)$ is true
-when the distance between object $O_1$ and $O_2$ is $d$ and false otherwise. 
-The value function of the
-agent can be represented as $V(S) = V_{monster}(Dist(A, M_1, 1)) + V_{monster}(Dist(A, M_2, 1.4) +
-V_{coin}(Dist(A, C, 1.4))$. The local functions $V_{monster}$ and $V_{coin}$ indicates
-the expected rewards when there is one such object in the world. The
-decomposition of value function allows us to handle varying number of objects
-by summation over local functions. The class-specific local function also
-allows to share the knowledge from different objects of the same type. 
-The agent knows how to handle a new entity if the agent has experience of the same type
-before. In other worlds, the local functions enable knowledge transfer with in the 
-same class.
+%The world in fig. \ref{fig:MarioWorld} consists of an agent, a
+%coin and two monsters.  The agent gets +10 reward when he picks a coin and
+%receives -10 reward if he encounters a monster. The relationship between 
+%objects can be described by the distance between the them. $Dist(O_1, O_2, d)$ is true
+%when the distance between object $O_1$ and $O_2$ is $d$ and false otherwise. 
+%The value function of the
+%agent can be represented as $V(S) = V_{monster}(Dist(A, M_1, 1)) + V_{monster}(Dist(A, M_2, 1.4) +
+%V_{coin}(Dist(A, C, 1.4))$. The local functions $V_{monster}$ and $V_{coin}$ indicates
+%the expected rewards when there is one such object in the world. The
+%decomposition of value function allows us to handle varying number of objects
+%by summation over local functions. The class-specific local function also
+%allows to share the knowledge from different objects of the same type. 
+%The agent knows how to handle a new entity if the agent has experience of the same type
+%before. In other worlds, the local functions enable knowledge transfer with in the 
+%same class.
 
 %There are several challenges arised from this problem.
 %First, we don't know the true reward function. An agent may receive a reward because
@@ -248,8 +219,6 @@ same class.
 %ways to explain why the agent receives the reward, but we don't know which one is the real cause.
 %Second, we approximate the value function by the summation of several local functions. Yet the potential 
 %local functions are many. It's important to choose to the correct local functions to approximate the value function.
-
-
 
 %Chanllenge:
 %1. The reward function estimation: we don't know which object introduce the reward
@@ -267,7 +236,7 @@ same class.
 %To learn the local value function, we 
 
 
-It motivates the following relational SARSA algorithm:
+By estimating the value function by L1-regularized linear regression, we obtain the following relational SARSA algorithm:
 \begin{center}
 \begin{tabular}{@{}lp{6cm}@{}}
 \hline
@@ -340,14 +309,14 @@ Repeat (for each episode)\\
 \section{Related Work}
 The relational reinforcement learning is one of the recent research direction for RL community. 
 We provide brief review here. More complete review can be found in \cite{TadSurveyRRL} and \cite{OtterSurveyRRL}.
-The relational representation allows us to generalize the existing policy into complex world, transfer
+The relational representation allows us to generalize the existing policy into the complex world, transfer
 the knowledge to similar scenarios and handle problems with varying number of objects.
 Driessens et al.\cite{TG} combined the Tilde algorithm and the G-algorithm to construct a
 relational regression tree to predict Q values. 
 %TODO: the approach discovers a huge regression tree for every scenario, which forbids the knowledge transfer
 The instance based regression approach \cite{KNN_RRL} computes the weighted average of Q values from the stored
 examples. The weights are determined by the distance between the examples.
-Gartner et al. \cite{GraphKernel} adopted Gaussian processes to approximate Q-functions. Since
+G\"{a}rtner et al. \cite{GraphKernel} adopted Gaussian processes to approximate Q-functions. Since
 Gaussian processes require positive definite covariance function to work, they regards the relations as graphs and
 use graph kernels as the covariance function.
 
@@ -358,16 +327,16 @@ subagent individually. Guestrin et al.\cite{RelationalMDP} approximates the valu
 linear combination of local functions which are defined for each class of objects.
 
 %TODO: regularized regression approach here
-first-order features (Walker et al., 2004; Sanner and Boutilier, 2005,
-2006).
-
-The approach by Walker et al. (2004) separates the structural induction of the representation
-from the actual value function estimation. First a set of first-order features
-– represented by relational conjunctions over state atoms – is induced. These are then
-used as input for a regression algorithm that estimates Q-value functions per action. The
-method resembles standard function approximation methods for RL (see Section 3.6), using
-first-order features and regularized kernel regression for learning the value function.
-
+%The approach by Walker et al. (2004) separates the structural induction of the representation
+%from the actual value function estimation. First a set of first-order features
+%– represented by relational conjunctions over state atoms – is induced. These are then
+%used as input for a regression algorithm that estimates Q-value functions per action. The
+%method resembles standard function approximation methods for RL (see Section 3.6), using
+%first-order features and regularized kernel regression for learning the value function.
+%The method resembles standard function approximation methods
+%for RL (see Section 2.3.1), using first-order features and regularized kernel regression for
+%learning the value function. However, instead of Q-learning, Monte Carlo estimates using
+%hand-coded policies are used as training examples.
 
 More recently, Asgharbeygi et al. \cite{RRLTD} proposed relational temporal difference learning 
 to learn a distributed value function represented over a conceptual hierarchy of relational predicates. 
@@ -428,15 +397,6 @@ Agent(a, o, d, o_1, d_1, o_2, d_2): Diff(a, o, d and Template(o, o_1, d_1, o_2, 
 Loc(a, l) -> captures the value which is relevent to the location of the agent.
 \]
 
-%coarse to fine template construction (why it will select coarse template first? because it appears more than complex templates)
-%\section{Regression}
-%coarse to fine template selection (why it will select coarse template first? because it appears more than complex templates)
-%why L1?
-%why use online L1?
-%how to update the value V by regressed Vhat
-%model free
-%unknown transition and reward
-%find the relevant template
 
 \section{Experiment}
 
@@ -487,12 +447,12 @@ random move.
 %Fig. \ref{fig:Policy} shows the learned policy of individual object class after 2,000,000 steps.
 %%It indicates that 
 
-Figure 1: Our agent (S) roams an n by n grid. It gets a payoff of 0.5 for every
-time step it avoids predator (P), and earns a payoff of 1.0 for every piece of food
-(f) it finds. S moves two steps for every step P makes, and P always moves directly
-toward S. When food is found, it reappears at a random location on the next time
-step. On every time step, S has a 10% chance of ignoring its policy and making a
-random move.
+%Figure 1: Our agent (S) roams an n by n grid. It gets a payoff of 0.5 for every
+%time step it avoids predator (P), and earns a payoff of 1.0 for every piece of food
+%(f) it finds. S moves two steps for every step P makes, and P always moves directly
+%toward S. When food is found, it reappears at a random location on the next time
+%step. On every time step, S has a 10% chance of ignoring its policy and making a
+%random move.
 
 
 
@@ -502,7 +462,6 @@ random move.
 %enable to differenciate the source of rewards -> regression, they heuristicly sum them up to get the value function
 %What is relational template? (capture the local property of a problem and ignore the rest)
 %hich applies 
-%Prop
 % no prior knowledge about transition and rewards
 %model free approach
 
@@ -515,6 +474,17 @@ random move.
 
 
 \endinput
+%coarse to fine template construction (why it will select coarse template first? because it appears more than complex templates)
+%\section{Regression}
+%coarse to fine template selection (why it will select coarse template first? because it appears more than complex templates)
+%why L1?
+%why use online L1?
+%how to update the value V by regressed Vhat
+%model free
+%unknown transition and reward
+%find the relevant template
+
+
 %Another closely related line of work comes from
 %Guestrin et al. (2003), who report a system that di-
 %rectly approximates the value function by additively
