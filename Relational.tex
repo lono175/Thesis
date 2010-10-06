@@ -61,37 +61,36 @@ produced by $P_i$ at state $S$. $S$ can be described as $S=I_{P_1}(S)\cup \dots 
 provide a complete description of $S$.
 
 In this work, we are interested in the value function which has the following property:
-\[
+\begin{equation}
 V(S) = \sum_{L_i \in S} V_{L_i},
 \label{eq:relV}
-\]
+\end{equation}
 in which $L_i$ is a positive literal at state $S$. $V_{L_i}$ is the utility which contributes to the whole 
 value function when $L_i$ is positive. The above equation indicates that the value function $V(S)$ can be factorized
 as the linear combination of the number of positive literals for each predicate. Each positive literal
 contributes a constant value to the value function. 
 
 
-To estimate the utility of each literal, we can use regression 
 For each step, the agent will receive a new value $V(S_t)$ based on the TD formula:
-\[
-\hat{V}(S_t) \leftarrow \hat{V}(S_t) + \alpha [r_{t+1} + \gamma \hat{V}(S_{t+1}) - \hat{V}(S_t)],
-\]
+\begin{equation}
+V(S_t) \leftarrow V(S_t) + \alpha [r_{t+1} + \gamma V(S_{t+1}) - V(S_t)],
+\end{equation}
 However, the utility of each positive literal cannot be observed directly. From equation (\ref{eq:relV}), 
-we know the value is the sum of each utility, therefore we can use linear regression to estimate 
+we know the value of $S_t$ is the sum of each utility, therefore we can use linear regression to estimate 
 each utility $V_{L_i}$. 
 
-Though are many batch learning algorithms for linear regression available, they are not suitable for reinforcement learning
+Though are many batch learning algorithms available for linear regression, they are not suitable for reinforcement learning
 tasks. The batch learning requires a full pass through the data, which not only increases the time
-to update the value function for each step, but also increases the memory storage because 
-the value for each time step needs to be stored and it becomes impractical as it will eventually
-exhausts all available memory resource. Thus, online learning is the only viable option 
+to update the value function as the number of data goes up, but also increases the memory storage. Because 
+the value for each time step needs to be stored for the full pass through, it will eventually
+exhaust all available memory resources. Thus, online learning is a more appropriate choice
 for reinforcement learning. 
 
-There are several Least-Squares Temporal Difference (LSTD) algorithms (\cite{OldLSTD}, \cite{LSTD} and \cite{LSPI}) which are proposed for 
+There are several Least-Squares Temporal Difference (LSTD) algorithms (\cite{OldLSTD}, \cite{LSTD}, \cite{LSPI} and \cite{TDFA09}) which are proposed for 
 learning the value function by basis function approximation for non-relational MDP problems. 
 These algorithms conduct linear regression in an online fashion, however, they are not suitable for our 
-relational setting. Because we don't prior knowledge about which relation is relevant to the value function, 
-we provide a bunch of relations which may be large compared to the samples, and these methods are prone
+relational setting. Because we don't have prior knowledge about which relation is relevant to the value function, 
+we need to provide a bunch of relations which may be large compared to the samples, and these methods are prone
 to over-fitting. 
 
 A approach to avoid over-fitting is to include regularization term in the regression setting. 
@@ -99,6 +98,7 @@ Several algorithms for L1 and L2 regularization for TD learning have been propos
 The L1 regularization is particularly suited for our relational setting, since it provide sparse solutions
 and can be used as a method for relational template selection.
 
+In this work, we use the approach proposed by Carbonetto et al. \cite{OnlineL1} to estimate the value function.
 
 %TODO: add hierarchical template here to motivate our sparse result
 %To incorporate our prior knowledge that the value function should be simple and depend on small number of variables, 
@@ -183,15 +183,6 @@ and can be used as a method for relational template selection.
 %Relational Regression
 %Approximate Policy Iteration
 
-\begin{figure}[h]
-    \centering
-    \begin{minipage}[t]{0.6\linewidth}
-        \centering
-        \includegraphics[width=\textwidth] {./figures/MarioWorld.eps}
-        \caption{The world with two monsters $M1$ and $M2$. A coin and a agent.}
-    \label{fig:MarioWorld}
-    \end{minipage}
-\end{figure}
 
 %Motivated by \cite{RelationalTemplate} and \cite{RelationalMDP}, we decompose the value function into
 %into the summation of several local functions, which are defined over some templates. 
@@ -306,6 +297,160 @@ Repeat (for each episode)\\
 %\end{figure}
 
 
+
+
+%\section{Value Function Approximation}
+%%TODO: use Literal here
+%We approximate the value function as the linear combination over the basis set $h_1, h_2, \dots, h_k$, 
+%where the scope of each function $h_i$ is defined by the relational features of template $t_i$.
+%\[
+%V(s) = sum_i w_i sum_\sigma belong I(i, s) h_i(f_{i, 1}(\sigma), \dots, f_{i, m_i}(\sigma))
+%\]
+
+%$I(trap, s) = {(A, T_1), (A, T_2)}, I(food, s) = {(A, F)}$
+%$V(S) = w_{trap}(Dist(A, M_1, 1)) + V_{monster}(Dist(A, M_2, 1.4) +
+%V_{coin}(Dist(A, C, 1.4))$. The local functions $V_{monster}$ and $V_{coin}$ indicates
+%the expected rewards when there is one such object in the world. The
+%decomposition of value function allows us to handle varying number of objects
+%by summation over local functions. The class-specific local function also
+%allows to share the knowledge from different objects of the same type. 
+%The agent knows how to handle a new entity if the agent has experience of the same type
+%before. In other worlds, the local functions enable knowledge transfer with in the 
+%same class.
+
+%\section{Relational Templates}
+
+%The relational templates contain small number of objects of a state. 
+%represent part of the states and they occur frequently and are
+%relevant to the value function.
+
+%\[
+%Diff(o_1, o_2, d)
+%Template_{c, c_1, c_2}(o, o_1, d_1, o_2, d_2): Diff(o, o_1, d_1) and Diff(o, o_2, d_2)
+%Agent(a, o, d, o_1, d_1, o_2, d_2): Diff(a, o, d and Template(o, o_1, d_1, o_2, d_2)
+%Loc(a, l) -> captures the value which is relevent to the location of the agent.
+%\]
+
+
+
+
+\section{Experiment}
+
+\begin{figure}[h]
+    \centering
+    \begin{minipage}[t]{0.6\linewidth}
+        \centering
+        \includegraphics[width=\textwidth] {./figures/trap.eps}
+        \caption{A grid world with two traps (T). A coin (C) and an agent (A).}
+    \label{fig:Trap}
+    \end{minipage}
+\end{figure}
+
+%TODO: the template in this experiment
+%TODO: show the difference of the regressed V and the optimal V for a scenario. It indicates our method
+% can estimate the unencountered scenario without sample through it. (work on non-repeating scenario).
+%Show the effectiveness of reward explanation
+%Show the effectiveness of template selection
+%Biased Estimation (if not regression, and slower (require a lot of sampling)
+%state it's impossible to do with non-relational approach
+We show the effectiveness of our algorithm on a simple avoid-trap-and-eat-food problem, which is shown
+in Fig. \ref{fig:Trap}. The world consists of one agent, $n$ food and $k$ traps.
+The number of food and traps as well as the locations are randomly generated at the beginning of each episode.
+The agent moves within 8 by 8 grid.
+%The size of the state space is $8 \times 8 \times 3 ^ (64 - 1)$
+It gets a reward of 10 when it gets a food and -30 if it gets into
+a trap. A penalty term -0.1 would apply for each step. If the agent tries to walk out of the world, it will
+stay put and receive -1 reward. Each episode ends when all food are consumed or the agent gets into a trap. 
+
+The size of the state space is more than $3^{64}$, which is impractical to solve with non-factorized and 
+non-relational approach. We compare our approach with the work in \cite{RRLTD}. We first generated 
+1000 episodes and run the experiments with the episodes to ensure the fair comparison.
+The predicates used in the experiment are listed in the table \ref{tbl:Predicates}.
+
+The result is not generated yet.
+
+\begin{table}
+\begin{tabular}[h]{ll}
+\hline
+Features used for the predicate construction\\
+\hline
+$locX(O)$&: the x-coordinate of the object $O$\\
+$locY(O)$&: the y-coordinate of the object $O$\\
+$dispX(O_1, O_2)$&: $locX(O_1) - locX(O_2)$\\
+$dispY(O_1, O_2)$&: $locY(O_1) - locY(O_2)$\\
+$class(O)$&: the class of the object $O$\\
+\hline
+\end{tabular}
+\caption{The features used by predicates.}
+\end{table}
+
+\begin{table}
+\begin{tabular}[h]{ll}
+\hline
+Predicates used in the experiment\\
+\hline
+$P_{locX}(O, X)$&: true when $locX(O) = X$\\
+$P_{locY}(O, Y)$&: true when $locY(O) = Y$\\
+$P_{dispX}(O_1, O_2, \Delta X)$&: true when $dispX(O_1, O_2) = \Delta X$\\
+$P_{dispY}(O_1, O_2, \Delta Y)$&: true when $dispY(O_1, O_2) = \Delta Y$\\
+$P_{template1}(C_1, C_2, O_1, O_2, \Delta X_2, \Delta Y_2)$&: true when $class(O_1) = C_1$\\
+                                                           &\  and $class(O_2) = C_2$ \\
+                                                           &\  and $P_{dispX}(O_1, O_2, \Delta X_2)$\\
+                                                           &\  and $P_{dispY}(O_1, O_2, \Delta Y_2)$\\
+$P_{template2}(C_1, C_2, C_3, O_1, O_2, \Delta X_2, \Delta Y_2, O_3, \Delta X_3, \Delta Y_3)$&: true when \\
+                                                                                             &\ $P_{template1}(C_1, C_2, O_1, O_2, \Delta X_2, \Delta Y_2)$ \\
+                                                                                             &\ and $P_{template1}(C_1, C_3, O_1, O_3, \Delta X_3, \Delta Y_3)$ \\
+$P_{templateN}(C_1, \dots, C_N, O_1, O_2, \Delta X_2, \Delta Y_2, \dots, O_N, \Delta X_N, \Delta Y_N)$&: true when\\
+                                                                                             &\ $P_{template1}(C_1, C_2, O_1, O_2, \Delta X_2, \Delta Y_2)$ \\
+                                                                                             &\ \ \ \ \ \ \vdots \\
+                                                                                             &\ and $P_{template1}(C_1, C_N, O_1, O_N, \Delta X_N, \Delta Y_N)$ \\
+\hline
+\end{tabular}
+\caption{The predicates for grid world games.}
+\label{tbl:Predicates}
+\end{table}
+
+%We conduct our experiment in $8 \times 8$ grid world. 
+%The world consists of an agent, indefinite number of coins and monsters. 
+%The location and the number of coins and monsters are decided at the beginning of each episode.
+%The goal of the agent is to collect as much coins as possible. Each coin contributes $+10$ reward to the agent.
+%After all coins have been collected, the episode ends. If the agent encounters a monster, it will receive
+%$-30$ reward and the episode ends immediately. The agent will receive $-1$ reward for each step. 
+
+%Unlike the grid world in previous literature, this game is more challenging because
+%the agent faces different scenarios for each episode. It is unlikely that
+%an episode will ever repeat itself. The success of the agent lies in how
+%to learn from the previous episode and transfer it into the new one.
+
+%The discounted reward factor $\gamma$ is 0.9 and $\alpha$ is 0.2.
+%The exploration strategy is $\epsilon-greedy$ with $\epsilon$ equal to 0.2.
+%Fig. \ref{fig:AvgReward} shows the average reward per step for the agent.
+%Fig. \ref{fig:Policy} shows the learned policy of individual object class after 2,000,000 steps.
+%%It indicates that 
+
+%Figure 1: Our agent (S) roams an n by n grid. It gets a payoff of 0.5 for every
+%time step it avoids predator (P), and earns a payoff of 1.0 for every piece of food
+%(f) it finds. S moves two steps for every step P makes, and P always moves directly
+%toward S. When food is found, it reappears at a random location on the next time
+%step. On every time step, S has a 10% chance of ignoring its policy and making a
+%random move.
+
+
+
+%hard to define good concepts "concept" -> feature selection, expert is not reliable
+%quote by Eric
+% Selection the relevent template of the value function
+%enable to differenciate the source of rewards -> regression, they heuristicly sum them up to get the value function
+%What is relational template? (capture the local property of a problem and ignore the rest)
+%hich applies 
+% no prior knowledge about transition and rewards
+%model free approach
+
+%TODO: vision perspective-->How to use policy to recognize objects.
+%TODO: strength: I found a way to decompose the value function of factoerized MDP into sum of local functions of primitive predicates
+% I can change it to sum of composite predicate as well like Relational Temporal Difference Learning by Nima
+
+
 \section{Related Work}
 The relational reinforcement learning is one of the recent research direction for RL community. 
 We provide brief review here. More complete review can be found in \cite{TadSurveyRRL} and \cite{OtterSurveyRRL}.
@@ -358,120 +503,14 @@ a set of good expert-defined templates. The regression also allows us to explain
 A reward received by the agent would be explained away by some of the local functions, so it cannot
 be claimed by all local functions at the same time.
 
-Our method resembles standard function approximation methods for RL (Guestrin),
-using first-order features and regression to learn the value function. 
-Nevertheless, in our relational setting, the number of features as well as basis functions are not fixed, but 
-may vary over time.
+%Our method resembles standard function approximation methods for RL (Guestrin),
+%using first-order features and regression to learn the value function. 
+%Nevertheless, in our relational setting, the number of features as well as basis functions are not fixed, but 
+%may vary over time.
 
-Our work is the first who adopts L1 regression on relational reinforcement learning.
+%Our work is the first who adopts L1 regression on relational reinforcement learning.
 
-%\section{Value Function Approximation}
-%%TODO: use Literal here
-%We approximate the value function as the linear combination over the basis set $h_1, h_2, \dots, h_k$, 
-%where the scope of each function $h_i$ is defined by the relational features of template $t_i$.
-%\[
-%V(s) = sum_i w_i sum_\sigma belong I(i, s) h_i(f_{i, 1}(\sigma), \dots, f_{i, m_i}(\sigma))
-%\]
-
-%$I(trap, s) = {(A, T_1), (A, T_2)}, I(food, s) = {(A, F)}$
-%$V(S) = w_{trap}(Dist(A, M_1, 1)) + V_{monster}(Dist(A, M_2, 1.4) +
-%V_{coin}(Dist(A, C, 1.4))$. The local functions $V_{monster}$ and $V_{coin}$ indicates
-%the expected rewards when there is one such object in the world. The
-%decomposition of value function allows us to handle varying number of objects
-%by summation over local functions. The class-specific local function also
-%allows to share the knowledge from different objects of the same type. 
-%The agent knows how to handle a new entity if the agent has experience of the same type
-%before. In other worlds, the local functions enable knowledge transfer with in the 
-%same class.
-
-\section{Relational Templates}
-
-The relational templates contain small number of objects of a state. 
-represent part of the states and they occur frequently and are
-relevant to the value function.
-
-\[
-Diff(o_1, o_2, d)
-Template_{c, c_1, c_2}(o, o_1, d_1, o_2, d_2): Diff(o, o_1, d_1) and Diff(o, o_2, d_2)
-Agent(a, o, d, o_1, d_1, o_2, d_2): Diff(a, o, d and Template(o, o_1, d_1, o_2, d_2)
-Loc(a, l) -> captures the value which is relevent to the location of the agent.
-\]
-
-
-\section{Experiment}
-
-%TODO: the template in this experiment
-%TODO: show the difference of the regressed V and the optimal V for a scenario. It indicates our method
-% can estimate the unencountered scenario without sample through it. (work on non-repeating scenario).
-%Show the effectiveness of reward explanation
-%Show the effectiveness of template selection
-%Biased Estimation (if not regression, and slower (require a lot of sampling)
-%state it's impossible to do with non-relational approach
-We show the effectiveness of our algorithm on a simple avoid-trap-and-eat-food problem, which is shown
-in Fig. ?. The world consists of one agent, ? food and ? traps. The size of the state space is $8 \times 8 \times 3 ^ (64 - 1)$
-The agent moves within 8 by 8 grid. It gets a reward of 10 when it gets a food and -10 if it gets into
-a trap. A penalty term -0.1 would apply for each step. If the agent walks out of the world, it will
-be reset into its original position and receive -1 reward. Each episode ends when all food are consumed or the agent gets into a trap. 
-
-We illustrate the use of the merging algorithm on a simple avoid-predator-and-eatfood
-problem, depicted in Figure 1. The component MDPs are the avoid-predator
-task and eat-food task; the composite MDP must solve these problems simultaneously.
-In isolation, the tasks avoid-predator and eat-food are fairly easy to learn.
-The state space of each task is of size n4; 625 states in the case illustrated. Using
-value iteration, the optimal solutions to both component tasks can be learned in
-approximately 1000 backups. Directly solving the composite problem requires n6
-states (15625 in our case), and requires roughly 1 million backups to converge.
-
-Figure 1: Our agent (S) roams an n by n grid. It gets a payoff of 0.5 for every
-time step it avoids predator (P), and earns a payoff of 1.0 for every piece of food
-(f) it finds. S moves two steps for every step P makes, and P always moves directly
-toward S. When food is found, it reappears at a random location on the next time
-step. On every time step, S has a 10% chance of ignoring its policy and making a
-random move.
-
-%We conduct our experiment in $8 \times 8$ grid world. 
-%The world consists of an agent, indefinite number of coins and monsters. 
-%The location and the number of coins and monsters are decided at the beginning of each episode.
-%The goal of the agent is to collect as much coins as possible. Each coin contributes $+10$ reward to the agent.
-%After all coins have been collected, the episode ends. If the agent encounters a monster, it will receive
-%$-30$ reward and the episode ends immediately. The agent will receive $-1$ reward for each step. 
-
-%Unlike the grid world in previous literature, this game is more challenging because
-%the agent faces different scenarios for each episode. It is unlikely that
-%an episode will ever repeat itself. The success of the agent lies in how
-%to learn from the previous episode and transfer it into the new one.
-
-%The discounted reward factor $\gamma$ is 0.9 and $\alpha$ is 0.2.
-%The exploration strategy is $\epsilon-greedy$ with $\epsilon$ equal to 0.2.
-%Fig. \ref{fig:AvgReward} shows the average reward per step for the agent.
-%Fig. \ref{fig:Policy} shows the learned policy of individual object class after 2,000,000 steps.
-%%It indicates that 
-
-%Figure 1: Our agent (S) roams an n by n grid. It gets a payoff of 0.5 for every
-%time step it avoids predator (P), and earns a payoff of 1.0 for every piece of food
-%(f) it finds. S moves two steps for every step P makes, and P always moves directly
-%toward S. When food is found, it reappears at a random location on the next time
-%step. On every time step, S has a 10% chance of ignoring its policy and making a
-%random move.
-
-
-
-%hard to define good concepts "concept" -> feature selection, expert is not reliable
-%quote by Eric
-% Selection the relevent template of the value function
-%enable to differenciate the source of rewards -> regression, they heuristicly sum them up to get the value function
-%What is relational template? (capture the local property of a problem and ignore the rest)
-%hich applies 
-% no prior knowledge about transition and rewards
-%model free approach
-
-%TODO: vision perspective-->How to use policy to recognize objects.
-%TODO: strength: I found a way to decompose the value function of factoerized MDP into sum of local functions of primitive predicates
-% I can change it to sum of composite predicate as well like Relational Temporal Difference Learning by Nima
-
-
-
-
+%TODO: state the differences with hierarchical approaches
 
 \endinput
 %coarse to fine template construction (why it will select coarse template first? because it appears more than complex templates)
@@ -1177,7 +1216,7 @@ It is better to apply it to Andrej's work on virtual avatar walking(human joint 
 of actions)
 24. collision detection as a prior information is still a way to go (pair-wise relationship modeling)
 25. David: Model the transition matrix and immediate reward and use MDP instead.
-26. Use convoltition to generate pairwise relationship to multiple objects--> A Q function which centered at a block which contains 
+26. Use convoltition to generate pairwise relationship to multipimpracticalle objects--> A Q function which centered at a block which contains 
 3 objects. (spatial hierachy)
 27. Fictitous gameplay with convolution. If I have pairwise model, I can simulated the game by put the player in a 
 small block which contains 3 or five objects and simulated the real Q function using pairwise model.
@@ -1225,8 +1264,15 @@ It is possible to have multiple branches (more than 2) for a node.
 49. Call this paper: relational template selection and claim novelty and effectiveness against TD-RRL
 50. the relationship with Peter Stone's Robot Soccer, experiment on Robot Soccer
 51. Experiment on L2 regularization and L1 and no regularization
-
-
+52. agent location detection
+53. threat detection: locate the most threaten objects in screen (it may or may not be nearest one)
+54. You can only use VMAX for lower level model (why?)
+55. Do you need to seperate different rewards?
+56. You need to scale the rewards to [-1, 1], or you need to adjust regularization constant everytime, also, the real weight should fall in [-1, 1]
+57. Use forward feature selection from lower order model to higher order and exclude the higher order variable if the lower order model is excluded
+58. Use group lasso to select the location of agents.
+59. Use different regularization term. regularize higher order predicate heavier? massage the regularization term???
+60. Use monte carlo sampling to sample the world in keepaway soccer
 
 
 
