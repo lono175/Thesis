@@ -60,6 +60,10 @@ Assume a RMDP contains $n$ predicates: $\mathbb{P}=\{P_1, \dots, P_n\}$. Each pr
 produced by $P_i$ at state $S$. $S$ can be described as $S=I_{P_1}(S)\cup \dots \cup I_{P_n}(S)$. Thus, the predicates in $\mathbb{P}$
 provide a complete description of $S$.
 
+%TODO: change it to assumption
+%TODO: use Alberta guy's example to motivate it
+%TODO: prove it works when certain conditions met (think one dimension example)
+%TODO: Show that it's always true (not an assumption) if we have progressive transfer learning. (in the worst case, V(S) = V(everything (the most complex model)))
 In this work, we are interested in the value function which has the following property:
 \begin{equation}
 V(S) = \sum_{L_i \in S} V_{L_i},
@@ -100,133 +104,6 @@ and can be used as a method for relational template selection.
 
 In this work, we use the approach proposed by Carbonetto et al. \cite{OnlineL1} to estimate the value function.
 
-%TODO: add hierarchical template here to motivate our sparse result
-%To incorporate our prior knowledge that the value function should be simple and depend on small number of variables, 
-%we use L1-regularized regression to ensure the sparsity. 
-
-%\[
-%\min_w \norm{Aw-b}^2 + \beta \norm{w}_1
-%\]
-
-%Let's us consider the example in fig. \ref{fig:MarioWorld}.
-%The world in consists of an agent, a coin and two traps. The agent gets +10 reward when he picks a coin and
-%receives -10 reward if he encounters a monster. The agent can choose to move up, down, left or right at
-%each turn, but with 0.1 probability that he will choose a random action. The relationship between 
-%objects can be described by the distance between the them. The set of positive ground literals are
-%${Dist(Agent, Trap, 1), Dist(Agent, Trap, 1.4), Dist(Agent, Coin, 1.4)}$. 
-%$Dist(O_1, O_2, d)$ is true
-%when the distance between object $O_1$ and $O_2$ is $d$ and false otherwise. 
-%The value function of the agent can be represented as $V(S) =
-%V_{Dist(Agent, Trap, 1)} + V_{Dist(Agent, Trap, 1.4)} + V_{Dist(Agent, Coin, 1.4)}$.
-%The decomposition of value function allows us to handle varying number of
-%objects by summation over local functions. The class-specific local function
-%also allows to share the knowledge from different objects of the same type.
-%The agent knows how to handle a new entity if the agent has experience of the
-%same type before. In other worlds, the local functions enable knowledge
-%transfer with in the same class.
-
-%\[ Diff(o_1, o_2, d) Template_{c, c_1, c_2}(o, o_1, d_1, o_2, d_2):
-%Diff(o, o_1, d_1) and Diff(o, o_2, d_2) Agent(a, o, d, o_1, d_1, o_2, d_2):
-%Diff(a, o, d and Template(o, o_1, d_1, o_2, d_2) Loc(a, l) -> captures the
-%value which is relevent to the location of the agent.  \]
-
-%$I(trap, s) = {(A, T_1), (A, T_2)}, I(food, s) = {(A, F)}$
-%$V(S) = w_{trap}(Dist(A, M_1, 1)) + V_{monster}(Dist(A, M_2, 1.4) +
-%V_{coin}(Dist(A, C, 1.4))$. The local functions $V_{monster}$ and $V_{coin}$ indicates
-%the expected rewards when there is one such object in the world. The
-%decomposition of value function allows us to handle varying number of objects
-%by summation over local functions. The class-specific local function also
-%allows to share the knowledge from different objects of the same type. 
-%The agent knows how to handle a new entity if the agent has experience of the same type
-%before. In other worlds, the local functions enable knowledge transfer with in the 
-%same class.
-
-%The task of relational reinforcement learning is to find an optimal policy for a RMDP with unknown transition
-%function and reward function. As in chapter \ref{ch:RL}, our objective is to find a policy $\pi:\mathbb{S} \rightarrow \mathbb{A}$ 
-%which maximizes the value function $V^{\pi}(s) = E_{\pi}[\sum^{\infty}_{t=0} \gamma^{i}R(s_t, \pi(s_t))]$, where $\gamma$ is the discount factor.
-
-%\begin{theorem} If the state transition probability can be factorized as $P(S'|S, A) = P(x_1'|x_1, A)P(x_2'|x_2, A)\dots P(x_k'|x_k, A)$
-%and $R(S) = R(x_1) + R(x_2) + \dots + R(x_k)$, where $x_i$ is a subset of $S$ and $S = x_1 \cup x_2 \cup \dots \cup x_k$,
-%then the value function can be decomposed into $V(S, A) = V_1(x_1, A) + V_2(x_2, A) + \dots + V_k(x_k, A)$.
-%\end{theorem}
-
-%\begin{align*}
-%Proof:
-%V(S, A) =& \sum_{S'}P(S'|S, A)R(S') \\
-%=& \sum_{x_1'} \sum_{x_2'} \dots \sum_{x_k'} P(x_1'|x_1, A)P(x_2'|x_2, A)\dots P(x_k'|x_k, A) [R(x_1') + R(x_2') + \dots + R(x_k')] \\
-%=& \sum_{x_1'} P(x_1'|x_1, A)R(x_1') \sum_{x_2'} \dots \sum_{x_k'} P(x_2'|x_2, A)\dots P(x_k'|x_k, A) \\
-%&+ \sum_{x_2'} P(x_2'|x_2, A)R(x_2') \sum_{x_1'} \sum_{x_3'}\dots \sum_{x_k'} P(x_1'|x_1, A)P(x_3'|x_3, A)\dots P(x_k'|x_k, A) \\
-%&+ \dots \\
-%&+ \sum_{x_k'} P(x_k'|x_k, A)R(x_k') \sum_{x_1'} \dots \sum_{x_{k-1}'} P(x_1'|x_1, A)\dots P(x_{k-1}'|x_{k-1}, A) \\
-%=& \sum_{x_1'} P(x_1'|x_1, A)R(x_1') +\sum_{x_2'} P(x_2'|x_2, A)R(x_2') + \dots + \sum_{x_k'} P(x_k'|x_k, A)R(x_k') \\
-%=& V_1(x_1, A) + V_2(x_2, A) + \dots + V_k(x_k, A)
-%\end{align*}
-
-%The value function decomposition allows us to estimate the value function without exploring the 
-%exponential state space. What we need is to estimate the individual local value function. It can 
-%be done by solving the following equations. 
-
-%\begin{align*}
-    %V(S_1) &= |x_1(S_1)|\cdot V_1(x_1(S_1)) + |x_2(S_1)|\cdot V_2(x_2(S_1)) + \dots + |x_k(S_1)|\cdot V_k(x_k(S_1)) \\
-    %V(S_2) &= |x_1(S_2)|\cdot V_1(x_1(S_2)) + |x_2(S_2)|\cdot V_2(x_2(S_2)) + \dots + |x_k(S_2)|\cdot V_k(x_k(S_2)) \\
-    %&\vdots\\
-    %V(S_N) &= |x_1(S_N)|\cdot V_1(x_1(S_N)) + |x_2(S_N)|\cdot V_2(x_2(S_N)) + \dots + |x_k(S_N)|\cdot V_k(x_k(S_N)) \\
-%\end{align*}
-
-%To solve the RMDP, common approaches involve relational regression and approximate policy iteration.
-%Example: Mario Coin Monster world
-%The example state, action, 
-%The propositional representation {(1, 24, 3), (2, 35, 6)}
-%input is a tuple
-%The common approach to solve the RMDP problem
-%Feature Engineering
-%Relational Regression
-%Approximate Policy Iteration
-
-
-%Motivated by \cite{RelationalTemplate} and \cite{RelationalMDP}, we decompose the value function into
-%into the summation of several local functions, which are defined over some templates. 
-%Each template represents a policy against a certain type of object.
-
-%The world in fig. \ref{fig:MarioWorld} consists of an agent, a
-%coin and two monsters.  The agent gets +10 reward when he picks a coin and
-%receives -10 reward if he encounters a monster. The relationship between 
-%objects can be described by the distance between the them. $Dist(O_1, O_2, d)$ is true
-%when the distance between object $O_1$ and $O_2$ is $d$ and false otherwise. 
-%The value function of the
-%agent can be represented as $V(S) = V_{monster}(Dist(A, M_1, 1)) + V_{monster}(Dist(A, M_2, 1.4) +
-%V_{coin}(Dist(A, C, 1.4))$. The local functions $V_{monster}$ and $V_{coin}$ indicates
-%the expected rewards when there is one such object in the world. The
-%decomposition of value function allows us to handle varying number of objects
-%by summation over local functions. The class-specific local function also
-%allows to share the knowledge from different objects of the same type. 
-%The agent knows how to handle a new entity if the agent has experience of the same type
-%before. In other worlds, the local functions enable knowledge transfer with in the 
-%same class.
-
-%There are several challenges arised from this problem.
-%First, we don't know the true reward function. An agent may receive a reward because
-%he picks up a coin, or he moves into the right of a monster (Fig. ?). There are many 
-%ways to explain why the agent receives the reward, but we don't know which one is the real cause.
-%Second, we approximate the value function by the summation of several local functions. Yet the potential 
-%local functions are many. It's important to choose to the correct local functions to approximate the value function.
-
-%Chanllenge:
-%1. The reward function estimation: we don't know which object introduce the reward
-%2. What is the correct partition of the value function
-%3. The complex transistion: An action may create more objects. A wall may make certain objects unaccessible
-%4. object based reward function (the number of reward functions changes over time)
-%5. The reason why we can use additive Q function
-%6. The problem of Additive Q (failed in highly interactive environment) and Additive SARSA (slow convergence, wrong estimation)
-%7. The grid world cahnges every episode (need transfer learning)
-%8. Unclear relationship (what is above, what is adjacent, what is mid-range attack, what is touch, what is absorb). for touch, father, it's clear
-%9. unknown transition function
-%10. unknown reward function, see L1LSTD talk
-%11. the curse of dimensionality
-
-%To learn the local value function, we 
-
-
 By estimating the value function by L1-regularized linear regression, we obtain the following relational SARSA algorithm:
 \begin{center}
 \begin{tabular}{@{}lp{6cm}@{}}
@@ -252,87 +129,49 @@ Repeat (for each episode)\\
 \end{center}
 
 
-%\section{Experiment}
-%We conduct our experiment in $8 \times 8$ grid world. 
-%The world consists of an agent, indefinite number of coins and monsters. 
-%The location and the number of coins and monsters are decided at the beginning of each episode.
-%The goal of the agent is to collect as much coins as possible. Each coin contributes $+10$ reward to the agent.
-%After all coins have been collected, the episode ends. If the agent encounters a monster, it will receive
-%$-30$ reward and the episode ends immediately. The agent will receive $-1$ reward for each step. 
-
-%Unlike the grid world in previous literature, this game is more challenging because
-%the agent faces different scenarios for each episode. It is unlikely that
-%an episode will ever repeat itself. The success of the agent lies in how
-%to learn from the previous episode and transfer it into the new one.
-
-%The discounted reward factor $\gamma$ is 0.9 and $\alpha$ is 0.2.
-%The exploration strategy is $\epsilon-greedy$ with $\epsilon$ equal to 0.2.
-%Fig. \ref{fig:AvgReward} shows the average reward per step for the agent.
-%Fig. \ref{fig:Policy} shows the learned policy of individual object class after 2,000,000 steps.
-%%It indicates that 
-
-%\begin{figure}[h]
-    %\centering
-    %\begin{minipage}[t]{0.6\linewidth}
-        %\centering
-        %\includegraphics[width=\textwidth] {./figures/AvgReward.eps}
-        %\caption{The average rewards acquired by relational template Q-Learning}
-    %\label{fig:AvgReward}
-    %\end{minipage}
-%\end{figure}
-%\begin{figure}[h]
-    %\centering
-    %\begin{minipage}[t]{0.48\linewidth}
-        %\centering
-        %\includegraphics[width=\textwidth] {./figures/PolicyCoin.eps}
-    %\end{minipage}
-    %\begin{minipage}[t]{0.48\linewidth}
-        %\centering
-        %\includegraphics[width=\textwidth] {./figures/PolicyMonster.eps}
-    %\end{minipage}
-    %\begin{minipage}[b]{0.48\linewidth} \centering (a) \end{minipage}
-    %\begin{minipage}[b]{0.48\linewidth} \centering (b) \end{minipage}
-    %\caption{(a)The learned policy for a coin (b)The learned policy against a monster}
-    %\label{fig:Policy}
-%\end{figure}
 
 
+\section{Progressive Transfer Learning}
+To speedup the learning process, it is known \cite{KeepAway} that it is beneficial to allow
+the agent to learn from simple scenarios first. In this work, we propose a progressive transfer learning 
+approach to gradually transfer the knowledge from simple scenarios to a more complex one.
 
+We start from a simple world which contains one object, and learn the utility associated 
+with the predicates with only one object involved. Then we gradually increase the number of 
+objects involved in each scenario to train the higher order predicates. 
 
-%\section{Value Function Approximation}
-%%TODO: use Literal here
-%We approximate the value function as the linear combination over the basis set $h_1, h_2, \dots, h_k$, 
-%where the scope of each function $h_i$ is defined by the relational features of template $t_i$.
-%\[
-%V(s) = sum_i w_i sum_\sigma belong I(i, s) h_i(f_{i, 1}(\sigma), \dots, f_{i, m_i}(\sigma))
-%\]
+We denote $V^i$ as the Q-function with the state involved $i$ objects. Our objective is to
+compute $\Delta{V^i(S)} = V^i(S) - V^{i-1}(S)$. Again, we use the linear approximation to estimate $\Delta{V^i}$:
+%TODO: show the state in V^i-1 is obtained by ignoring one object of the state
+\begin{equation}
+\Delta{V^i}(S) = \sum_{L^i_j \in S} V_{L^i_j},
+\label{eq:deltaV}
+\end{equation}
+where $L^i$ is the $i$th-order predicate. $\Delta{V^i}$ indicates the amount of knowledge we need to 
+transfer from a simpler model. It is the residual between the current model and the transferred one.
+We objective is to learn the residual function for each training process. If the residual function is 
+0 everywhere, we achieve the optimal knowledge transfer.
+$V_{L^i}$ is the utility associated with the $i$th-order predicate. We can
+see that the utility of a higher order predicate is to estimate what cannot be explained by
+lower order predicates. 
 
-%$I(trap, s) = {(A, T_1), (A, T_2)}, I(food, s) = {(A, F)}$
-%$V(S) = w_{trap}(Dist(A, M_1, 1)) + V_{monster}(Dist(A, M_2, 1.4) +
-%V_{coin}(Dist(A, C, 1.4))$. The local functions $V_{monster}$ and $V_{coin}$ indicates
-%the expected rewards when there is one such object in the world. The
-%decomposition of value function allows us to handle varying number of objects
-%by summation over local functions. The class-specific local function also
-%allows to share the knowledge from different objects of the same type. 
-%The agent knows how to handle a new entity if the agent has experience of the same type
-%before. In other worlds, the local functions enable knowledge transfer with in the 
-%same class.
+The value function $V^i$ can be constructed by:
+\begin{equation}
+    V^i(S) = V^1(S)+\Delta{V^2(S)}+\dots+\Delta{V^i(S)}
+\label{eq:deltaSum}
+\end{equation}
 
-%\section{Relational Templates}
+Combined with the equation \ref{eq:deltaV}, we can get:
+\begin{equation}
+    V^i(S) = \sum_{L^1_j \in S} V_{L^1_j}+\sum_{L^2_j \in S} V_{L^2_j}+\dots+\sum_{L^i_j \in S} V_{L^i_j},
+\label{eq:deltaSum}
+\end{equation}
+which is corresponding to our original equation \ref{eq:relV}.
 
-%The relational templates contain small number of objects of a state. 
-%represent part of the states and they occur frequently and are
-%relevant to the value function.
+%TODO: our hope is that residual decrease as the order goes up
+%if so, we don't need to transfer all the way up. We can just use 2vs 1 to go 10vs9 since the approximation is good enough
 
-%\[
-%Diff(o_1, o_2, d)
-%Template_{c, c_1, c_2}(o, o_1, d_1, o_2, d_2): Diff(o, o_1, d_1) and Diff(o, o_2, d_2)
-%Agent(a, o, d, o_1, d_1, o_2, d_2): Diff(a, o, d and Template(o, o_1, d_1, o_2, d_2)
-%Loc(a, l) -> captures the value which is relevent to the location of the agent.
-%\]
-
-
-
+%Notice that our objective is to learn the utility associated with each relation.
 
 \section{Experiment}
 
@@ -1139,8 +978,212 @@ Therefore, investigating the affects of RL in an FPS
 environment is an applicable and interesting area to
 research.
 
+%TODO: add hierarchical template here to motivate our sparse result
+%To incorporate our prior knowledge that the value function should be simple and depend on small number of variables, 
+%we use L1-regularized regression to ensure the sparsity. 
+
+%\[
+%\min_w \norm{Aw-b}^2 + \beta \norm{w}_1
+%\]
+
+%Let's us consider the example in fig. \ref{fig:MarioWorld}.
+%The world in consists of an agent, a coin and two traps. The agent gets +10 reward when he picks a coin and
+%receives -10 reward if he encounters a monster. The agent can choose to move up, down, left or right at
+%each turn, but with 0.1 probability that he will choose a random action. The relationship between 
+%objects can be described by the distance between the them. The set of positive ground literals are
+%${Dist(Agent, Trap, 1), Dist(Agent, Trap, 1.4), Dist(Agent, Coin, 1.4)}$. 
+%$Dist(O_1, O_2, d)$ is true
+%when the distance between object $O_1$ and $O_2$ is $d$ and false otherwise. 
+%The value function of the agent can be represented as $V(S) =
+%V_{Dist(Agent, Trap, 1)} + V_{Dist(Agent, Trap, 1.4)} + V_{Dist(Agent, Coin, 1.4)}$.
+%The decomposition of value function allows us to handle varying number of
+%objects by summation over local functions. The class-specific local function
+%also allows to share the knowledge from different objects of the same type.
+%The agent knows how to handle a new entity if the agent has experience of the
+%same type before. In other worlds, the local functions enable knowledge
+%transfer with in the same class.
+
+%\[ Diff(o_1, o_2, d) Template_{c, c_1, c_2}(o, o_1, d_1, o_2, d_2):
+%Diff(o, o_1, d_1) and Diff(o, o_2, d_2) Agent(a, o, d, o_1, d_1, o_2, d_2):
+%Diff(a, o, d and Template(o, o_1, d_1, o_2, d_2) Loc(a, l) -> captures the
+%value which is relevent to the location of the agent.  \]
+
+%$I(trap, s) = {(A, T_1), (A, T_2)}, I(food, s) = {(A, F)}$
+%$V(S) = w_{trap}(Dist(A, M_1, 1)) + V_{monster}(Dist(A, M_2, 1.4) +
+%V_{coin}(Dist(A, C, 1.4))$. The local functions $V_{monster}$ and $V_{coin}$ indicates
+%the expected rewards when there is one such object in the world. The
+%decomposition of value function allows us to handle varying number of objects
+%by summation over local functions. The class-specific local function also
+%allows to share the knowledge from different objects of the same type. 
+%The agent knows how to handle a new entity if the agent has experience of the same type
+%before. In other worlds, the local functions enable knowledge transfer with in the 
+%same class.
+
+%The task of relational reinforcement learning is to find an optimal policy for a RMDP with unknown transition
+%function and reward function. As in chapter \ref{ch:RL}, our objective is to find a policy $\pi:\mathbb{S} \rightarrow \mathbb{A}$ 
+%which maximizes the value function $V^{\pi}(s) = E_{\pi}[\sum^{\infty}_{t=0} \gamma^{i}R(s_t, \pi(s_t))]$, where $\gamma$ is the discount factor.
+
+%\begin{theorem} If the state transition probability can be factorized as $P(S'|S, A) = P(x_1'|x_1, A)P(x_2'|x_2, A)\dots P(x_k'|x_k, A)$
+%and $R(S) = R(x_1) + R(x_2) + \dots + R(x_k)$, where $x_i$ is a subset of $S$ and $S = x_1 \cup x_2 \cup \dots \cup x_k$,
+%then the value function can be decomposed into $V(S, A) = V_1(x_1, A) + V_2(x_2, A) + \dots + V_k(x_k, A)$.
+%\end{theorem}
+
+%\begin{align*}
+%Proof:
+%V(S, A) =& \sum_{S'}P(S'|S, A)R(S') \\
+%=& \sum_{x_1'} \sum_{x_2'} \dots \sum_{x_k'} P(x_1'|x_1, A)P(x_2'|x_2, A)\dots P(x_k'|x_k, A) [R(x_1') + R(x_2') + \dots + R(x_k')] \\
+%=& \sum_{x_1'} P(x_1'|x_1, A)R(x_1') \sum_{x_2'} \dots \sum_{x_k'} P(x_2'|x_2, A)\dots P(x_k'|x_k, A) \\
+%&+ \sum_{x_2'} P(x_2'|x_2, A)R(x_2') \sum_{x_1'} \sum_{x_3'}\dots \sum_{x_k'} P(x_1'|x_1, A)P(x_3'|x_3, A)\dots P(x_k'|x_k, A) \\
+%&+ \dots \\
+%&+ \sum_{x_k'} P(x_k'|x_k, A)R(x_k') \sum_{x_1'} \dots \sum_{x_{k-1}'} P(x_1'|x_1, A)\dots P(x_{k-1}'|x_{k-1}, A) \\
+%=& \sum_{x_1'} P(x_1'|x_1, A)R(x_1') +\sum_{x_2'} P(x_2'|x_2, A)R(x_2') + \dots + \sum_{x_k'} P(x_k'|x_k, A)R(x_k') \\
+%=& V_1(x_1, A) + V_2(x_2, A) + \dots + V_k(x_k, A)
+%\end{align*}
+
+%The value function decomposition allows us to estimate the value function without exploring the 
+%exponential state space. What we need is to estimate the individual local value function. It can 
+%be done by solving the following equations. 
+
+%\begin{align*}
+    %V(S_1) &= |x_1(S_1)|\cdot V_1(x_1(S_1)) + |x_2(S_1)|\cdot V_2(x_2(S_1)) + \dots + |x_k(S_1)|\cdot V_k(x_k(S_1)) \\
+    %V(S_2) &= |x_1(S_2)|\cdot V_1(x_1(S_2)) + |x_2(S_2)|\cdot V_2(x_2(S_2)) + \dots + |x_k(S_2)|\cdot V_k(x_k(S_2)) \\
+    %&\vdots\\
+    %V(S_N) &= |x_1(S_N)|\cdot V_1(x_1(S_N)) + |x_2(S_N)|\cdot V_2(x_2(S_N)) + \dots + |x_k(S_N)|\cdot V_k(x_k(S_N)) \\
+%\end{align*}
+
+%To solve the RMDP, common approaches involve relational regression and approximate policy iteration.
+%Example: Mario Coin Monster world
+%The example state, action, 
+%The propositional representation {(1, 24, 3), (2, 35, 6)}
+%input is a tuple
+%The common approach to solve the RMDP problem
+%Feature Engineering
+%Relational Regression
+%Approximate Policy Iteration
 
 
+%Motivated by \cite{RelationalTemplate} and \cite{RelationalMDP}, we decompose the value function into
+%into the summation of several local functions, which are defined over some templates. 
+%Each template represents a policy against a certain type of object.
+
+%The world in fig. \ref{fig:MarioWorld} consists of an agent, a
+%coin and two monsters.  The agent gets +10 reward when he picks a coin and
+%receives -10 reward if he encounters a monster. The relationship between 
+%objects can be described by the distance between the them. $Dist(O_1, O_2, d)$ is true
+%when the distance between object $O_1$ and $O_2$ is $d$ and false otherwise. 
+%The value function of the
+%agent can be represented as $V(S) = V_{monster}(Dist(A, M_1, 1)) + V_{monster}(Dist(A, M_2, 1.4) +
+%V_{coin}(Dist(A, C, 1.4))$. The local functions $V_{monster}$ and $V_{coin}$ indicates
+%the expected rewards when there is one such object in the world. The
+%decomposition of value function allows us to handle varying number of objects
+%by summation over local functions. The class-specific local function also
+%allows to share the knowledge from different objects of the same type. 
+%The agent knows how to handle a new entity if the agent has experience of the same type
+%before. In other worlds, the local functions enable knowledge transfer with in the 
+%same class.
+
+%There are several challenges arised from this problem.
+%First, we don't know the true reward function. An agent may receive a reward because
+%he picks up a coin, or he moves into the right of a monster (Fig. ?). There are many 
+%ways to explain why the agent receives the reward, but we don't know which one is the real cause.
+%Second, we approximate the value function by the summation of several local functions. Yet the potential 
+%local functions are many. It's important to choose to the correct local functions to approximate the value function.
+
+%Chanllenge:
+%1. The reward function estimation: we don't know which object introduce the reward
+%2. What is the correct partition of the value function
+%3. The complex transistion: An action may create more objects. A wall may make certain objects unaccessible
+%4. object based reward function (the number of reward functions changes over time)
+%5. The reason why we can use additive Q function
+%6. The problem of Additive Q (failed in highly interactive environment) and Additive SARSA (slow convergence, wrong estimation)
+%7. The grid world cahnges every episode (need transfer learning)
+%8. Unclear relationship (what is above, what is adjacent, what is mid-range attack, what is touch, what is absorb). for touch, father, it's clear
+%9. unknown transition function
+%10. unknown reward function, see L1LSTD talk
+%11. the curse of dimensionality
+
+%To learn the local value function, we 
+
+
+
+%\section{Experiment}
+%We conduct our experiment in $8 \times 8$ grid world. 
+%The world consists of an agent, indefinite number of coins and monsters. 
+%The location and the number of coins and monsters are decided at the beginning of each episode.
+%The goal of the agent is to collect as much coins as possible. Each coin contributes $+10$ reward to the agent.
+%After all coins have been collected, the episode ends. If the agent encounters a monster, it will receive
+%$-30$ reward and the episode ends immediately. The agent will receive $-1$ reward for each step. 
+
+%Unlike the grid world in previous literature, this game is more challenging because
+%the agent faces different scenarios for each episode. It is unlikely that
+%an episode will ever repeat itself. The success of the agent lies in how
+%to learn from the previous episode and transfer it into the new one.
+
+%The discounted reward factor $\gamma$ is 0.9 and $\alpha$ is 0.2.
+%The exploration strategy is $\epsilon-greedy$ with $\epsilon$ equal to 0.2.
+%Fig. \ref{fig:AvgReward} shows the average reward per step for the agent.
+%Fig. \ref{fig:Policy} shows the learned policy of individual object class after 2,000,000 steps.
+%%It indicates that 
+
+%\begin{figure}[h]
+    %\centering
+    %\begin{minipage}[t]{0.6\linewidth}
+        %\centering
+        %\includegraphics[width=\textwidth] {./figures/AvgReward.eps}
+        %\caption{The average rewards acquired by relational template Q-Learning}
+    %\label{fig:AvgReward}
+    %\end{minipage}
+%\end{figure}
+%\begin{figure}[h]
+    %\centering
+    %\begin{minipage}[t]{0.48\linewidth}
+        %\centering
+        %\includegraphics[width=\textwidth] {./figures/PolicyCoin.eps}
+    %\end{minipage}
+    %\begin{minipage}[t]{0.48\linewidth}
+        %\centering
+        %\includegraphics[width=\textwidth] {./figures/PolicyMonster.eps}
+    %\end{minipage}
+    %\begin{minipage}[b]{0.48\linewidth} \centering (a) \end{minipage}
+    %\begin{minipage}[b]{0.48\linewidth} \centering (b) \end{minipage}
+    %\caption{(a)The learned policy for a coin (b)The learned policy against a monster}
+    %\label{fig:Policy}
+%\end{figure}
+
+
+
+
+%\section{Value Function Approximation}
+%%TODO: use Literal here
+%We approximate the value function as the linear combination over the basis set $h_1, h_2, \dots, h_k$, 
+%where the scope of each function $h_i$ is defined by the relational features of template $t_i$.
+%\[
+%V(s) = sum_i w_i sum_\sigma belong I(i, s) h_i(f_{i, 1}(\sigma), \dots, f_{i, m_i}(\sigma))
+%\]
+
+%$I(trap, s) = {(A, T_1), (A, T_2)}, I(food, s) = {(A, F)}$
+%$V(S) = w_{trap}(Dist(A, M_1, 1)) + V_{monster}(Dist(A, M_2, 1.4) +
+%V_{coin}(Dist(A, C, 1.4))$. The local functions $V_{monster}$ and $V_{coin}$ indicates
+%the expected rewards when there is one such object in the world. The
+%decomposition of value function allows us to handle varying number of objects
+%by summation over local functions. The class-specific local function also
+%allows to share the knowledge from different objects of the same type. 
+%The agent knows how to handle a new entity if the agent has experience of the same type
+%before. In other worlds, the local functions enable knowledge transfer with in the 
+%same class.
+
+%\section{Relational Templates}
+
+%The relational templates contain small number of objects of a state. 
+%represent part of the states and they occur frequently and are
+%relevant to the value function.
+
+%\[
+%Diff(o_1, o_2, d)
+%Template_{c, c_1, c_2}(o, o_1, d_1, o_2, d_2): Diff(o, o_1, d_1) and Diff(o, o_2, d_2)
+%Agent(a, o, d, o_1, d_1, o_2, d_2): Diff(a, o, d and Template(o, o_1, d_1, o_2, d_2)
+%Loc(a, l) -> captures the value which is relevent to the location of the agent.
+%\]
 
 Beyond Soccer and chess. A new oppourtunituy.
 
@@ -1273,6 +1316,10 @@ It is possible to have multiple branches (more than 2) for a node.
 58. Use group lasso to select the location of agents.
 59. Use different regularization term. regularize higher order predicate heavier? massage the regularization term???
 60. Use monte carlo sampling to sample the world in keepaway soccer
+61. Show that 3vs2 keepaway to 4vs3 is unneccessary and harmful. You should use 2vs1 to 4vs3. (motivate the necessity to use progressive transfer learning)
+62. transfer directly from 2vs 1 to 10vs9
+63. Show that without higher order predicate, it's not useful to train in high order scenario, and it can also be harmful
+64. Show higher order predicate is useful, but the effect will die away
 
 
 
