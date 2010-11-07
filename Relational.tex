@@ -179,9 +179,9 @@ which is corresponding to our original equation \ref{eq:relV}.
     \centering
     \begin{minipage}[t]{0.6\linewidth}
         \centering
-        \includegraphics[width=\textwidth] {./figures/trap.eps}
-        \caption{A grid world with two traps (T). A coin (C) and an agent (A).}
-    \label{fig:Trap}
+        \includegraphics[width=\textwidth] {./figures/monster.eps}
+        \caption{A grid world with two monsters (M). A food (F) and an agent (A).}
+    \label{fig:Monster}
     \end{minipage}
 \end{figure}
 
@@ -192,62 +192,115 @@ which is corresponding to our original equation \ref{eq:relV}.
 %Show the effectiveness of template selection
 %Biased Estimation (if not regression, and slower (require a lot of sampling)
 %state it's impossible to do with non-relational approach
-We show the effectiveness of our algorithm on a simple avoid-trap-and-eat-food problem, which is shown
-in Fig. \ref{fig:Trap}. The world consists of one agent, $n$ food and $k$ traps.
-The number of food and traps as well as the locations are randomly generated at the beginning of each episode.
+We show the effectiveness of our algorithm on a simple avoid-monster-and-eat-food problem, which is shown
+in Fig. \ref{fig:Monster}. The world consists of a single agent, a food and a monster.
+The location of all objects are randomly generated at the beginning of each episode.
 The agent moves within 8 by 8 grid.
+There are 10\% chances for the agent to move in a random direction.
 %The size of the state space is $8 \times 8 \times 3 ^ (64 - 1)$
-It gets a reward of 10 when it gets a food and -30 if it gets into
-a trap. A penalty term -0.1 would apply for each step. If the agent tries to walk out of the world, it will
-stay put and receive -1 reward. Each episode ends when all food are consumed or the agent gets into a trap. 
+It gets a reward of 20 when it gets a food and -30 if it is caught by
+a monster. A penalty term -0.1 would apply for each step. If the agent tries to walk out of the world, it will
+stay put and receive -1 reward. With 30\% probability, the monster moves one step toward the location of the agent.
+Otherwise, it stays in the original location. 
+Each episode ends when the food is consumed or the agent is caught by a monster. 
 
-The size of the state space is more than $3^{64}$, which is impractical to solve with non-factorized and 
-non-relational approach. We compare our approach with the work in \cite{RRLTD}. We first generated 
-1000 episodes and run the experiments with the episodes to ensure the fair comparison.
-The predicates used in the experiment are listed in the table \ref{tbl:Predicates}.
+\begin{figure}[h]
+    \centering
+    \begin{minipage}[t]{0.6\linewidth}
+        \centering
+        \includegraphics[width=\textwidth] {./figures/RRL_result.eps}
+        \caption{The average reward with and without progressive transfer learning}
+    \label{fig:Res}
+    \end{minipage}
+\end{figure}
 
-The result is not generated yet.
+\begin{figure}[h]
+    \centering
+    \begin{minipage}[t]{0.6\linewidth}
+        \centering
+        \includegraphics[width=\textwidth] {./figures/Conv.eps}
+        \caption{The learning rate of PTL and SARSA agents}
+    \label{fig:Res_Learning}
+    \end{minipage}
+\end{figure}
+We compare the result with progressive transfer learning(PTL) and traditional SARSA.
+The PTL agent was trained by the simple scenarios with one or two objects. 
+The scenario with one object involves the agent itself. The scenarios with two objects involves
+the agent and a food or a monster. Each scenario takes one-third of total episodes to train
+the agent. The agent needs to transfer its knowledge
+from the simple configurations to a more complex testing environment which consists of
+three objects with one for each type. The SARSA agent uses all episodes to learn from the complete world, which consists
+of three types of objects and is the same as the testing environment. 
+Fig. \ref{fig:Res} shows the average reward for 100 episodes. Each agent was trained separately with different number of episodes. 
+The figure indicates how the amount of training in the simple scenarios affects the performance of the agent.
 
-\begin{table}
-\begin{tabular}[h]{ll}
-\hline
-Features used for the predicate construction\\
-\hline
-$locX(O)$&: the x-coordinate of the object $O$\\
-$locY(O)$&: the y-coordinate of the object $O$\\
-$dispX(O_1, O_2)$&: $locX(O_1) - locX(O_2)$\\
-$dispY(O_1, O_2)$&: $locY(O_1) - locY(O_2)$\\
-$class(O)$&: the class of the object $O$\\
-\hline
-\end{tabular}
-\caption{The features used by predicates.}
-\end{table}
+Fig. \ref{fig:Res_Learning} shows the learning rate of the PTL and SARSA agents. We trained the PTL agent by 450 episodes.
+Then we tested them for 10,000 episodes and average the reward for each 100 episodes. To decrease the time for convergence,
+the size of the world is set to 4 by 4 grid and the monster is static.
 
-\begin{table}
-\begin{tabular}[h]{ll}
-\hline
-Predicates used in the experiment\\
-\hline
-$P_{locX}(O, X)$&: true when $locX(O) = X$\\
-$P_{locY}(O, Y)$&: true when $locY(O) = Y$\\
-$P_{dispX}(O_1, O_2, \Delta X)$&: true when $dispX(O_1, O_2) = \Delta X$\\
-$P_{dispY}(O_1, O_2, \Delta Y)$&: true when $dispY(O_1, O_2) = \Delta Y$\\
-$P_{template1}(C_1, C_2, O_1, O_2, \Delta X_2, \Delta Y_2)$&: true when $class(O_1) = C_1$\\
-                                                           &\  and $class(O_2) = C_2$ \\
-                                                           &\  and $P_{dispX}(O_1, O_2, \Delta X_2)$\\
-                                                           &\  and $P_{dispY}(O_1, O_2, \Delta Y_2)$\\
-$P_{template2}(C_1, C_2, C_3, O_1, O_2, \Delta X_2, \Delta Y_2, O_3, \Delta X_3, \Delta Y_3)$&: true when \\
-                                                                                             &\ $P_{template1}(C_1, C_2, O_1, O_2, \Delta X_2, \Delta Y_2)$ \\
-                                                                                             &\ and $P_{template1}(C_1, C_3, O_1, O_3, \Delta X_3, \Delta Y_3)$ \\
-$P_{templateN}(C_1, \dots, C_N, O_1, O_2, \Delta X_2, \Delta Y_2, \dots, O_N, \Delta X_N, \Delta Y_N)$&: true when\\
-                                                                                             &\ $P_{template1}(C_1, C_2, O_1, O_2, \Delta X_2, \Delta Y_2)$ \\
-                                                                                             &\ \ \ \ \ \ \vdots \\
-                                                                                             &\ and $P_{template1}(C_1, C_N, O_1, O_N, \Delta X_N, \Delta Y_N)$ \\
-\hline
-\end{tabular}
-\caption{The predicates for grid world games.}
-\label{tbl:Predicates}
-\end{table}
+\begin{figure}[h]
+    \centering
+    \begin{minipage}[t]{0.6\linewidth}
+        \centering
+        \includegraphics[width=\textwidth] {./figures/Comp.eps}
+        \caption{The average reward for the world consists of 5 food and 2 monsters}
+    \label{fig:Res_Complex}
+    \end{minipage}
+\end{figure}
+
+To show that the efficiency for PTL agent to learn in more complex scenario, we tested the agents in a world with
+5 food and 2 monsters. The monster moved toward the location of the agent with 30\% probability. The world is 8 by 8. 
+The PTL agent was trained for 600 episodes. We run the experiment with 50,000 episodes.
+The result is shown in Fig. \ref{fig:Res_Complex}. 
+
+
+%The size of the state space is more than $3^{64}$, which is impractical to solve with non-factorized and 
+%non-relational approach. We compare our approach with the work in \cite{RRLTD}. We first generated 
+%1000 episodes and run the experiments with the episodes to ensure the fair comparison.
+%The predicates used in the experiment are listed in the table \ref{tbl:Predicates}.
+
+%The result is not generated yet.
+
+%\begin{table}
+%\begin{tabular}[h]{ll}
+%\hline
+%Features used for the predicate construction\\
+%\hline
+%$locX(O)$&: the x-coordinate of the object $O$\\
+%$locY(O)$&: the y-coordinate of the object $O$\\
+%$dispX(O_1, O_2)$&: $locX(O_1) - locX(O_2)$\\
+%$dispY(O_1, O_2)$&: $locY(O_1) - locY(O_2)$\\
+%$class(O)$&: the class of the object $O$\\
+%\hline
+%\end{tabular}
+%\caption{The features used by predicates.}
+%\end{table}
+
+%\begin{table}
+%\begin{tabular}[h]{ll}
+%\hline
+%Predicates used in the experiment\\
+%\hline
+%$P_{locX}(O, X)$&: true when $locX(O) = X$\\
+%$P_{locY}(O, Y)$&: true when $locY(O) = Y$\\
+%$P_{dispX}(O_1, O_2, \Delta X)$&: true when $dispX(O_1, O_2) = \Delta X$\\
+%$P_{dispY}(O_1, O_2, \Delta Y)$&: true when $dispY(O_1, O_2) = \Delta Y$\\
+%$P_{template1}(C_1, C_2, O_1, O_2, \Delta X_2, \Delta Y_2)$&: true when $class(O_1) = C_1$\\
+                                                           %&\  and $class(O_2) = C_2$ \\
+                                                           %&\  and $P_{dispX}(O_1, O_2, \Delta X_2)$\\
+                                                           %&\  and $P_{dispY}(O_1, O_2, \Delta Y_2)$\\
+%$P_{template2}(C_1, C_2, C_3, O_1, O_2, \Delta X_2, \Delta Y_2, O_3, \Delta X_3, \Delta Y_3)$&: true when \\
+                                                                                             %&\ $P_{template1}(C_1, C_2, O_1, O_2, \Delta X_2, \Delta Y_2)$ \\
+                                                                                             %&\ and $P_{template1}(C_1, C_3, O_1, O_3, \Delta X_3, \Delta Y_3)$ \\
+%$P_{templateN}(C_1, \dots, C_N, O_1, O_2, \Delta X_2, \Delta Y_2, \dots, O_N, \Delta X_N, \Delta Y_N)$&: true when\\
+                                                                                             %&\ $P_{template1}(C_1, C_2, O_1, O_2, \Delta X_2, \Delta Y_2)$ \\
+                                                                                             %&\ \ \ \ \ \ \vdots \\
+                                                                                             %&\ and $P_{template1}(C_1, C_N, O_1, O_N, \Delta X_N, \Delta Y_N)$ \\
+%\hline
+%\end{tabular}
+%\caption{The predicates for grid world games.}
+%\label{tbl:Predicates}
+%\end{table}
 
 %We conduct our experiment in $8 \times 8$ grid world. 
 %The world consists of an agent, indefinite number of coins and monsters. 
@@ -289,6 +342,30 @@ $P_{templateN}(C_1, \dots, C_N, O_1, O_2, \Delta X_2, \Delta Y_2, \dots, O_N, \D
 %TODO: strength: I found a way to decompose the value function of factoerized MDP into sum of local functions of primitive predicates
 % I can change it to sum of composite predicate as well like Relational Temporal Difference Learning by Nima
 
+
+\section{Rate of Convergence}
+Let $V^N = V(O_1, \dots, O_N)$ be the value function of a game which consists of $N$ objects of the same type.
+Each object has $K$ states. Therefore, the number of states for $N$ object world is $K^N$.
+Our objective is to approximate $V^N$ by:
+\begin{equation}
+    \hat{V}^N(O_1, \dots, O_N) = \sum_{1 \le i_1 \le N} \Delta V^1(O_{i_1}) + \sum_{1 \le i_1, i_2 \le N} \Delta V^2(O_{i_1}, O_{i_2})
+    + \dots + \sum_{1 \le i_1, \dots, i_{N-1} \le N} \Delta V^{N-1}(O_{i_1}, \dots, O_{i_{N-1}})
+\end{equation}
+
+Let $R = \max_x |\Delta V^1(x)|$, the magnitude of the largest expected reward in the one object world.
+Assume there exists a constant $a$, $0 < a < 1$, such that $a^iR > \max_x |\Delta V^{i+1}(x)|$.
+Assume we know the transition probability, therefore we can use dynamic programming to solve the MDP problem.
+Following the analysis of value iteration in \cite{ComplexityMDP}, we can solve $\Delta V^1 \equiv V^1$ in 
+$O(MK^2)$ steps, where $M$ is the number of possible actions. Likewise, $\Delta V^i \equiv V^i - V^{i-1}$ can be computed in $O(MK^{2i})$ steps.
+To achieve $\epsilon$-optimality ($|V^N - \hat{V}^N| < \epsilon$), we need to compute the value function up to $i^*$ order, where 
+$i^* > \frac{log(\epsilon) - log(R)}{log(a)}$. As a result, the total steps are $O(MK^2) + O(MK^{4}) + \dots + O(MK^{2i^*}) = O(MK^{2i^*})$.
+Compared to use dynamic programming to solve the problem directly, it requires $O(MK^{2N})$ steps. When $N \gg i^*$, it is a significant performance boost.
+
+The above analysis assumes the magnitude of the value function decreases a constant factor as the order goes up.
+Let's change to a different assumption. Assume there are at most $L$ nonzero values for $\Delta V^i$, $i > 1$.
+To learn $\Delta V^1$ still requires $O(MK^2)$ step. However, $\Delta V^2$ has only $L$ nonzero values. We
+can run dynamic programming algorithm specifically to the nonzero locations, which requires $O(ML^2)$.
+The overall steps are $O(MK^2) + O(NML^{2})$. When $K^N \gg L$, it can be a huge performance boost as well.
 
 \section{Related Work}
 The relational reinforcement learning is one of the recent research direction for RL community. 
@@ -1320,8 +1397,12 @@ It is possible to have multiple branches (more than 2) for a node.
 62. transfer directly from 2vs 1 to 10vs9
 63. Show that without higher order predicate, it's not useful to train in high order scenario, and it can also be harmful
 64. Show higher order predicate is useful, but the effect will die away
-
-
+65. Show progressive learning will outperform any learning in single scenario (1 vs 1 + 2 vs 2 > 2 vs 2), use the same 10 sec criteria
+66. Scale up to 9 vs 10
+67. The motivation: the real predicates are unknown, you need a way to find true related template. Write it in the perspective of relational templates.
+68. Compare with RLTD
+69. Relational View of keepaway soccer
+70. Show that the common prototype of video games like Raiden or Ys have finite size of relational template(Higher order of templates will vanish)
 
 
 
