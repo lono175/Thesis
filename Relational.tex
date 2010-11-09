@@ -353,7 +353,7 @@ Our objective is to approximate $V^N$ by:
 \end{equation}
 
 Let $R = \max_x |\Delta V^1(x)|$, the magnitude of the largest expected reward in the one object world.
-Assume there exists a constant $a$, $0 < a < 1$, such that $a^iR > \max_x |\Delta V^{i+1}(x)|$.
+Assume there exists a constant $a$, $0 < a < 1$, such that $a^iR > \max_x |\Delta V^{i+1}(x)|$ for all $i>1$.
 Assume we know the transition probability, therefore we can use dynamic programming to solve the MDP problem.
 Following the analysis of value iteration in \cite{ComplexityMDP}, we can solve $\Delta V^1 \equiv V^1$ in 
 $O(MK^2)$ steps, where $M$ is the number of possible actions. Likewise, $\Delta V^i \equiv V^i - V^{i-1}$ can be computed in $O(MK^{2i})$ steps.
@@ -366,6 +366,64 @@ Let's change to a different assumption. Assume there are at most $L$ nonzero val
 To learn $\Delta V^1$ still requires $O(MK^2)$ step. However, $\Delta V^2$ has only $L$ nonzero values. We
 can run dynamic programming algorithm specifically to the nonzero locations, which requires $O(ML^2)$.
 The overall steps are $O(MK^2) + O(NML^{2})$. When $K^N \gg L$, it can be a huge performance boost as well.
+
+\begin{figure}[h]
+    \centering
+    \begin{minipage}[t]{0.6\linewidth}
+        \centering
+        \includegraphics[width=\textwidth] {./figures/EasyExample.eps}
+        \caption{A game whose value function can be approximated by first order templates }
+    \label{fig:EasyGame}
+    \end{minipage}
+\end{figure}
+
+Fig. \ref{fig:EasyGame} shows a game which consists of an agent and several food. The agent always starts 
+from the leftmost of the grids. The agent receive reward $R$ when it gets a food. The only action of the agent is to go to the right. The discount factor
+is $\gamma$. Suppose the food are $F=\{F_1, F_2, \dots, F_N\}$. The value function of a food and an agent
+is $\Delta V^1(F_k, A) = \gamma^{d_k}R$, where $d_k$ is the distance between the food and the agent.
+The value function for this game is simply $V(F, A)=\sum_k \Delta V^1(F_k, A)$.
+The value function of higher order templates are all zeros ($\Delta V^2=\Delta V^3=\dots=\Delta V^N=0$).
+Therefore, we can always find a constant $a$ to satisfy $a^iR > \max_x |\Delta V^{i+1}(x)| = 0$ for all $i>1$. 
+
+
+\begin{figure}[h]
+    \centering
+    \begin{minipage}[t]{0.6\linewidth}
+        \centering
+        \includegraphics[width=\textwidth] {./figures/WallExample.eps}
+        \caption{A game whose value function cannot be approximated well by lower order templates}
+    \label{fig:WallExample}
+    \end{minipage}
+\end{figure}
+Fig. \ref{fig:WallExample} shows a similar game which includes additional "wall" objects.
+The game consists of an agent, a food and several wall objects. The agent always starts
+from the leftmost of the grids, while the food always appear at the rightmost of the grids.
+There are several walls between them. The wall blocks the path of the agent, so the agent
+cannot get the food after the wall. Assume discount factor for this game is 1.
+Let the walls be $W = \{W_1, W_2, \dots, W_N\}$.
+$\Delta V^1(F, A) = 1^{d_k}R = R$. Since the agent cannot get any reward from walls, $\Delta V^1(W_k, A) = 0$
+However, $V(F, W_k, A) = 0 = \Delta V^1(F, A) + \Delta V^1(W_k, A) + \Delta V^2(F, W_k, A) = R + 0 + \Delta V^2(F, W_k, A)$.
+As a result, $\Delta V^2(F, W_k, A) = -R $. Similarly, $V(F, W_k, W_j, A) = 0 = \Delta V^1(F, A) + \Delta V^1(W_k, A) + \Delta V^1(W_j, A) + \Delta V^2(F, W_k, A) + \Delta V^2(F, W_j, A) + \Delta V^3(F, W_k, W_j, A)
+= R + 0 + 0 -R -R + \Delta V^3(F, W_k, W_j, A)$. We get $\Delta V^3(F, W_k, W_j, A)=R$. Repeat this process, we get $|V^N(F, W, A)| = R$ for any $N>0$.
+It is impossible to find the constant $a$ for this game.
+
+\begin{figure}[h]
+    \centering
+    \begin{minipage}[t]{0.6\linewidth}
+        \centering
+        \includegraphics[width=\textwidth] {./figures/ValueOfOrder.eps}
+        \caption{The value range for the first five order templates}
+    \label{fig:ValueOrder}
+    \end{minipage}
+\end{figure}
+
+To evaluate if the magnitude of value function would diminish as the order increases, 
+we run the game which is similar to Fig. \ref{fig:EasyGame}, but the agent can be placed to anywhere,
+and it can choose to move to left or right.
+The result is shown in Fig. \ref{fig:ValueOrder}. It indicates that the magnitude of value drops from 
+first order to second order, however, we do not observe the trend continues.
+
+
 
 \section{Related Work}
 The relational reinforcement learning is one of the recent research direction for RL community. 
