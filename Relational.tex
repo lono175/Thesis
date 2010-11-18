@@ -254,6 +254,7 @@ The PTL agent was trained for 600 episodes. We run the experiment with 50,000 ep
 The result is shown in Fig. \ref{fig:Res_Complex}. 
 
 
+
 %The size of the state space is more than $3^{64}$, which is impractical to solve with non-factorized and 
 %non-relational approach. We compare our approach with the work in \cite{RRLTD}. We first generated 
 %1000 episodes and run the experiments with the episodes to ensure the fair comparison.
@@ -352,8 +353,13 @@ Our objective is to approximate $V^N$ by:
     + \dots + \sum_{1 \le i_1, \dots, i_{N-1} \le N} \Delta V^{N-1}(O_{i_1}, \dots, O_{i_{N-1}})
 \end{equation}
 
+\begin{theorem}
 Let $R = \max_x |\Delta V^1(x)|$, the magnitude of the largest expected reward in the one object world.
-Assume there exists a constant $a$, $0 < a < 1$, such that $a^iR > \max_x |\Delta V^{i+1}(x)|$ for all $i>1$.
+If there exists a constant $a$, $0 < a < 1$, such that $a^iR > \max_x |\Delta V^{i+1}(x)|$ for all $i>1$,
+we can achieve $\epsilon$-optimality ($|V^N - \hat{V}^N| < \epsilon$) within total steps $O(MK^{2i^*})$.
+\end{theorem}
+
+Proof:\\
 Assume we know the transition probability, therefore we can use dynamic programming to solve the MDP problem.
 Following the analysis of value iteration in \cite{ComplexityMDP}, we can solve $\Delta V^1 \equiv V^1$ in 
 $O(MK^2)$ steps, where $M$ is the number of possible actions. Likewise, $\Delta V^i \equiv V^i - V^{i-1}$ can be computed in $O(MK^{2i})$ steps.
@@ -362,7 +368,14 @@ $i^* > \frac{log(\epsilon) - log(R)}{log(a)}$. As a result, the total steps are 
 Compared to use dynamic programming to solve the problem directly, it requires $O(MK^{2N})$ steps. When $N \gg i^*$, it is a significant performance boost.
 
 The above analysis assumes the magnitude of the value function decreases a constant factor as the order goes up.
-Let's change to a different assumption. Assume there are at most $L$ nonzero values for $\Delta V^i$, $i > 1$.
+Let's change to a different assumption.
+
+\begin{theorem}
+If there are at most $L$ nonzero values for $\Delta V^i$, $i > 1$, we can learn the value 
+function with $O(ML^2)$ steps.
+\end{theorem}
+
+Proof:\\
 To learn $\Delta V^1$ still requires $O(MK^2)$ step. However, $\Delta V^2$ has only $L$ nonzero values. We
 can run dynamic programming algorithm specifically to the nonzero locations, which requires $O(ML^2)$.
 The overall steps are $O(MK^2) + O(NML^{2})$. When $K^N \gg L$, it can be a huge performance boost as well.
@@ -377,7 +390,8 @@ The overall steps are $O(MK^2) + O(NML^{2})$. When $K^N \gg L$, it can be a huge
     \end{minipage}
 \end{figure}
 
-Fig. \ref{fig:EasyGame} shows a game which consists of an agent and several food. The agent always starts 
+Fig. \ref{fig:EasyGame} illustrates a game which satisfies with the assumption of the above theorems. 
+The agent always starts 
 from the leftmost of the grids. The agent receive reward $R$ when it gets a food. The only action of the agent is to go to the right. The discount factor
 is $\gamma$. Suppose the food are $F=\{F_1, F_2, \dots, F_N\}$. The value function of a food and an agent
 is $\Delta V^1(F_k, A) = \gamma^{d_k}R$, where $d_k$ is the distance between the food and the agent.
@@ -396,6 +410,7 @@ Therefore, we can always find a constant $a$ to satisfy $a^iR > \max_x |\Delta V
     \end{minipage}
 \end{figure}
 Fig. \ref{fig:WallExample} shows a similar game which includes additional "wall" objects.
+This game serves as an example to show when the preconditions of the above theorems cannot be satisfied.
 The game consists of an agent, a food and several wall objects. The agent always starts
 from the leftmost of the grids, while the food always appear at the rightmost of the grids.
 There are several walls between them. The wall blocks the path of the agent, so the agent
@@ -406,6 +421,9 @@ However, $V(F, W_k, A) = 0 = \Delta V^1(F, A) + \Delta V^1(W_k, A) + \Delta V^2(
 As a result, $\Delta V^2(F, W_k, A) = -R $. Similarly, $V(F, W_k, W_j, A) = 0 = \Delta V^1(F, A) + \Delta V^1(W_k, A) + \Delta V^1(W_j, A) + \Delta V^2(F, W_k, A) + \Delta V^2(F, W_j, A) + \Delta V^3(F, W_k, W_j, A)
 = R + 0 + 0 -R -R + \Delta V^3(F, W_k, W_j, A)$. We get $\Delta V^3(F, W_k, W_j, A)=R$. Repeat this process, we get $|V^N(F, W, A)| = R$ for any $N>0$.
 It is impossible to find the constant $a$ for this game.
+
+If we let the discount factor to be less than 1, we get $|V^N(F, W, A)| \le \gamma^{N+1}R$. 
+It satisfy the Theorem 1 but does not satisfy Theorem 2.
 
 \begin{figure}[h]
     \centering
@@ -421,9 +439,34 @@ To evaluate if the magnitude of value function would diminish as the order incre
 we run the game which is similar to Fig. \ref{fig:EasyGame}, but the agent can be placed to anywhere,
 and it can choose to move to left or right.
 The result is shown in Fig. \ref{fig:ValueOrder}. It indicates that the magnitude of value drops from 
-first order to second order, however, we do not observe the trend continues.
+first order to second order, however, we do not observe the trend continues. This result shows the 
+above theorems are sufficient but not necessary conditions for good transfer learning result.
+
+\begin{figure}[h]
+    \centering
+    \begin{minipage}[t]{0.6\linewidth}
+        \centering
+        \includegraphics[width=\textwidth] {./figures/ValueOfOrder.eps}
+        \caption{The value range for the first five order templates}
+    \label{fig:ValueOrder}
+    \end{minipage}
+\end{figure}
 
 
+\begin{figure}[h]
+    \centering
+    \begin{minipage}[t]{0.6\linewidth}
+        \centering
+        \includegraphics[width=\textwidth] {./figures/TemplateOrder.eps}
+        \caption{The comparison of the effectiveness of different order of templates}
+    \label{fig:TemplateOrder}
+    \end{minipage}
+\end{figure}
+
+To show the effectiveness of higher order templates, we run the game with 5 food and 2 monsters
+and compare the average reward of them. The result is shown in \ref{fig:TemplateOrder}.
+Each agent has 10,000 training episodes which are evenly distributed among different templates.
+Then we run it for additional 20,000 episodes to test.
 
 \section{Related Work}
 The relational reinforcement learning is one of the recent research direction for RL community. 
@@ -1461,6 +1504,9 @@ It is possible to have multiple branches (more than 2) for a node.
 68. Compare with RLTD
 69. Relational View of keepaway soccer
 70. Show that the common prototype of video games like Raiden or Ys have finite size of relational template(Higher order of templates will vanish)
+71. RL is all about finding the shortest path to the reward. I can use model based approach. Build a movement model without object.
+    Build a reward model without object. Then put objects one by one, build more complex models. The value function
+    can be computed by the weighted shortest path algorithm.
 
 
 
