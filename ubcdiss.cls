@@ -43,6 +43,7 @@
 \newtheorem{definition}{Definition}
 \newtheorem{theorem}{Theorem}
 \newtheorem{proof}{Proof}
+\newtheorem{conjecture}{Conjecture}
 
 %% Useful command stolen from Forbes' genthesis.cls
 \newcommand{\@addto}[2]{
