@@ -390,7 +390,7 @@ The overall steps are $O(MK^2) + O(NML^{2})$. When $K^N \gg L$, it can be a huge
     \end{minipage}
 \end{figure}
 
-Fig. \ref{fig:EasyGame} illustrates a game which satisfies with the assumption of the above theorems. 
+Fig. \ref{fig:EasyGame} illustrates a game which satisfies with the assumption of both of the above theorems. 
 The agent always starts 
 from the leftmost of the grids. The agent receive reward $R$ when it gets a food. The only action of the agent is to go to the right. The discount factor
 is $\gamma$. Suppose the food are $F=\{F_1, F_2, \dots, F_N\}$. The value function of a food and an agent
@@ -423,7 +423,7 @@ As a result, $\Delta V^2(F, W_k, A) = -R $. Similarly, $V(F, W_k, W_j, A) = 0 = 
 It is impossible to find the constant $a$ for this game.
 
 If we let the discount factor to be less than 1, we get $|V^N(F, W, A)| \le \gamma^{N+1}R$. 
-It satisfy the Theorem 1 but does not satisfy Theorem 2.
+It satisfy the conditions of the theorem 1 but does not satisfy conditions of theorem 2.
 
 \begin{figure}[h]
     \centering
