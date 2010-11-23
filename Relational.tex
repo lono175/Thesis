@@ -455,7 +455,7 @@ above theorems are sufficient but not necessary conditions for good transfer lea
 
 \begin{figure}[h]
     \centering
-    \begin{minipage}[t]{0.6\linewidth}
+    \begin{minipage}[t]{1.0\linewidth}
         \centering
         \includegraphics[width=\textwidth] {./figures/TemplateOrder.eps}
         \caption{The comparison of the effectiveness of different order of templates}
@@ -464,9 +464,17 @@ above theorems are sufficient but not necessary conditions for good transfer lea
 \end{figure}
 
 To show the effectiveness of higher order templates, we run the game with 5 food and 2 monsters
-and compare the average reward of them. The result is shown in \ref{fig:TemplateOrder}.
+and compare the average reward of them. The result is shown in Fig. \ref{fig:TemplateOrder}.
 Each agent has 10,000 training episodes which are evenly distributed among different templates.
-Then we run it for additional 20,000 episodes to test.
+Then we run it for additional 20,000 episodes to test. It indicates that under the 
+same amount of training, the agents which are trained in complex environments perform 
+better than those without. However, the benefits diminish after a certain order.
+For example, the agent trained with 2 food performs better than the agent trained with 1 food.
+But the agent trained with 3 food performs almost the same as the 2 food one.
+In addition, the higher order may not be always better than lower order.
+The agent which is trained with 1 food and 2 monster does not perform better than 
+1 food and 1 monster. It maybe due to the fact that it's harder for the agent to learn
+in 2 monster environment.
 
 \section{Related Work}
 The relational reinforcement learning is one of the recent research direction for RL community. 
