@@ -83,7 +83,27 @@ However, the utility of each positive literal cannot be observed directly. From 
 we know the value of $S_t$ is the sum of each utility, therefore we can use linear regression to estimate 
 each utility $V_{L_i}$. 
 
-Though are many batch learning algorithms available for linear regression, they are not suitable for reinforcement learning
+\begin{figure}[h]
+    \centering
+    \begin{minipage}[t]{0.6\linewidth}
+        \centering
+        \includegraphics[width=\textwidth] {./figures/monster.eps}
+        \caption{A grid world with two monsters (M). A food (F) and an agent (A).}
+    \label{fig:Monster}
+    \end{minipage}
+\end{figure}
+
+Consider the avoid-monster-and-eat-food problem in 
+Fig. \ref{fig:Monster}. The world consists of a single agent, a food and a monster.
+A reasonable predicate can be $P = {\bf Dist}(O_1, O_2, D)$, which characterizes the
+distance between object $O_1$ and $O_2$. The set of literals $I_{P}(S)$ of Fig. \ref{fig:Monster}
+is $\{Dist(A, M, 1), Dist(A, M, \sqrt{2}), Dist(A, F, \sqrt{2})\}$.
+The domain of constants $\mathbb{D}$ is $\{A, M, F,$ set of some positive real numbers$\}$.
+The agent can move in the four possible directions, therefore the action for the agent $\mathbb{A}$ 
+is \{North, South, East, West\}.
+
+
+Though there are many batch learning algorithms available for linear regression, they are not suitable for reinforcement learning
 tasks. The batch learning requires a full pass through the data, which not only increases the time
 to update the value function as the number of data goes up, but also increases the memory storage. Because 
 the value for each time step needs to be stored for the full pass through, it will eventually
@@ -140,7 +160,7 @@ We start from a simple world which contains one object, and learn the utility as
 with the predicates with only one object involved. Then we gradually increase the number of 
 objects involved in each scenario to train the higher order predicates. 
 
-We denote $V^i$ as the Q-function with the state involved $i$ objects. Our objective is to
+We denote $V^i$ as the Q-function with the state involved $i$ objects. The objective is to
 compute $\Delta{V^i(S)} = V^i(S) - V^{i-1}(S)$. Again, we use the linear approximation to estimate $\Delta{V^i}$:
 %TODO: show the state in V^i-1 is obtained by ignoring one object of the state
 \begin{equation}
@@ -149,7 +169,7 @@ compute $\Delta{V^i(S)} = V^i(S) - V^{i-1}(S)$. Again, we use the linear approxi
 \end{equation}
 where $L^i$ is the $i$th-order predicate. $\Delta{V^i}$ indicates the amount of knowledge we need to 
 transfer from a simpler model. It is the residual between the current model and the transferred one.
-We objective is to learn the residual function for each training process. If the residual function is 
+The objective is to learn the residual function for each training process. If the residual function is 
 0 everywhere, we achieve the optimal knowledge transfer.
 $V_{L^i}$ is the utility associated with the $i$th-order predicate. We can
 see that the utility of a higher order predicate is to estimate what cannot be explained by
@@ -175,15 +195,6 @@ which is corresponding to our original equation \ref{eq:relV}.
 
 \section{Experiment}
 
-\begin{figure}[h]
-    \centering
-    \begin{minipage}[t]{0.6\linewidth}
-        \centering
-        \includegraphics[width=\textwidth] {./figures/monster.eps}
-        \caption{A grid world with two monsters (M). A food (F) and an agent (A).}
-    \label{fig:Monster}
-    \end{minipage}
-\end{figure}
 
 %TODO: the template in this experiment
 %TODO: show the difference of the regressed V and the optimal V for a scenario. It indicates our method
@@ -192,7 +203,7 @@ which is corresponding to our original equation \ref{eq:relV}.
 %Show the effectiveness of template selection
 %Biased Estimation (if not regression, and slower (require a lot of sampling)
 %state it's impossible to do with non-relational approach
-We show the effectiveness of our algorithm on a simple avoid-monster-and-eat-food problem, which is shown
+We show the effectiveness of our algorithm on a simple avoid-monster-and-eat-food problem, which has been shown
 in Fig. \ref{fig:Monster}. The world consists of a single agent, a food and a monster.
 The location of all objects are randomly generated at the beginning of each episode.
 The agent moves within 8 by 8 grid.
@@ -442,7 +453,7 @@ The result is shown in Fig. \ref{fig:ValueOrder}. It indicates that the magnitud
 first order to second order, however, we do not observe the trend continues. 
 This example that does not satisfy either of theorem 1 or 2, but it still shows speedup
 in our experiment.
-Clearly the conditions of theorem 1 and 2 are sufficient but necessary for the 
+Clearly the conditions of theorem 1 and 2 are sufficient but not necessary for the 
 speedup of transfer learning.
 
 \begin{figure}[h]
@@ -838,35 +849,6 @@ are the time t variables Barrack1:Status0, Peasant1:Task,
 Peasant2:Task, Gold1:Amount andWood1:Amount.
 The transition model is the same for all instances in the
 same class, as in (1). Thus, all of the o:Status variables for
-
-Health H’
-
-Count
-   	 
-Health H’
-AFootman
-
- 
-F1.Health
-F1.A
-F1.H’
-E1.Health E1.H’
-F2.Health
-F2.A
-F2.H’
-E2.Health E2.H’
-
-����
-
-
-
- 	 
- 
- 	 
- 
-
-Time   
-(a) (b)
 Figure 2: Freecraft tactical domain: (a) Schema; (b) Resulting factored
 MDP for a world with 2 footmen and 2 enemies.
 barrack objects o share the same conditional probability distribution.

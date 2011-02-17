@@ -40,6 +40,7 @@
 \RequirePackage{tabbing}
 \RequirePackage{amsfonts}
 \RequirePackage{amsmath}
+%\usepackage{hyperref} %for url
 \newtheorem{definition}{Definition}
 \newtheorem{theorem}{Theorem}
 \newtheorem{proof}{Proof}
