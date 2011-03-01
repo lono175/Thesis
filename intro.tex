@@ -5,20 +5,26 @@
 \label{ch:intro}
 
 \section{Problem Statement}
-The objective of this project is to build a software which can play a wide range 
-of video games. To achieve this goal, the software shall not possess any game-specific 
-information. Besides, the software shall be able to play the games in a non-intrusive approach.
-That is, the software shall be able to extract the necessary information 
-from the screenshot of the games and control the games from standard input devices such as keyboard.
-Since most of video games use graphical display as the primary interface, this requirement allows
-the software to be applied to different video games.
+\cbstart
+The objective of this project is to build a software agent which can play a wide range 
+of video games. To achieve this goal, the agent shall not possess any game-specific 
+information. It shall not possess the knowledge of underlying game mechanics and shall
+learn how to play the game through playing it. 
+\cbend
+%Besides, the software shall be able to play the games in a non-intrusive approach.
+%That is, the software shall be able to extract the necessary information 
+%from the screenshot of the games and control the games from standard input devices such as keyboard.
+%Since most of video games use graphical display as the primary interface, this requirement allows
+%the software to be applied to different video games.
 
 \section{Why video games?}
 Over the past decade, substantial research has been conducted to teach computer play classic strategy games such
 as Deep Thought\cite{DeepBlue}, TD-Gammon\cite{Gammon}, and GO\cite{Go}.
 On the other hand, little research has been made\cite{FPS}\cite{Mario} to extend the effort to other genres of video games.
 The genres of video games include not only classic strategy games, but also action, first-person shooter, role-player, adventure, simulation, etc.
-Video games introduce a new challenge to the AI community.
+\cbstart
+To build an agent which is able to adapt to a variety of video games introduces a new challenge to the AI community.
+\cbend
 
 The challenge includes:
 \begin{itemize}{}
@@ -30,8 +36,8 @@ a specific game. Instead, the objective is to design a good and generic AI to pl
 \item Large but highly structured states:
 For a 256 color video game with resolution $640 \times 480$, it has $2^{2,457,600}$ states.
 The number of states is too big to be tractable. However, a video game often consists of small number of objects.
-If we can figure out a way to represent the relationship of these objects, the number of states
-can be reduced.
+A good representation is required to describe the relationship of these objects effectively and reduce
+the number of states.
 
 \item Dynamic number of agents:
 Unlike classic strategy games, the number of agents in video games is highly dynamic.
@@ -41,7 +47,7 @@ It is a challenge which doesn't exist in classic strategy games.
 
 Video games can be viewed as a abstract representation of the real world. Often can we find the 
 correspondence between such an artificial world to a real-world problem\cite{KeepAway}.
-Focusing on Video games allows us to attack a real-world problem without tackling unnecessary details, while maintaining sufficient 
+Focusing on video games allows us to attack a real-world problem without tackling unnecessary details, while maintaining sufficient 
 level of abstraction. In addition, video games are well-understood and customizable environments. 
 It allows us to test an AI algorithm and justify if the result is correct\cite{Yavar}.
 
@@ -51,42 +57,48 @@ The process are time-consuming and the hard-coded behavior would produce unreali
 If we can design a generic agent and let it act reactively with the environment, it can produce 
 more various and unpredictable behaviors.
 
-\section{Why apply computer vision to video games?}
+%better AI
 
-The reason behind is the reality that most of the video games do not have source codes which are publicly available.
-If a researcher needs to test his algorithm on Super Mario Bros., all he can do is to apply it on Infinite Mario Bros.,
-which is an open source clone of original Super Mario Bros. He cannot test his algorithm on Mario Bros. 1 or 2, which are available
-on binary format. If a researcher does not have source codes, he cannot extract the game states like the location
-of Koopa Troopas which are mandatory for any AI algorithm to work. 
+%adaptive AI
 
-Using computer vision techniques to extract the information from the game screen is a way to solve this problem.
-Because most of the video games uses graphics as the primary interface to interact with the player, it contains
-the necessary information for the player to play. The use of computer vision allows us to test the algorithm
-non-intrusively, without the effort to hack the game engine or reimplement the game.
+%automatic testing
 
-Besides, the vision allows a more generic way for a computer to play a video game. It creates 
-new applications which cannot be done by intrusive approaches.
+%\section{Why apply computer vision to video games?}
 
-\begin{itemize}{}
-\item Non-intrusive and generic AI:
-Have you ever played a good game with poor AI? Can you change it with a better one?
-Without the source codes of the game or the engine support, the answer is usually "No".
-Nevertheless, if we could design a software which can learn to play any video game, 
-the answer can be changed to "Yes". The non-intrusive and generic agents can be 
-applied to any video games with/without the support from the game company.
+%The reason behind is the reality that most of the video games do not have source codes which are publicly available.
+%If a researcher needs to test his algorithm on Super Mario Bros., all he can do is to apply it on Infinite Mario Bros.,
+%which is an open source clone of original Super Mario Bros. He cannot test his algorithm on Mario Bros. 1 or 2, which are available
+%on binary format. If a researcher does not have source codes, he cannot extract the game states like the location
+%of Koopa Troopas which are mandatory for any AI algorithm to work. 
 
-\item Modding: 
-Game modding becomes popular in recent years \cite{Modding}. 
-Modding allows users to customize the video games to suite their personal tastes.
-The modding usually includes the introduce new content, modification of original one, or remove the unsatisfactory elements.
-The process can be done by the support of game development kit released by the game company.
-It can also be done without the support from the game company. However, the modders need to hack the game engine,
-decode the data format and implement their own development kit. 
-The process can be time-consuming and tedious.
-If we could automate the process by having a software which can 
-traverse the game and extract the in-game elements for us, it could save a lot of time.
+%Using computer vision techniques to extract the information from the game screen is a way to solve this problem.
+%Because most of the video games uses graphics as the primary interface to interact with the player, it contains
+%the necessary information for the player to play. The use of computer vision allows us to test the algorithm
+%non-intrusively, without the effort to hack the game engine or reimplement the game.
 
-\end{itemize}
+%Besides, the vision allows a more generic way for a computer to play a video game. It creates 
+%new applications which cannot be done by intrusive approaches.
+
+%\begin{itemize}{}
+%\item Non-intrusive and generic AI:
+%Have you ever played a good game with poor AI? Can you change it with a better one?
+%Without the source codes of the game or the engine support, the answer is usually "No".
+%Nevertheless, if we could design a software which can learn to play any video game, 
+%the answer can be changed to "Yes". The non-intrusive and generic agents can be 
+%applied to any video games with/without the support from the game company.
+
+%\item Modding: 
+%Game modding becomes popular in recent years \cite{Modding}. 
+%Modding allows users to customize the video games to suite their personal tastes.
+%The modding usually includes the introduce new content, modification of original one, or remove the unsatisfactory elements.
+%The process can be done by the support of game development kit released by the game company.
+%It can also be done without the support from the game company. However, the modders need to hack the game engine,
+%decode the data format and implement their own development kit. 
+%The process can be time-consuming and tedious.
+%If we could automate the process by having a software which can 
+%traverse the game and extract the in-game elements for us, it could save a lot of time.
+
+%\end{itemize}
 
 %\chapter{Related Work}
 %\label{ch:Related}

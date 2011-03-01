@@ -1500,7 +1500,16 @@ It is possible to have multiple branches (more than 2) for a node.
 71. RL is all about finding the shortest path to the reward. I can use model based approach. Build a movement model without object.
     Build a reward model without object. Then put objects one by one, build more complex models. The value function
     can be computed by the weighted shortest path algorithm.
-
+72. Use hard-coded agent to sample and tell the ptl which feature is relevant
+73. Use the distrution which has long tail on the left but not on the right as the prior of the sample Q values, put a lot of confidence on the prior unless the sample points are really really huge
+74. Why RL? because it can handle unoberserved event--> an invisible wall in the dungeon. Or a false wall.
+75. Backtracking how?
+76. Technique: 1.learning from simpler scenario (linear SARSA doesn't work) 2. search(back tracking)(linear SARSA doesn't work)
+77. Technique (no simulation environment, game mechanism is not fully understood, too complex):
+    1. learning from hand-coded agents and optimize it--> 
+       1.1. purly use it as exploration policy and update the Q function
+       1.2. use its feature selection as additional information and pretend the agent is learning in the simplified scenario (useful if we need to play simplified scenario later--> works if there are many objects of the same kind, which is very noisy)
+    2. learning from human player
 
 
 

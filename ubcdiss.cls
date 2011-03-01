@@ -37,9 +37,15 @@
 \RequirePackage{ifthen}
 
 % add by lono
-\RequirePackage{tabbing}
+\RequirePackage{Tabbing}
 \RequirePackage{amsfonts}
 \RequirePackage{amsmath}
+\RequirePackage{changebar}
+%\usepackage{memoir}
+%\usepackage{soul}
+%\usepackage{color}
+%\definecolor{lightgray}{rgb}{.92,.92,.92}
+%\sethlcolor{lightgray}
 %\usepackage{hyperref} %for url
 \newtheorem{definition}{Definition}
 \newtheorem{theorem}{Theorem}

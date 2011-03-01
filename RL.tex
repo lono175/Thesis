@@ -2,6 +2,11 @@
 \chapter{Reinforcement Learning}
 \label{ch:RL}
 
+Given a reward function, reinforcement learning algorithms can
+search over possible action space and find a sequence of actions 
+which can maximize the rewards. The reinforcement learning is an ideal choice
+to develop a learning agent for video games.
+
 We briefly introduce the basic concept of reinforcement learning in this chapter. 
 For a more completed introduction of reinforcement learning, please refer to
 \cite{SuttonIntro} and \cite{KevinIntro}.
@@ -54,6 +59,36 @@ where $V(s_t)$ is the value function of the state $s_t$. $V(s_t)$ is the expecte
 the agent reaches the state $s_t$. $r_{t+1}$ is the reward given to the agent when it chooses
 the action at state $s_t$.
 
+\section{Q-Learning}
+\label{sec:Q-Learning}
+    Q-Learning is an off-policy TD approach. Compared to SARSA, Q-Learning updates
+the Q value by the highest value of the next possible state-action, rather than the 
+next state-action executed by the agent.  
+The Q value is updated by:
+\begin{displaymath}
+   Q(s_t, a_t) \leftarrow Q(s_t, a_t) + \alpha [r_{t+1}+\gamma \max_a Q(s_{t+1},a)-Q(s_t,a_t)],
+\end{displaymath}
+
+where $\max_a Q(s_{t+1},a)$ is the highest value of the next possible state-action. 
+
+\begin{center}
+\begin{tabular}{@{}lp{6cm}@{}}
+\hline
+Algorithm: Q-Learning\\
+\hline
+Initialize $Q(s, a)$ arbitrarily\\
+Repeat (for each episode)\\
+\ \ \ \ \ \ Initialize $s$\\
+\ \ \ \ \ \ Repeat (for each step of episode):\\
+\ \ \ \ \ \ \ \ \ \ \ \ Choose $a$ based on $s$ using policy derived from $Q$ (e.g., $\epsilon$-greedy method)\\
+\ \ \ \ \ \ \ \ \ \ \ \ Take action $a$, obtain reward $r$ and next state $s'$ from the environment\\
+\ \ \ \ \ \ \ \ \ \ \ \ $Q(s, a) \leftarrow Q(s, a) + \alpha [r + \gamma max_{a'} Q(s', a')-Q(s, a)]$\\
+\ \ \ \ \ \ \ \ \ \ \ \ $s \leftarrow s'$\\
+\ \ \ \ \ \ Until $s$ is terminal\\
+\hline  
+\end{tabular}
+\end{center}
+
 \section{SARSA}
 \label{sec:SARSA}
 SARSA is a on-policy TD approach. On-policy indicates that it learns from the current policy.
@@ -87,62 +122,32 @@ Repeat (for each episode)\\
 \end{tabular}
 \end{center}
 
-\section{Q-Learning}
-\label{sec:Q-Learning}
-    Q-Learning is an off-policy TD approach. Compared to SARSA, Q-Learning updates
-the Q value by the highest value of the next possible state-action, rather than the 
-next state-action executed by the agent.  
-The Q value is updated by:
-\begin{displaymath}
-   Q(s_t, a_t) \leftarrow Q(s_t, a_t) + \alpha [r_{t+1}+\gamma \max_a Q(s_{t+1},a)-Q(s_t,a_t)],
-\end{displaymath}
+SARSA 
+%\section{minmax Q-Learning}
+%\label{sec:minmax}
 
-where $\max_a Q(s_{t+1},a)$ is the highest value of the next possible state-action. 
+    %In two player zero-sum game, it's reasonable to take the action of the opponent into consideration.
+%In minmax Q-learning, the Q value is a function of state, the action of player, and the action of opponent.
+%The Q value is updated by:
+%\begin{displaymath}
+    %Q(s_t, a_t, o_t) \leftarrow Q(s_t, a_t, o_t) + \alpha [r_{t+1}+\gamma\max_a min_o Q(s_{t+1}, a, o)-Q(s_t, a_t, o_t)],
+%\end{displaymath}
 
-
-\begin{center}
-\begin{tabular}{@{}lp{6cm}@{}}
-\hline
-Algorithm: Q-Learning\\
-\hline
-Initialize $Q(s, a)$ arbitrarily\\
-Repeat (for each episode)\\
-\ \ \ \ \ \ Initialize $s$\\
-\ \ \ \ \ \ Repeat (for each step of episode):\\
-\ \ \ \ \ \ \ \ \ \ \ \ Choose $a$ based on $s$ using policy derived from $Q$ (e.g., $\epsilon$-greedy method)\\
-\ \ \ \ \ \ \ \ \ \ \ \ Take action $a$, obtain reward $r$ and next state $s'$ from the environment\\
-\ \ \ \ \ \ \ \ \ \ \ \ $Q(s, a) \leftarrow Q(s, a) + \alpha [r + \gamma max_{a'} Q(s', a')-Q(s, a)]$\\
-\ \ \ \ \ \ \ \ \ \ \ \ $s \leftarrow s'$\\
-\ \ \ \ \ \ Until $s$ is terminal\\
-\hline  
-\end{tabular}
-\end{center}
-
-\section{minmax Q-Learning}
-\label{sec:minmax}
-
-    In two player zero-sum game, it's reasonable to take the action of the opponent into consideration.
-In minmax Q-learning, the Q value is a function of state, the action of player, and the action of opponent.
-The Q value is updated by:
-\begin{displaymath}
-    Q(s_t, a_t, o_t) \leftarrow Q(s_t, a_t, o_t) + \alpha [r_{t+1}+\gamma\max_a min_o Q(s_{t+1}, a, o)-Q(s_t, a_t, o_t)],
-\end{displaymath}
-
-\begin{center}
-\begin{tabular}{@{}lp{6cm}@{}}
-\hline
-Algorithm: minmax Q-learning\\
-\hline
-\ \ \ Initialize: $Q(s, a, o) \leftarrow 1, V(s) \leftarrow 1$
-\ \ \ Repeat (for each episode)\\
-\ \ \ \ \ \ Initialize $s$\\
-\ \ \ \ \ \ Repeat (for each step of episode):\\
-\ \ \ \ \ \ \ \ \ \ \ \ Choose $a$ based on $s$ using policy derived from $Q$ (e.g., $\epsilon$-greedy method)\\
-\ \ \ \ \ \ \ \ \ \ \ \ Take action $a$, obtain opponent action $o$, reward $r$ and next state $s'$ from the environment\\
-\ \ \ \ \ \ \ \ \ \ \ \ $Q(s, a, o) \leftarrow Q(s, a, o) + \alpha [r + \gamma max_{a'} min_{o'} Q(s', a', o')-Q(s, a, o)]$\\
-\ \ \ \ \ \ \ \ \ \ \ \ $s \leftarrow s'$\\
-\hline  
-\end{tabular}
-\end{center}
+%\begin{center}
+%\begin{tabular}{@{}lp{6cm}@{}}
+%\hline
+%Algorithm: minmax Q-learning\\
+%\hline
+%\ \ \ Initialize: $Q(s, a, o) \leftarrow 1, V(s) \leftarrow 1$
+%\ \ \ Repeat (for each episode)\\
+%\ \ \ \ \ \ Initialize $s$\\
+%\ \ \ \ \ \ Repeat (for each step of episode):\\
+%\ \ \ \ \ \ \ \ \ \ \ \ Choose $a$ based on $s$ using policy derived from $Q$ (e.g., $\epsilon$-greedy method)\\
+%\ \ \ \ \ \ \ \ \ \ \ \ Take action $a$, obtain opponent action $o$, reward $r$ and next state $s'$ from the environment\\
+%\ \ \ \ \ \ \ \ \ \ \ \ $Q(s, a, o) \leftarrow Q(s, a, o) + \alpha [r + \gamma max_{a'} min_{o'} Q(s', a', o')-Q(s, a, o)]$\\
+%\ \ \ \ \ \ \ \ \ \ \ \ $s \leftarrow s'$\\
+%\hline  
+%\end{tabular}
+%\end{center}
 
 
