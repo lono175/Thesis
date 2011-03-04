@@ -57,23 +57,22 @@ a relational MDP as follows:
 
 Assume a RMDP contains $n$ predicates: $\mathbb{P}=\{P_1, \dots, P_n\}$. Each predicate $P_i$ has the form $\bold{Pname}(v_1, \dots, v_k)$.
 {\bf Pname} is the name of the predicate, and $v_i$ is a constant. Let $I_{P_i}(S)$ be the set of all positive ground literals
-produced by $P_i$ at state $S$. $S$ can be described as $S=I_{P_1}(S)\cup \dots \cup I_{P_n}(S)$. Thus, the predicates in $\mathbb{P}$
+produced by $P_i$ at the state $S$. The state $S$ can be described as $S=I_{P_1}(S)\cup \dots \cup I_{P_n}(S)$. Thus, the predicates in $\mathbb{P}$
 provide a complete description of $S$.
 
 %TODO: change it to assumption
 %TODO: use Alberta guy's example to motivate it
 %TODO: prove it works when certain conditions met (think one dimension example)
 %TODO: Show that it's always true (not an assumption) if we have progressive transfer learning. (in the worst case, V(S) = V(everything (the most complex model)))
-In this work, we are interested in the value function which has the following property:
+In this work, we assume the value function which has the following property:
 \begin{equation}
 V(S) = \sum_{L_i \in S} V_{L_i},
 \label{eq:relV}
 \end{equation}
-in which $L_i$ is a positive literal at state $S$. $V_{L_i}$ is the utility which contributes to the whole 
+in which $L_i$ is a positive literal at the state $S$. $V_{L_i}$ is the utility which contributes to the whole 
 value function when $L_i$ is positive. The above equation indicates that the value function $V(S)$ can be factorized
 as the linear combination of the number of positive literals for each predicate. Each positive literal
 contributes a constant value to the value function. 
-
 
 For each step, the agent will receive a new value $V(S_t)$ based on the TD formula:
 \begin{equation}
@@ -97,7 +96,7 @@ Consider the avoid-monster-and-eat-food problem in
 Fig. \ref{fig:Monster}. The world consists of a single agent, a food and a monster.
 A reasonable predicate can be $P = {\bf Dist}(O_1, O_2, D)$, which characterizes the
 distance between object $O_1$ and $O_2$. The set of literals $I_{P}(S)$ of Fig. \ref{fig:Monster}
-is $\{Dist(A, M, 1), Dist(A, M, \sqrt{2}), Dist(A, F, \sqrt{2})\}$.
+True $\{Dist(A, M, 1), Dist(A, M, \sqrt{2}), Dist(A, F, \sqrt{2})\}$.
 The domain of constants $\mathbb{D}$ is $\{A, M, F,$ set of some positive real numbers$\}$.
 The agent can move in the four possible directions, therefore the action for the agent $\mathbb{A}$ 
 is \{North, South, East, West\}.
@@ -265,6 +264,46 @@ The PTL agent was trained for 600 episodes. We run the experiment with 50,000 ep
 The result is shown in Fig. \ref{fig:Res_Complex}. 
 
 
+
+\begin{table}
+\begin{tabular}[h]{l|l|l|l|l|l}
+\hline
+\multicolumn{3}{c}{The average reward for different level of training }\\
+\hline
+$(0, 1)$ & $(1, 0)$ & $(1, 1)$ & $(2, 1)$ & $(1, 2)$ & Reward $(3, 5)$\\
+20000    & 0        & 0        & 0        & 0        & -11.9088\\
+10000    & 10000    & 0        & 0        & 0        & -5.8666\\
+6666     & 6666     & 6667     & 0        & 0        & -4.3233\\
+0        &          & 20000    & 0        & 0        & 11.4728\\
+0        &          & 0        & 0        & 20000    & -8.8101\\
+0        &          & 10000    & 0        & 10000    & -15.4953\\
+4000     & 4000     & 4000     & 4000     & 4000     & -13.3894\\
+\hline
+
+
+\hline
+\end{tabular}
+%\caption{The features used by predicates.}
+\end{table}
+
+\begin{table}
+\begin{tabular}[h]{l|l|l|l|l|l}
+\hline
+\multicolumn{3}{c}{The average reward for different level of training }\\
+\hline
+$(0, 1)$ & $(1, 0)$ & $(1, 1)$ & $(2, 1)$ & $(1, 2)$ & Reward $(6, 10)$\\
+20000    & 0        & 0        & 0        & 0        & -6.0867\\
+10000    & 10000    & 0        & 0        & 0        & 2.2270\\
+6666     & 6666     & 6667     & 0        & 0        & -0.9143\\
+0        &          & 20000    & 0        & 0        &  6.7395 \\
+0        &          & 0        & 0        & 20000    & -2.1970\\
+0        &          & 10000    & 0        & 10000    & -18.9684\\
+4000     & 4000     & 4000     & 4000     & 4000     & -11.0146\\
+\hline
+\hline
+\end{tabular}
+%\caption{The features used by predicates.}
+\end{table}
 
 %The size of the state space is more than $3^{64}$, which is impractical to solve with non-factorized and 
 %non-relational approach. We compare our approach with the work in \cite{RRLTD}. We first generated 
@@ -526,21 +565,26 @@ More recently, Asgharbeygi et al. \cite{RRLTD} proposed relational temporal diff
 to learn a distributed value function represented over a conceptual hierarchy of relational predicates. 
 Proper et al. \cite{RelationalTemplate} uses relational templates to transfer the knowledge from different 
 subdomains of a real-time strategy game. These approaches both approximates the value function by 
-the sum of several local functions which are defined over relational predicates or templates. There
-are some issues of their approaches. First, they both require an "expert" to define appropriate
-predicates or templates. The "expert" may miss some important templates which are necessary for 
-the agent to succeed. He may also define some redundant templates so the learning process 
-becomes redundant. The second issue is that when an agent receives a reward, they use the reward to update all of the 
-local functions. However, the reward may actually be generated by one of the functions, not all of them.
-Their approaches are unable to determine the cause of the reward.
+the sum of several local functions which are defined over relational predicates or templates.
+Our work argues that the learning process can be more efficient if the value associated with
+each relational predicate is first learned in a simple setting, then gradually transfer 
+it to more and more complex scenarios. 
 
-In this work, we propose a relational template selection approach to 
-select a set of relevant relational templates by L1-regularized regression.
-The L1-regularized regression allows us to define a large number of relational
-templates and select the relevant templates automatically. Therefore, we do not require
-a set of good expert-defined templates. The regression also allows us to explain the cause of the reward.
-A reward received by the agent would be explained away by some of the local functions, so it cannot
-be claimed by all local functions at the same time.
+%There
+%are some issues of their approaches. First, they both require an "expert" to define appropriate
+%predicates or templates. The "expert" may miss some important templates which are necessary for 
+%the agent to succeed. He may also define some redundant templates so the learning process 
+%becomes redundant. The second issue is that when an agent receives a reward, they use the reward to update all of the 
+%local functions. However, the reward may actually be generated by one of the functions, not all of them.
+%Their approaches are unable to determine the cause of the reward.
+
+%In this work, we propose a relational template selection approach to 
+%select a set of relevant relational templates by L1-regularized regression.
+%The L1-regularized regression allows us to define a large number of relational
+%templates and select the relevant templates automatically. Therefore, we do not require
+%a set of good expert-defined templates. The regression also allows us to explain the cause of the reward.
+%A reward received by the agent would be explained away by some of the local functions, so it cannot
+%be claimed by all local functions at the same time.
 
 %Our method resembles standard function approximation methods for RL (Guestrin),
 %using first-order features and regression to learn the value function. 
@@ -1510,7 +1554,8 @@ It is possible to have multiple branches (more than 2) for a node.
        1.1. purly use it as exploration policy and update the Q function
        1.2. use its feature selection as additional information and pretend the agent is learning in the simplified scenario (useful if we need to play simplified scenario later--> works if there are many objects of the same kind, which is very noisy)
     2. learning from human player
-
+78. Compoare with baseline linear sarsa with transfer learning
+79. Use grid world as motivating example
 
 
 
