@@ -1,4 +1,120 @@
 \chapter{Planning}
+There are two ways for a RL agent to use its sample data. It can use the sample data to update the 
+value function and improve its policy. It is called model-free (or direct) reinforcement learning. 
+Another approach is to use the sample data to estimate parameters for the model of the environment and compute the value function
+from the model. It is called model-based (indirect) reinforcement learning.
+
+The advantage of model-based approaches is that they make more efficient use of the sample data, thus 
+it take fewer time to train a model-based RL agent. Other the other hand, model-free approaches do not assume 
+a prior model, so it would not be affected by the bias of the model design. Besides, the existence of 
+good linear approximation algorithms, such as linear SARSA, makes it possible for model-free approaches to
+handle large scale problems.
+
+Model-based approaches needs to enumerate through all possible states to compute the value function. 
+But the number of states grows exponentially with the number of features, 
+and it quickly becomes intractable if the number features grows large.
+
+The main idea of this work is to combine the model-free, model-based and hierarchical reinforcement learning.
+For the lower level of hierarchy, we adopt the model-free approach to handle the complete and possibly large state space.
+On the top level of hierarchy, we use the model-based to plan on a coarser level, which contains only small number of states.
+This approach allows the agent to plan on the higher level and make efficient use of the sample data. On the lower level,
+the agent uses model-free approaches with linear approximation to handle the complete state space.
+
+The prior works on hierarchical reinforcement learning (HRL) can be divided into two categories: model-free and model-based approaches. 
+The model-free approaches include HAMQ \cite{HAMQ}, MAXQ \cite{MAXQ}, SMDP and options framework \cite{option}
+For model-based approaches, Seri et al. \cite{HLearning} proposed a model-based HRL in average reward setting.
+Diuk et al. \cite{Diuk} adopted model-based HRL to deterministic domain. Jong and Stone \cite{RMaxQ} combined 
+R-MAXQ and MAXQ to achieve efficient model-based exploration and the action abstraction of MAXQ.
+
+
+%\begin{figure}[h]
+    %\centering
+    %\begin{minipage}[t]{0.3\linewidth}
+        %\centering
+        %\includegraphics[width=\textwidth] {./figures/monster_plan.eps}
+    %\end{minipage}
+    %\caption{The shortest path from the agent's location to the food}
+    %\label{fig:monster_plan}
+%\end{figure}
+%Take the eat-food-and-avoid-monster game in Fig. \ref{fig:monster_plan} as the motivating example. 
+%The top level planner finds a path to the location of coins. 
+%The low level deals with primitive actions to go the the destination specified by the top level planner.
+%If the monsters do not move and the actions are deterministic
+%, the optimal policy of the game can be founded by the shortest path algorithm. The goal state is the location of the food,
+%the cost to move to the adjacent location is $1$, if there is a monster in the adjacent location, the cost 
+%to move to it is $\infty$. The agent only needs to compute the lowest cost path from its current position to the goal,
+%and choose the action which can keep it on this precomputed path.
+
+%However, the game is not a static one. The monsters may move around and block the precomputed path. The actions of
+%agent may have unpredictable result to lead it out of the precomputed path.
+%This stochastic natural of the game makes it natural to formulate the problem as a stochastic shortest path
+%problem. A stochastic shortest-path (SSP) problem is a MDP problem with a absorbing goal state and positive costs.
+%A solution of a SSP problem is a policy from the initial state to the goal state with minimum expected cost.
+
+%Most of the previous work on RL focus on model-free approaches for several reasons. 
+%The most 
+%Within a planning agent, there are at least two roles for real experience: it
+%can be used to improve the model (to make it more accurately match the real
+%environment) and it can be used to directly improve the value function and
+%policy using the kinds of reinforcement learning methods we have discussed in
+%previous chapters. The former we call model-learning, and the latter we call
+%direct reinforcement learning (direct RL). The possible relationships between
+%experience, model, values, and policy are summarized in Figure  9.2. Each arrow
+%shows a relationship of influence and presumed improvement. Note how experience
+%can improve value and policy functions either directly or indirectly via the
+%model. It is the latter, which is sometimes called indirect reinforcement
+%learning, that is involved in planning. 
+
+%The second branch is model-based RL, which directly estimates
+%a model of the environment and then plans with
+%this model. Early work demonstrated that summarizing an
+%agent’s experience into a model could be an efficient way
+%to reuse data (Moore & Atkeson, 1993), and later work utilized
+%the uncertainty in an agent’s model to guide exploration,
+%yielding the first (probabilistic) finite bounds on the amount of data required
+%to learn near-optimal behaviors in the general case (Kearns & Singh, 1998;
+%Kakade, 2003).
+
+
+%motivation: play a randomly generate maze to adapt to
+%adapt to noval situation
+
+%weakness-> an adversary to block the path forever
+%no knowledge (coin won't disappear-->need hack to do it, moster won't move)
+%comparison to the previous work->HRL,
+
+
+%model based-> state space is too large. good to train with
+%few examples (10 sec training)
+%model free-> cannot handle randomly generated maze -> failed to adapt to noval situation. can handle large space (linear SARSA)
+
+%combine both-> use model based on top level to reduce
+%the state space, and model free on bottom to 
+%deal with randomized noisy world for short term reward
+
+%build multilevel of hierachy on features
+%label each room with a number 1, 2, 3
+%the coordinate of wrt the room
+%(1, (25, 30))
+%move from room 1 to room 2
+%top level
+%action (1->2)
+%second level
+%assume (1, (25, 30)) -> (2, (0, 0))
+%action ((25, 30) -> (0, 0)) goal (-25, -30) in single step
+
+%need to build time model of the full state
+%P(s->s'|x, t) the propability to move from state s to s'
+%after t steps of the observation of full state x
+
+%power coms from trasition model, not shortest path
+%you can use model-based approach on this
+
+%fickle passenger of MaxQ
+%coarseness on time and space scale
+
+%-->you can work on continus varible now, no more grid world
+
 %1. Assumption on the state difference (if it is not true --> like the agent in a world boundary or the health is 100 and cannot be imporve
   %since the state is outside the known state boundary, the planner whon't plan for it. but the local planner may still direct the agent
   %to go outside the world boundary, which may be a problem)
@@ -37,48 +153,50 @@
 %compare to the model-based RL
 
 %1. Example: Grid world u
-\begin{figure}[h]
-    \centering
-    \begin{minipage}[t]{0.3\linewidth}
-        \centering
-        \includegraphics[width=\textwidth] {./figures/monster_plan.eps}
-    \end{minipage}
-    \caption{The shortest path from the agent's location to the food}
-    \label{fig:monster_plan}
-\end{figure}
-Consider the eat-food-and-avoid-monster game in Fig. \ref{fig:monster_plan}. If the monsters do not move and the actions are deterministic
-, the optimal policy of the game can be founded by the shortest path algorithm. The goal state is the location of the food,
-the cost to move to the adjacent location is $1$, if there is a monster in the adjacent location, the cost 
-to move to it is $\infty$. The agent only needs to compute the lowest cost path from its current position to the goal,
-and choose the action which can keep it on this precomputed path.
+%\begin{figure}[h]
+    %\centering
+    %\begin{minipage}[t]{0.3\linewidth}
+        %\centering
+        %\includegraphics[width=\textwidth] {./figures/monster_plan.eps}
+    %\end{minipage}
+    %\caption{The shortest path from the agent's location to the food}
+    %\label{fig:monster_plan}
+%\end{figure}
+%Consider the eat-food-and-avoid-monster game in Fig. \ref{fig:monster_plan}. If the monsters do not move and the actions are deterministic
+%, the optimal policy of the game can be founded by the shortest path algorithm. The goal state is the location of the food,
+%the cost to move to the adjacent location is $1$, if there is a monster in the adjacent location, the cost 
+%to move to it is $\infty$. The agent only needs to compute the lowest cost path from its current position to the goal,
+%and choose the action which can keep it on this precomputed path.
 
-However, the game is not a static one. The monsters may move around and block the precomputed path. The actions of
-agent may have unpredictable result to lead it out of the precomputed path.
-This stochastic natural of the game makes it natural to formulate the problem as a stochastic shortest path
-problem. A stochastic shortest-path (SSP) problem is a MDP problem with a absorbing goal state and positive costs.
-A solution of a SSP problem is a policy from the initial state to the goal state with minimum expected cost.
+%However, the game is not a static one. The monsters may move around and block the precomputed path. The actions of
+%agent may have unpredictable result to lead it out of the precomputed path.
+%This stochastic natural of the game makes it natural to formulate the problem as a stochastic shortest path
+%problem. A stochastic shortest-path (SSP) problem is a MDP problem with a absorbing goal state and positive costs.
+%A solution of a SSP problem is a policy from the initial state to the goal state with minimum expected cost.
 
-A work by Zucker et al. \cite{Planner} introduced a two-level approach to solve a maze problem.
-The planner uses the shortest path algorithm to find a path from the current state to the goal state.
-The cost of each step is estimated by Q value, which is computed by the SARSA algorithm.
+%A work by Zucker et al. \cite{Planner} introduced a two-level approach to solve a maze problem.
+%The planner uses the shortest path algorithm to find a path from the current state to the goal state.
+%The cost of each step is estimated by Q value, which is computed by the SARSA algorithm.
 
-A issue occurred when we want to apply this approach to general MDP problems: we do not know the 
-goal state. The objective of MDP is to find a sequence of actions which can maximize the overall 
-rewards. There are no clearly defined "goal" for the MDP problems.
+%A issue occurred when we want to apply this approach to general MDP problems: we do not know the 
+%goal state. The objective of MDP is to find a sequence of actions which can maximize the overall 
+%rewards. There are no clearly defined "goal" for the MDP problems.
 
-A possible way to adopt the planning technique to the MDP problems is to choose a sequence 
-of goals which can maximize the overall rewards. The goal can be chosen to be the state
-with the highest expected reward. To achieve this, an agent needs to learn 
-the probability to move from one state to another, and the reward to be received
-from each state. 
+%A possible way to adopt the planning technique to the MDP problems is to choose a sequence 
+%of goals which can maximize the overall rewards. The goal can be chosen to be the state
+%with the highest expected reward. To achieve this, an agent needs to learn 
+%the probability to move from one state to another, and the reward to be received
+%from each state. 
 
-The approach is two fold. In the beginning, the planner selects a path from the current 
-state to the goal state with the highest expected reward. The path consists of several
-nodes, which are considered as the subgoals of the plan. The RL agent finds the subgoal 
-right after the current state, and chooses a sequence of actions which can lead the agent
-to the subgoal. The result can be either success or failure, and the probability of the successful
-rate of a plan would be updated accordingly. The planner then use the updated information to 
-compute a new path.
+%The approach is two fold. In the beginning, the planner selects a path from the current 
+%state to the goal state with the highest expected reward. The path consists of several
+%nodes, which are considered as the subgoals of the plan. The RL agent finds the subgoal 
+%right after the current state, and chooses a sequence of actions which can lead the agent
+%to the subgoal. The result can be either success or failure, and the probability of the successful
+%rate of a plan would be updated accordingly. The planner then use the updated information to 
+%compute a new path.
+
+
 
 
 %application: the key-room problem--> each room lock a key, one room has a treasure, the agent needs to go through 
