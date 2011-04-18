@@ -1,4 +1,51 @@
 \chapter{Planning}
+
+%TODO: Add normal Definition here
+\begin{definition} Markov decision process is formalized as a tuple $<S, A, P, R>$, where
+\begin{itemize}{}
+\item $S$ is a finite set of states of the environment.
+\item $A$ is a finite of actions.
+\item The transition function $P:S \times A \times S \rightarrow [0, 1]$ defines a probability distribution over the possible next states. 
+\item The reward function $R:S \times A \rightarrow \mathbb{R}$ defines the reward after executing a certain action at a certain state.
+\end{itemize}
+\end{definition}
+
+Given a state of the environment, a policy $\pi: S \times A)$ tells what action should be performed. 
+The value function $V^{\pi}: S \times \mathbb{R}$ is the expected cumulative reward when executing
+policy $\pi$ from state $s$.
+
+The value function satisfies the Bellman equation:
+\begin{equation}
+    V^{\pi}(s) = \sum_{s'}P(s'|s, \pi(s))[R(s, \pi(s)) + \gamma V^{\pi}(s')],
+\end{equation}
+where $\gamma \cin [0, 1]$ is the discount factor which discounts the future reward to the present value.
+
+Similarly, we define the action-value function (or Q function) as:
+\begin{equation}
+    Q^{\pi}(s, a) = \sum_{s'}P(s'|s, \pi(s))[R(s, \pi(s)) + \gamma Q^{\pi}(s', \pi(s'))].
+\end{equation}
+The Q function is the expected cumulative reward after executing action $a$ at state $s$ and following
+$\pi$ thereafter.
+
+Now lets us extends action set $A$ to include composite actions.
+
+We also need to explicit model the time limit for a composite action to execute, since it
+is possible for a composite action to have unachievable terminal state (why?). We do not want 
+to wait for the composite action to infinity.
+
+The transition function $P$ and $R$ are modified to include the time limit $t$:
+\begin{equation}
+    P(s'|s, a, t) = \sum^t_{k=1} \gamma^k Pr(k, s'|s, a),
+\end{equation}
+\begin{equation}
+    R(s, a, t) = \sum^t_{k=0} \gamma^k r_k,
+\end{equation}
+The value function needs to be modified as:
+\begin{equation}
+    V^{\pi}(s) = \sum_{s'}P(s'|s, \pi(s), t)[R(s, \pi(s), t) + \gamma^N V^{\pi}(s')],
+\end{equation}
+where $N$ is the number of steps for the action $\pi(s)$ to finish its execution.
+A question arises since we do not know the actual time to finish executing each composite action (how MaxQ solve it?).
 %1. Assumption on the state difference (if it is not true --> like the agent in a world boundary or the health is 100 and cannot be imporve
   %since the state is outside the known state boundary, the planner whon't plan for it. but the local planner may still direct the agent
   %to go outside the world boundary, which may be a problem)
