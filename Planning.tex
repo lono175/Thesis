@@ -46,6 +46,23 @@ The value function needs to be modified as:
 \end{equation}
 where $N$ is the number of steps for the action $\pi(s)$ to finish its execution.
 A question arises since we do not know the actual time to finish executing each composite action (how MaxQ solve it?).
+
+Although the state abstraction provides us compact state representation, 
+it doesn't change the size of the planning envelope. Thus we do not gain any computational
+advantage by applying such an abstraction technique.
+
+A key observation of this work is to adopt an unsafe projection function. By assuming 
+some features do not change during the execution of actions, we do gain computational advantage by
+significantly reducing the size of the planning envelope. However, our approach doesn't mean that
+part of the features are completely ignored. The agent still computes the plan according to 
+the new value of the features.
+
+%TODO: the grid world example--> assuming monster does not move is correct
+%TODO: show that approximation is necessary--> the planning envelope is exponentially huge wrt the number of monsters
+
+To compensate the incapability to predict the movement of the monsters in the long run, 
+we exploits the model-free approach to handle the dynamic of the environment in the short period.
+
 %1. Assumption on the state difference (if it is not true --> like the agent in a world boundary or the health is 100 and cannot be imporve
   %since the state is outside the known state boundary, the planner whon't plan for it. but the local planner may still direct the agent
   %to go outside the world boundary, which may be a problem)
