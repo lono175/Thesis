@@ -52,6 +52,9 @@
 \newtheorem{proof}{Proof}
 \newtheorem{conjecture}{Conjecture}
 
+\newcommand{\suchthat}{ \mathrel{\ooalign{$\ni$\cr\kern-1pt$-$\kern-6.5pt$-$}}}
+
+
 %% Useful command stolen from Forbes' genthesis.cls
 \newcommand{\@addto}[2]{
   \expandafter\let\expandafter\old\csname#1\endcsname

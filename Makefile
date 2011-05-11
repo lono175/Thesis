@@ -1,7 +1,7 @@
 NAME1 = diss
 PRODUCT1 = $(NAME1).dvi
 TEXSOURCE1 = $(NAME1).tex \
-		    abstract.tex ack.tex glossary.tex intro.tex version.tex \
+		    abstract.tex ack.tex glossary.tex intro.tex version.tex planning.tex\
 		    ubcdiss.cls
 BBL1 = $(NAME1).bbl
 
@@ -45,12 +45,11 @@ BIBTEX=		bibtex
 XELATEX=	xelatex 
 LATEX=		latex
 BIBLATEX=	$(PDFLATEX)
-BIBTEX=		bibtex 
+BIBTEX=		bibtex
 RM=		del 
 MV=		mv
 
 .tex.dvi:
-	$(PDFLATEX) $(LATEXFLAGS) $<
 	$(PDFLATEX) $(LATEXFLAGS) $<
 
 .tex.bbl: 
