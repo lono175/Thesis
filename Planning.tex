@@ -59,7 +59,7 @@ where $\gamma \in [0, 1]$ is the discount factor which discounts the future rewa
 
 Similarly, we define the action-value function (or Q function) as:
 \begin{equation}
-    Q^{\pi}(s, a) = \sum_{s'}P(s'|s, \pi(s))[R(s, \pi(s)) + \gamma Q^{\pi}(s', \pi(s'))].
+    Q^{\pi}(s, a) = \sum_{s'}P(s'|s, a)[R(s, a) + \gamma Q^{\pi}(s', \pi(s'))].
     \label{eq:Q}
 \end{equation}
 The Q function is the expected cumulative reward after executing action $a$ at state $s$ and following
@@ -134,7 +134,7 @@ Each primitive leads to -1 reward to the agent.
     \caption{The hierarchy of maze in Fig. \ref{fig:Maze}. The max nodes are the triangles, and Q nodes are the rectangles. }
     \label{fig:MazeH}
 \end{figure}
-The hierarchy is shown in Fig. \ref{fg:MazeH}.
+The hierarchy is shown in Fig. \ref{fig:MazeH}.
 "MaxRoot" node corresponds to the root subtask. "MaxGotoExit" corresponds to GotoExit subtask,
 and "MaxExit" corresponds to GotoGoal subtask.
 
@@ -256,19 +256,19 @@ relevant information.
 \section{Optimality with Biased Model}
 The primary contribution of this work is to show that by combining model-based and 
 model-free approaches, we can still achieve optimality even when the model is biased.
-Andre and Russell \cite{OptimalQ} extends MaxQ framework to be hierarchical optimal.
-They defined $Q_E(i, s, \pi(s))$ as:
-\begin{equation}
-    Q_E^{\pi}(i, s, \pi(s)) = \Sigma_N \Sigma_{x \in T_i}P(x, N| s, \pi(s)) \gamma^N Q^{\pi}(x, \pi(x)).
-    \label{eq:QE}
-\end{equation}
-$Q_E^{\pi}(i, s, \pi(s))$ is the expected cumulative reward after $i$-th node follows 
-policy $\pi$ at state $s$ and terminates at some point.
+%Andre and Russell \cite{OptimalQ} extends MaxQ framework to be hierarchical optimal.
+%They defined $Q_E(i, s, \pi(s))$ as:
+%\begin{equation}
+    %Q_E^{\pi}(i, s, \pi(s)) = \Sigma_N \Sigma_{x \in T_i}P(x, N| s, \pi(s)) \gamma^N Q^{\pi}(x, \pi(x)).
+    %\label{eq:QE}
+%\end{equation}
+%$Q_E^{\pi}(i, s, \pi(s))$ is the expected cumulative reward after $i$-th node follows 
+%policy $\pi$ at state $s$ and terminates at some point.
 
 \begin{definition}
     Give a hierarchical policy $\pi$ and state $s$, an execution path $E_p^\pi(a_0, s)$ 
-    is a set of actions $\{a_0, a_1, \dots, a_{n_1}\}$, where $a_1=\pi_{a_0}(s), a_2=\pi_{a_1}(s), \dots$,
-    and $\pi_{a_{n_1}}(s)$ is a primitive action.
+    is a set of actions $\{a_0, a_1, \dots, a_{n-1}\}$, where $a_1=\pi_{a_0}(s), a_2=\pi_{a_1}(s), \dots$,
+    and $\pi_{a_{n-1}}(s)$ is a primitive action.
 \end{definition}
 The execution path tells us the order of subtasks which will be invoked for state $s$.
 
@@ -282,6 +282,39 @@ The execution path tells us the order of subtasks which will be invoked for stat
 \end{definition}
 
 
+%TODO: not all s are defined in Q(i, s, a)
+%TODO: what if pi_c_bar may change for every step?
+%TODO: what if pi_c_bar is not deterministic
+%TODO: write down the Q learning algorithm and the model-based one
+%TODO: why Q^*(i, s, a) = Q^*(s, a) shows that hierarchical pi is the optimal policy
+%TODO: any rigorous property for leaf cover?
+%TODO: do I use all assumption for the theorem?
+%TODO: the relationship between HORDQ and my approach
+
+\begin{theorem}
+    If $\mathbb{C}(H)$ is a total leaf cover, we have $Q^*(i, s, a) = Q^*(s, a), \forall i \in \mathbb{C}(H)$
+\end{theorem}
+Proof: Let $\pi_{\bar{\mathbb{C}}}: \mathbb{C}(H) \times S \rightarrow \mathbb{C}(H)$ be the policy to invoke
+the next subtask $j = \pi_{\bar{\mathbb{C}}}(i, s)$ which belongs to $\mathbb{C}(H)$. It is determined
+by the policy of subtasks which do not belong to $\mathbb{C}(H)$. Follow Bellman's equation, we have:
+\begin{align}
+    Q^{\pi}(i, s, a) &= \sum_{s'} P^{\pi}(\pi_{\bar{\mathbb{C}}}(i, s'), s'|i, s, a) [R(s', s, a) + \gamma Q^{\pi}(\pi_{\bar{\mathbb{C}}}(i, s'), s', \pi_i(s'))]\\
+    &=\sum_{s'}P^{\pi}(\pi_{\bar{\mathbb{C}}}(i, s')| i, s, a, s') P(s' | i, s, a)  [R(s', s, a) + \gamma Q^{\pi}(\pi_{\bar{\mathbb{C}}}(i, s'), s', \pi_i(s'))]\\
+    &\mbox{since $\pi_{\bar{\mathbb{C}}}$ is a deterministic policy}\\
+    &=\sum_{s'} P(s' | s, a) [R(s', s, a) + \gamma Q^{\pi}(\pi_{\bar{\mathbb{C}}}(i, s'), s', \pi_i(s'))]
+    \label{eq:MaxIrr}
+\end{align}
+
+Compare to the Bellman equation of the flat MDP:
+\begin{equation}
+    Q^{\pi_f}(s, a) = \sum_{s'}P(s'|s, a)[R(s', s, a) + \gamma Q^{\pi_f}(s', \pi_f(s'))].
+    \label{eq:bellman}
+\end{equation}
+
+The equations \ref{eq:MaxIrr} and \ref{eq:bellman} are identical except for the Q values.
+Due to uniqueness of Bellman equation, if $\pi_i(s) = \pi_f(s), \forall s$, we will have $Q^{\pi_f}(s, a) = Q^{\pi_f}(i, s, a)$. 
+If $\pi_i(s) = \pi^*_f(s)$, $Q^*(s, a)$ is a solution and also an optimal solution (why?) of equation \ref{eq:MaxIrr}.
+Thus we have $Q^*(i, s, a) = Q^*(s, a)$. \textbf{QED.}
 
 %\begin{definition}
     %$\mathbb{C}(H) = \{N_1, N_2, \dots, N_k\}$ is a leaf cover of MaxQ hierarchy $H$ if 
@@ -295,12 +328,13 @@ The execution path tells us the order of subtasks which will be invoked for stat
     %where $\pi_p^*(s)$ is the flat optimal policy.
 %\end{definition}
 
-\begin{theorem}
-    If the corresponding subtask policy $\pi_i$ is optimal $\forall N_i \in \mathbb{C}(H)$,
-    the policy $\pi_j$ of the ancestor of $N_i$ is also optimal for all possible $\pi_j$.
-\end{theorem}
-Proof: $\forall N_j$: the ancestor of some node $\in \mathbb{C}(H)$, policy $\pi_j(s)$ would invoke some 
-node $N_i$ and execute its policy $\pi_i^{hg*}(s)$. Since the policy is optimal, $\pi_j^{hg*}(s)=\pi_p^*(s)$.
+
+%\begin{theorem}
+    %If the corresponding subtask policy $\pi_i$ is optimal $\forall N_i \in \mathbb{C}(H)$,
+    %the policy $\pi_j$ of the ancestor of $N_i$ is also optimal for all possible $\pi_j$.
+%\end{theorem}
+%Proof: $\forall N_j$: the ancestor of some node $\in \mathbb{C}(H)$, policy $\pi_j(s)$ would invoke some 
+%node $N_i$ and execute its policy $\pi_i^{hg*}(s)$. Since the policy is optimal, $\pi_j^{hg*}(s)=\pi_p^*(s)$.
 
 %\begin{center}
 %\begin{tabular}{@{}lp{6cm}@{}}
@@ -325,11 +359,11 @@ node $N_i$ and execute its policy $\pi_i^{hg*}(s)$. Since the policy is optimal,
 %\end{tabular}
 %\end{center}
 
-Note that Q function is:
-\begin{align}
-    Q^{\pi}(s, \pi(s)) &= Q^{\pi}(i, s, \pi(s)) + Q_E^{\pi}(i, s, \pi(s))\\
-    &= V^{\pi}(\pi(s), s) + C^{\pi}(i, s, \pi(s)) + Q_E^{\pi}(i, s, \pi(s))
-\end{align}
+%Note that Q function is:
+%\begin{align}
+    %Q^{\pi}(s, \pi(s)) &= Q^{\pi}(i, s, \pi(s)) + Q_E^{\pi}(i, s, \pi(s))\\
+    %&= V^{\pi}(\pi(s), s) + C^{\pi}(i, s, \pi(s)) + Q_E^{\pi}(i, s, \pi(s))
+%\end{align}
 
 %Andre and Russell then prove:
 %\begin{theorem}
@@ -359,7 +393,7 @@ such nodes. Since the optimal policy does not depend on any nodes not in $\mathb
 we can safely replace all such nodes by our approximated model-based nodes.
 
 For example, if we replace "MaxRoot" with approximated model-based nodes,
-the policy is still hierarchical optimal. 
+the policy is still optimal. 
 
 The problem of this hierarchical optimal approach is that policy $\pi_i$ of $i$-th
 node is determined by the expected cumulative reward, not by the expected pseudo reward as
@@ -368,7 +402,7 @@ pursue the goal state defined by the hierarchy, thus it makes the hierarchical
 design useless. 
 It is necessary to add some pseudo reward to encourage each subtask to pursue 
 the goal. Nevertheless, it should be done carefully, otherwise we will lose
-the hierarchical optimality.
+the optimality.
 
 Here we show a way to add the pseudo reward without violating the hierarchical 
 optimal constraint:
@@ -376,17 +410,30 @@ optimal constraint:
     Let $x$ be some terminal state of subtask $M_i$, $R(x)$ be the reward
     when the agent arrives state $x$, $\tilde{R}(x) = R(x) - r$ be the pseudo reward
     and $r$ be the penalty term.
-    If $P(x| s, \pi^*(s)) = 0$, we have $Q^*(s, \pi^*(s)) = \tilde{Q}^*(s, \tilde{\pi}(s))$.
+    If $P(x| s, \pi_i^*(s)) = 0$, we have $Q^*(i, s, \pi^*(s)) = \tilde{Q}^*(s, \tilde{\pi}(s))$.
 \end{theorem}
 
 The above theorem says that the optimal policy does not change 
 if some penalty is applied at some terminal states which are not part of the optimal path.
+
+
+%We need the penalty for the hierarchy to work. 
+%Since we do not usually know what the optimal policy is, we may add penalty term in 
+%wrong states and lose the optimality. But we do not always require 
+
 
 The idea of our work is to use the approximated model-based node to 
 compute the plan for the agent, and let the hierarchical optimal model-free node
 to execute the plan. If everything works as the plan, the agent would converge to the optimal
 policy in a short time. If not (following the plan is worse than the penalty term),
 the model-free node will take control and find the optimal policy on its own.
+
+The penalty term serves as a mechanism to enforce the subtask to follow the hierarchy.
+The subtask will strictly follow the subgoal defined by the hierarchy if the penalty term is large.
+On the other hand, if the penalty term is small, the subtask is more likely to go rouge and try to 
+solve the whole problem on its own. Here we have a engineering decision: if we trust our hierarchy design, 
+we should increase the penalty term to let the agent find the optimal policy as fast as it can; 
+if not, a low penalty term allows the agent to find the optimal policy when the hierarchy doesn't work.
 
 %show that the exact condition (the certain hierarchy) for the conjecture to work (iff)
 %Show that use decision tree to predict next state is bad (because the planning envelope is too big)

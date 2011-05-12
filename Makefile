@@ -32,6 +32,11 @@ $(NAME1).bbl: $(TEXSOURCE1) $(BIBINPUTS) $(PDFFIGURES)
 #$(NAME2).dvi: $(TEXSOURCE2) $(BBL2) $(BUILTEPSFIGURES)
 #$(NAME2).bbl: $(TEXSOURCE2) $(BIBINPUTS) $(BUILTEPSFIGURES) $(BUILTPDFFIGURES)
 
+final: 
+	$(RM) $(NAME1).dvi
+	$(PRODUCT1)
+$(NAME1).dvi: $(TEXSOURCE1) $(BBL1) $(EPSFIGURES)
+
 clean:
 	$(RM) $(NAME1).aux $(NAME1).dvi \
 	    $(NAME1).log $(NAME1).blg $(NAME1).bbl $(NAME1).out \
