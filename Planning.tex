@@ -282,7 +282,7 @@ The execution path tells us the order of subtasks which will be invoked for stat
 \end{definition}
 
 
-%TODO: not all s are defined in Q(i, s, a)
+%TODO: not all s are defined in Q(i, s, a) (focus on si instead of all i)
 %TODO: what if pi_c_bar may change for every step?
 %TODO: what if pi_c_bar is not deterministic
 %TODO: write down the Q learning algorithm and the model-based one
@@ -290,13 +290,15 @@ The execution path tells us the order of subtasks which will be invoked for stat
 %TODO: any rigorous property for leaf cover?
 %TODO: do I use all assumption for the theorem?
 %TODO: the relationship between HORDQ and my approach
+%TODO: provide the reason why we need to acceess all primitive action (because of the dumb and never learn planner)
+%TODO: show that I can convert any MDP problem to hierarchy one, thus we can always combine approximated model-based approach with HORDQ.
 
 \begin{theorem}
     If $\mathbb{C}(H)$ is a total leaf cover, we have $Q^*(i, s, a) = Q^*(s, a), \forall i \in \mathbb{C}(H)$
 \end{theorem}
 Proof: Let $\pi_{\bar{\mathbb{C}}}: \mathbb{C}(H) \times S \rightarrow \mathbb{C}(H)$ be the policy to invoke
 the next subtask $j = \pi_{\bar{\mathbb{C}}}(i, s)$ which belongs to $\mathbb{C}(H)$. It is determined
-by the policy of subtasks which do not belong to $\mathbb{C}(H)$. Follow Bellman's equation, we have:
+by the policy of subtasks which do not belong to $\mathbb{C}(H)$ and terminate predicate $T_i$. Follow Bellman's equation, we have:
 \begin{align}
     Q^{\pi}(i, s, a) &= \sum_{s'} P^{\pi}(\pi_{\bar{\mathbb{C}}}(i, s'), s'|i, s, a) [R(s', s, a) + \gamma Q^{\pi}(\pi_{\bar{\mathbb{C}}}(i, s'), s', \pi_i(s'))]\\
     &=\sum_{s'}P^{\pi}(\pi_{\bar{\mathbb{C}}}(i, s')| i, s, a, s') P(s' | i, s, a)  [R(s', s, a) + \gamma Q^{\pi}(\pi_{\bar{\mathbb{C}}}(i, s'), s', \pi_i(s'))]\\
