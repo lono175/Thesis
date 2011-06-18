@@ -1,6 +1,55 @@
 
 \chapter{Reinforcement Learning}
 \label{ch:RL}
+\section{Model Formulation}
+
+In this work, we address the finite state Markov decision process (MDP) problem:
+%\subsection{Model Formulation}
+\begin{definition} A Markov decision process is formalized as a tuple $<S, A, P, R>$, where $S$ is a finite set of states of the environment, $A$ is
+ a finite set of actions, the transition function $P:S \times A \times S \rightarrow [0, 1]$ defines a
+ probability distribution over the possible next states, and the reward function $R:S \times A \rightarrow \mathbb{R}$ defines
+ the reward after executing a certain action at a certain state.
+\end{definition}
+
+Given a state of the environment, a policy $\pi: S \times A$ dictates what action should be performed at that state. 
+The Q-function represents the expected cumulative reward after action $a$ is executed in state $s$ and 
+policy $\pi$ is followed thereafter.
+%The value function $V^{\pi}: S \rightarrow \mathbb{R}$ represents the expected cumulative reward when 
+%policy $\pi$ is followed from state $s$.
+
+The Q-function satisfies the Bellman equation:
+%\begin{equation}
+    %V^{\pi}(s) = \sum_{s'}P(s'|s, \pi(s))[R(s'|s, \pi(s)) + \gamma V^{\pi}(s')],
+    %\label{eq:V}
+%\end{equation}
+
+%Similarly, we define the action-value function (or Q function) as:
+\begin{equation}
+    Q^{\pi}(s, a) = \sum_{s'}P(s'|s, a)[R(s'|s, a) + \gamma Q^{\pi}(s', \pi(s'))],
+    \label{eq:Q}
+\end{equation}
+where $\gamma \in [0, 1]$ is the discount factor which discounts the future reward to the present value.
+
+%\begin{equation}
+    %Q^{\pi}(s, a) = \sum_{s', N}P(s', N|s, a)[R(s', N|s, a) + \gamma^N Q^{\pi}(s', \pi(s'))].
+    %\label{eq:SMDPQ}
+%\end{equation}
+%Now lets us extends action set $A$ to include composite actions.
+
+%The transition function $P$ and $R$ are modified to include the time to accomplish each composite action:
+%\begin{equation}
+    %R(s, a) = \sum^{\infty}_{k=0} \gamma^k r_k
+%\end{equation}
+
+%The value function needs to be modified as:
+%\begin{equation}
+    %V^{\pi}(s) = \sum_{s'}P(s'|s, \pi(s))[R(s, \pi(s), t) + \gamma^N V^{\pi}(s')],
+%\end{equation}
+%where $N$ is the number of steps for the action $\pi(s)$ to finish its execution.
+%A question arises since we do not know the actual time to finish executing each composite action.
+%Let's set $gamma=1$ from now on.
+%TODO: (how MaxQ solve it?).
+
 
 Given a reward function, reinforcement learning algorithms can
 search over possible action space and find a sequence of actions 

@@ -1,261 +1,23 @@
 \chapter{Planning}
 
-\begin{figure}[h]
-    \centering
-    \begin{minipage}[t]{0.6\linewidth}
-        \centering
-        \includegraphics[width=\textwidth] {./figures/monsterPlan.eps}
-    \end{minipage}
-    \caption{The shortest path from the agent's location to the food}
-    \label{fig:MonsterPlan}
-\end{figure}
-
-Take the eat-food-and-avoid-monster game in Fig. \ref{fig:MonsterPlan} as our motivating example. 
-The agent receives reward +20 when it gets the food and -30 when it is caught by a monster.
-%The top level planner finds a path to the location of food. 
-%The low level deals with primitive actions to go the destination specified by the top level planner.
-If the monsters do not move and the actions are deterministic
-, the objective of the agent is to find a shortest path from the current position to the food.
-However, the game is not a static one. The monsters may move around and try to catch the agent.
-So the agent needs to learn how to bypass the monster and keep on its precomputed path to the food.
-It suggests a hierarchical strategy: the top level planner computes a path to the food and
-the low level planner deals with the monster.
-
-In this work, we adopt the hierarchical reinforcement learning (HRL) framework.
-Most of previous work of HRL focuses either on the pure model-based or model-free approach.
-Model-based approaches make effective use of samples, thus it may converge to optimal
-policy with small number of samples. On the other hand, model-free approaches are more 
-successful to the large scale problems due to the efficient approximation techniques.
-We combine the two different approaches within the HRL framework and try to get the best out 
-of it--the ability to achieve good performance with small number of samples when applied
-to large and complex problems.
-
-%The goal state is the location of the food,
-%the cost to move to the adjacent location is $1$, if there is a monster in the adjacent location, the cost 
-%to move to it is $\infty$. The agent only needs to compute the lowest cost path from its current position to the goal,
-%and choose the action which can keep it on this precomputed path.
-Let us begin by the formulation of Markov decision process.
-
-%TODO: Add normal Definition here
-\begin{definition} Markov decision process is formalized as a tuple $<S, A, P, R>$, where
-\begin{itemize}{}
-\item $S$ is a finite set of states of the environment.
-\item $A$ is a finite of actions.
-\item The transition function $P:S \times A \times S \rightarrow [0, 1]$ defines a probability distribution over the possible next states. 
-\item The reward function $R:S \times A \rightarrow \mathbb{R}$ defines the reward after executing a certain action at a certain state.
-\end{itemize}
-\end{definition}
-
-Given a state of the environment, a policy $\pi: S \times A$ tells what action should be performed. 
-The value function $V^{\pi}: S \times \mathbb{R}$ is the expected cumulative reward when executing
-policy $\pi$ from state $s$.
-
-The value function satisfies the Bellman equation:
-\begin{equation}
-    V^{\pi}(s) = \sum_{s'}P(s'|s, \pi(s))[R(s, \pi(s)) + \gamma V^{\pi}(s')],
-    \label{eq:V}
-\end{equation}
-where $\gamma \in [0, 1]$ is the discount factor which discounts the future reward to the present value.
-
-Similarly, we define the action-value function (or Q function) as:
-\begin{equation}
-    Q^{\pi}(s, a) = \sum_{s'}P(s'|s, a)[R(s, a) + \gamma Q^{\pi}(s', \pi(s'))].
-    \label{eq:Q}
-\end{equation}
-The Q function is the expected cumulative reward after executing action $a$ at state $s$ and following
-$\pi$ thereafter.
-
-Now lets us extends action set $A$ to include composite actions.
-
-%We also need to explicit model the time limit for a composite action to execute, since it
-%is possible for a composite action to have unachievable terminal state (why?). We do not want 
-%to wait for the composite action to infinity.
-
-The transition function $P$ and $R$ are modified to include the time to accomplish each composite action:
-\begin{equation}
-    P(s'|s, a) = \sum^{\infty}_{k=1} \gamma^k Pr(k, s'|s, a),
-    \label{eq:multiProb}
-\end{equation}
-\begin{equation}
-    R(s, a) = \sum^{\infty}_{k=0} \gamma^k r_k
-\end{equation}
-
-%The value function needs to be modified as:
-%\begin{equation}
-    %V^{\pi}(s) = \sum_{s'}P(s'|s, \pi(s))[R(s, \pi(s), t) + \gamma^N V^{\pi}(s')],
-%\end{equation}
-%where $N$ is the number of steps for the action $\pi(s)$ to finish its execution.
-%A question arises since we do not know the actual time to finish executing each composite action.
-%Let's set $gamma=1$ from now on.
-%TODO: (how MaxQ solve it?).
-
-
-\section{Hierarchical Reinforcement Learning}
-
-In this work, we follow the MaxQ hierarchy defined in \cite{MaxQ}:
+In this work, we follow the same hierarchical formulation as in MAXQ \cite{MaxQJ}:
 \begin{definition}
     Given a MDP $M$, the hierarchical reinforcement learning decomposes $M$ into a finite
-    set of subtasks $M = {M_0, M_1, \dots, M_n}$, where $M_0$ is the root subtask. 
-    Each subtask is defined by 3 tuples $<T_i, A_i, \tilde{R}_i>$. 
-    \begin{itemize}{}
-    \item $T_i$ is a termination predicate. It partitions state space $S$ into active states $S_i$ and
-                terminal states $T_i$. If subtask $M_i$ enters any terminal states, it terminates immediately
-                and the control to the parent subtask. 
-    \item $A_i$ is a set actions which are available to subtask $M_i$. An action can be either primitive or composite.
-                If it is composite, it pass execution to the corresponding subtask. No recursive calls 
+    set of subtasks $M' = \{M_0, M_1, \dots, M_n\}$, where $M_0$ is the root subtask. 
+    Each subtask is defined by 3 tuples $<U_i, A_i, \tilde{R}_i>$. 
+    $U_i$ is a termination predicate. It partitions the state space $S$ into active states $S_i$ and
+                terminal states $T_i$. If subtask $M_i$ enters any terminal state, it terminates immediately
+                and returns control to the parent subtask. 
+    $A_i$ is a set of actions which are accessible to subtask $M_i$. An action can be either primitive or composite.
+                If it is composite, it simply invokes the corresponding subtask. No recursive calls 
                 are allowed in the hierarchy.
-    \item $\tilde{R}_i$ is the pseudo reward function 
-    \end{itemize}
+    $\tilde{R}_i(s'|s, a)$ is the pseudo reward function. 
 \end{definition}
-A hierarchical policy $\pi = \{\pi_1, \pi_2, \dots, \pi_n\}$ is a set which contains all subtask policies. 
-The subtask policy $\pi: S_i \rightarrow A_i$ maps an active state to one of the actions to execute.
+A hierarchical policy $\pi = \{\pi_0, \pi_1, \dots, \pi_n\}$ is a set which contains all subtask policies. 
+The subtask policy $\pi_i: S_i \rightarrow A_i$ maps an active state to an action to execute.
 
-Fig. \ref{fig:Maze} shows a simple maze problem introduced by Dietterich \cite{MaxQJ}.
-The agent has 4 primitive actions: North, South, East, West, and two composite actions: GotoExit and GotoGoal.
-The 
-GotoExit terminates when the agent exits the left room. GotoGoal terminates when the agent achieves to the goal.
-Each primitive leads to -1 reward to the agent.
-
-\begin{figure}[h]
-    \centering
-    \begin{minipage}[t]{0.4\linewidth}
-        \centering
-        \includegraphics[width=\textwidth] {./figures/Maze.eps}
-    \end{minipage}
-    \caption{A simple maze problem. The direction of arrow indicates the optimal policy. Figure from \cite{MaxQJ}.}
-    \label{fig:Maze}
-\end{figure}
-\begin{figure}[h]
-    \centering
-    \begin{minipage}[t]{0.8\linewidth}
-        \centering
-        \includegraphics[width=\textwidth] {./figures/MazeH.eps}
-    \end{minipage}
-    \caption{The hierarchy of maze in Fig. \ref{fig:Maze}. The max nodes are the triangles, and Q nodes are the rectangles. }
-    \label{fig:MazeH}
-\end{figure}
-The hierarchy is shown in Fig. \ref{fig:MazeH}.
-"MaxRoot" node corresponds to the root subtask. "MaxGotoExit" corresponds to GotoExit subtask,
-and "MaxExit" corresponds to GotoGoal subtask.
-
-In Dietterich's work, all Max nodes are model-free. 
-So let us proceed by changing "MaxRoot" node to the model-based one, and let "MaxExit"and "MaxGoal"
-to be the regular model-free Max node.
-The task for the $i$-th model-based Max node is to compute:
-\begin{equation}
-    Q^{\pi}(i, s, a) = V^{\pi}(a, s) + C^{\pi}(i, s, a),
-\end{equation}
-where the completion function $C^{\pi}(i, s, a)$ is the expected cumulative reward after
-we complete (composite) action $a$ at state $s$ and before the termination of $i$-th Max node.
-$V^{\pi}(a, s)$ is the 
-expected cumulative reward when we execute action $a$ at state $s$.
-The value $Q^{\pi}(i, s, a)$ is stored in the corresponding Q node.
-For example, $Q^{\pi}(MaxRoot, s, GotoExit)$ is stored in "QExit" node.
-
-The node queries its children node to get the value of $V^{\pi}(a, s)$.
-It can be computed by:
-\begin{equation}
-    V^{\pi}(i, s) = \left\{\begin{array}{ll}
-                    Q^{\pi}(i, s, \pi_i(s)) & \mbox{if i is composite} \\
-                    \sigma_{s'} P(s'|s, i)R(s'|s, i) & \mbox{if $x>y$} \\  
-                    \end{array} \right.
-    \label{eq:V}
-\end{equation}
-In our example, to compute $Q^{\pi}(MaxRoot, s, GotoExit)$, "MaxRoot" node would query 
-"MaxExit" node to get $V^{\pi}(GotoExit, s)$.
-
-The $C^{\pi}(i, s, a)$ can be computed by the model:
-\begin{equation}
-    C^{\pi}(i, s, a) = \sum_{s', N}P(s', N|s, \pi(s))\gamma^N[Q^{\pi}(i, s', \pi(s'))].
-    \label{eq:C}
-\end{equation}
-
-Note that $P(s'|s, \pi(s))$ and $V^{\pi}(a, s)$ are provided by the child Max nodes.
-
-For model-based child Max nodes, $P(s'|s, \pi(s))$ can be computed by equation \ref{eq:multiProb}.
-
-For primitive Max nodes, it can be estimated by:
-\begin{equation}
-    \tilde{P}(s'|s, a)  = \frac{n(s', s, a)}{n(s, a)},
-    \label{eq:countP}
-\end{equation}
-where $n(s, a)$ is the number of times primitive action $a$ executed 
-at state $s$. $n(s', s, a)$ is the number of times primitive action $a$
-transitioned the agent from state $s$ to $s'$.
-
-For model-free Max nodes, it can be estimated by \cite{option}:
-\begin{equation}
-    \tilde{P}(x|s, a) = (1-\alpha)\tilde{P}(x|s, a) + \alpha [ \gamma^N \delta_{s'x}],
-    \label{eq:approxP}
-\end{equation}
-where $s'$ is the observed state after composite action $a$ is executed at state $s$.
-$k$ is the number of steps for action $a$ to finish. 
-$x$ is the terminal state for the model-free Max node. $\delta_{s'x}=1$ if observed state $s'$
-is terminal state $x$ and 0 otherwise.
-$\alpha$ is the step-size parameter.
-The update of equation \ref{eq:approxP} is conducted after action $a$ terminates at some terminal state,
-so we know the exact value of $k$. Note that all of terminal states of the Max node shall be updated after 
-action $a$ finished.
-
-We can also use equation \ref{eq:countP} to estimate $\tilde{P}(x|s, a)$, but the policy of the Max node
-might change, so equation \ref{eq:approxP} is a better choice.
-
-\section{State Abstraction for model-based Max nodes}
-The idea behind model-based approach is to use the sample data to build the model of the environment
-and conduct the planning from the model.
-The advantage of model-based approaches is that they make more efficient use of the sample data, thus 
-it take fewer time to train a model-based RL agent.
-
-The disadvantage is that it needs to compute Q value of all state-action pairs in the current 
-planning envelope by Bellman equation (equ. \ref{eq:Q}) until convergence.
-Since the number of state-action pairs grows exponentially with the number of features,
-it quickly becomes computationally intractable for both time and memory.
-For a problem with 9 binary features, the number of states can be $O(2^9)$ and the
-number of state-action pairs $(s, a, s')$ can be as large as $2^(9+1+9)=2^19$, which cannot be fit into the
-memory of modern computers.
-
-To apply model-based reinforcement learning to large scale problems, 
-we need to use some state abstraction technique to reduce the size of planning envelope.
-
-We begin by constructing a projection function $proj(s)$ (it always exists, why?),
-which projects state $s$ to an action-invariant space.
-That is:
-\begin{equation}
-    \forall P(s'|s, a) > 0, proj(s') = proj(s)
-\end{equation}
-It means that the projected state does not change after the execution of 
-any actions.
-We also needs its dual function $\bar{proj}(s)$ to reconstruct 
-the original state $s = \phi(proj(s), \bar{proj}(s))$.
-
-Now we can model $P(s'|s, a)$ by:
-\begin{equation}
-    P(s'|s, a) = P(\bar{proj}(s')| \bar{proj}(s), proj(s), a)
-\end{equation}
-
-Note that we need to query $P(s'|s, a)$ from the child nodes with original representation.
-Thus, $\phi(ps, \bar{ps})$ is adopted to compute the original $s'$.  
-
-Although the state abstraction technique above provides us compact state representation, 
-it doesn't change the size of the planning envelope. Thus we do not gain any computational
-advantage by applying such an abstraction technique.
-
-A key observation of this work is to adopt the approximated projection function which
-does not project state $s$ to an action-invariant space.
-The size of planning envelope grows exponentially with the number of features.
-By assuming 
-some features do not change during the execution of actions, we do gain computational advantage by
-significantly reducing the size of the planning envelope. 
-We lose the optimally with this approximation technique, but it is necessary because we want 
-to apply our work beyond toy applications.
-Our approach doesn't imply that
-some features are completely ignored. The agent still computes the plan according to 
-the full state information, but the transition model is simplified to only include the 
-relevant information.
-
-\section{Optimality with Biased Model}
-The primary contribution of this work is to show that by combining model-based and 
-model-free approaches, we can still achieve optimality even when the model is biased.
+%\subsection{MAXQ}
+%\subsection{HORDQ}
 %Andre and Russell \cite{OptimalQ} extends MaxQ framework to be hierarchical optimal.
 %They defined $Q_E(i, s, \pi(s))$ as:
 %\begin{equation}
@@ -265,22 +27,239 @@ model-free approaches, we can still achieve optimality even when the model is bi
 %$Q_E^{\pi}(i, s, \pi(s))$ is the expected cumulative reward after $i$-th node follows 
 %policy $\pi$ at state $s$ and terminates at some point.
 
+%In theorem ?, we show that if we modify the hierarchy and let some subtasks to have access all primitive actions, 
+%the hierarchical optimal policy is equal to the optimal policy.
+
+\section{Recursive Optimality and Hierarchical Optimality}
+\begin{figure}[t]
+\begin{center}
+    \includegraphics[width=4in] {./figures/Maze.eps}
+\end{center}
+\caption{The task hierarchy of the taxi domain \cite{MaxQJ}.}
+\label{fig:taxi}
+\end{figure}
+\begin{figure}[t]
+\begin{center}
+    \includegraphics[width=4in] {./figures/MazeH.eps}
+\end{center}
+\caption{The task hierarchy of the taxi domain \cite{MaxQJ}.}
+\label{fig:taxi}
+\end{figure}
+
+There are three definitions of optimality of hierarchical reinforcement learning:
+
 \begin{definition}
-    Give a hierarchical policy $\pi$ and state $s$, an execution path $E_p^\pi(a_0, s)$ 
-    is a set of actions $\{a_0, a_1, \dots, a_{n-1}\}$, where $a_1=\pi_{a_0}(s), a_2=\pi_{a_1}(s), \dots$,
-    and $\pi_{a_{n-1}}(s)$ is a primitive action.
+    \textbf{Optimality:} An optimal policy $\pi^*$ for MDP $M$ is a policy that achieves the highest cumulative reward
+    among all policies for the MDP.
 \end{definition}
-The execution path tells us the order of subtasks which will be invoked for state $s$.
-
-
 \begin{definition}
-    $\mathbb{C}(H) = \{N_1, N_2, \dots, N_k\}$ is a leaf cover of hierarchy $H$ if 
-    there exists a composite action $a \in E_p^{\pi}(0, s)$, which belongs to $\mathbb{C}(H)$ for every
-    state $s$ and every hierarchical policy $\pi$.
-    Furthermore, $\mathbb{C}(H)$ is a total leaf cover if all primitive actions are available for every 
-    subtasks $N_i \in \mathbb{C}(H)$.
+    \textbf{Hierarchical Optimality:} Given $Pi_H$, which is the set of all policies consistent with hierarchy $H$, 
+    then a hierarchical optimal policy for MDP $M$ is a policy $\pi^* \in Pi_H$ that achieves the highest cumulative reward
+    among all policies $\pi \in Pi_H$.
+\end{definition}
+\begin{definition}
+    \textbf{Recursive Optimality:} A recursive optimal policy for MDP $M$ with hierarchical 
+    decomposition $M' = \{M_0, M_1, \dots, M_n\}$ is a policy $\pi = \{\pi_0, \pi_1, \dots, \pi_n\}$ such
+    that each policy $\pi_i$ achieves the highest cumulative pseudo-reward for the corresponding subtask $M_i$,
+    assuming fixed policies for its action $A_i$, 
 \end{definition}
 
+
+%Recursive and hierarchical optimality are two impor-
+%tant forms of optimality in hierarchical reinforcement
+%learning. Recursive optimality only guarantees that
+%the policy of each subtask is optimal given the policies
+%of its children. It is an important form of optimality
+%because it permits each subtask to learn a locally opti-
+%mal policy while ignoring the behavior of its ancestors
+%in the hierarchy. This increases the opportunities for
+%subtask sharing and state abstraction. The original
+%MAXQ HRL algorithm (Dietterich, 2000) converges
+%to a recursively optimal policy. On the other hand,
+%hierarchical optimality is a stronger form of optimal-
+%ity since it is a global optimum consistent with the
+%given hierarchy. In this form of optimality, the policy
+%for each individual subtask is not necessarily optimal,
+%but the policy for the entire hierarchy is optimal. The
+%HAMQ HRL algorithm (Parr, 1998) and the SMDP
+%learning algorithm for a xed set of options (Sutton
+%et al., 1999) both converge to a hierarchically optimal
+%policy.
+%The following example from (Dietterich, 2000) demon-
+%strates the dierence between recursively and hierar-
+%chically optimal policies. Consider the simple maze
+%problem in gure 1. Suppose a robot starts somewhere
+%in the left room and it must reach the goal G in the
+%right room. In addition to three primitive actions,
+%North, South and East, the robot has a high level task
+%Exit Room in the left room and a high level task Go to
+%Goal in the right room. Exit Room terminates when
+%the robot exits the left room and Go to Goal termi-
+%nates when the robot reaches the goal G. The arrows
+%in gure 1(a) show the locally optimal policy within
+%each room. The arrows in the left room seek to exit
+%the room by the shortest path. The arrows in the right
+%room follow the shortest path to the goal. However,
+%the resulting policy is not hierarchically optimal. Fig-
+%ure 1(b) shows the hierarchically optimal policy that
+%would always exit the left room by the upper door.
+%This policy would not be locally optimal because the
+%states in the shaded region would not follow the short-
+%est path to the doorway.
+
+%TODO: which approach is HO and which is RO
+%TODO: MAXQ
+%TODO: the problem of RO
+%TODO: HORDQ which approach is HO and we choose HORDQ
+%TODO: the problem of HO
+\section{Optimal Planning with Task Hierarchy}
+\begin{figure}[t]
+\begin{center}
+    \includegraphics[width=4in] {./figures/TaxiHierarchy.eps}
+\end{center}
+\caption{The task hierarchy of the taxi domain \cite{MaxQJ}.}
+\label{fig:taxi}
+\end{figure}
+
+%The primary contribution of this work is to show that by combining model-based and 
+%model-free approaches, we can still achieve optimality even when the model is biased.
+
+We illustrate our idea with the task hierarchy (Fig. \ref{fig:taxi}) of the taxi domain introduced by Dietterich \cite{MaxQJ}.
+The taxi problem is an episodic task. For each episode, the taxi starts
+at a random location. To finish the task, the taxi needs to go to the passenger's location, pick up the passenger,
+go to the destination, and put down the passenger. The task can be further decomposed two subtasks: $Get$ and $Put$. 
+The goal of subtask $Get$ is to move the taxi to the passenger's location and pick up the passenger. The goal of 
+subtask $Put$ is to put down the passenger at the destination.
+
+Assume the policy of subtask $Root$ is suboptimal and always invokes $Get$ even when 
+the passenger is already in the taxi. Optimality can be guaranteed if subtask $Get$
+learns to deliver the passenger to his destination.
+Or suppose the policy of $Root$ always chooses $Put$.
+If subtask $Put$ learns to pickup the passenger when he is not in the taxi, 
+we will have the optimal policy because it does not matter which decision is made 
+by $Root$, the passenger can always be picked up and delivered to the destination.
+
+The above example provides two observations.
+First, in order to guarantee optimality, subtasks $Get$ and $Put$ need 
+to act optimally in regards to the goal of whole problem, not 
+the subgoal of each subtask. It implies that we need to seek hierarchical optimality
+rather than recursive optimality.
+
+Second, optimality cannot be guaranteed without modification of the hierarchy. In the original hierarchy, 
+subtask $Get$ has no access to action $Putdown$. Even though subtask $Get$ delivers the passenger to the destination,
+it cannot put him down. We need to modify the hierarchy to let subtask $Get$ be
+able to solve the problem on its own. A way to achieve that is to let subtask $Get$ have access
+to action $Putdown$. 
+
+%We can only guarantee optimality by adopting HORDQ for certain positions
+%in the hierarchy. The "positions" are defined by the following definition:
+
+We define which subtasks in a given hierarchy shall act optimally with the following definition:
+\begin{definition}
+    $C(H) = \{M_{j_1}, M_{j_2}, \dots, M_{j_k}\}$ is a leaf cover of hierarchy $H$ 
+    if there is no subtask $M_i \notin C(H)$ which has access to a primitive action.
+    Furthermore, $TC(H)$ is a total leaf cover if it is a leaf cover and all primitive
+    actions are directly or indirectly (through child subtasks) accessible for every 
+    subtask $M_i \in TC(H)$.
+\end{definition}
+
+%A leaf cover contains the subtasks which are able to solve the problem on their own.
+We can always find a leaf cover for a hierarchy by including all subtasks which have access
+to primitive actions. The total leaf cover can be constructed from the leaf cover by
+adding the missing primitive actions.
+Consider the task hierarchy in taxi domain in Figure \ref{fig:taxi},
+if we add action $Pickup$ and $Putdown$ to subtask $Navigate$, 
+we get a total leaf cover which consists of subtasks $Get$, $Put$, and $Navigate$.
+%Another way is to let Navigate, Get and Put subtasks
+%have access to all six primitive actions and include these subtasks in the total leaf cover. 
+
+This conversion increases the exploration space because each subtask needs to explore more actions. It may increase 
+the time to learn the optimal policy. However, as we show in our experiment, a good approximate model can effectively increase
+the learning rate, so the time to learn the optimal policy might still decrease overall.
+
+%There 
+%It is worth noting that we can get the same optimality guarantee with any 
+%hierarchical optimal learning algorithms such as HAMQ\cite{HAMQ} or tracked decomposed Q-learning\cite{HORDQ}. However, HORDQ can be easily integrated with 
+%the existing MAXQ hierarchy, while the decomposed representation of Q-function is preserved.
+
+Andre and Russell \cite{OptimalQ}\cite{HORDQ} introduced hierarchical optimal recursive decomposed Bellman equations
+which extend the decomposition of MAXQ in a way that hierarchical optimality
+can be guaranteed.
+
+The Q-value is decomposed as:
+\begin{align}
+    \label{eq:HordQ}
+    Q^{\pi}(i, s, a) = E[\sum_{t=0}^{\infty}\gamma^t r_t] &= E[\sum_{t=0}^{N_1 - 1}\gamma^t r_t] + E[\sum_{t=N_1}^{N_2 - 1}\gamma^t r_t] + E[\sum_{t=N_2}^{\infty}\gamma^t r_t]\\
+                    &= Q_r^{\pi}(i, s, a) + Q_c^{\pi}(i, s, a) + Q_e^{\pi}(i, s, a),
+\end{align}
+where $r_t$ is the random variable of the reward that the agent receives at step $t$, $N_1$ is the number of primitive actions to finish action $a$, 
+and $N_2$ is the number of primitive actions 
+to finish subtask $M_i$. $ Q_r^{\pi}$ is the expected cumulative reward for executing action $a$.
+$Q_c^{\pi}$ is the expected cumulative reward when subtask $M_i$ finishes after the execution of action $a$. 
+$Q_e^{\pi}$ is the expected cumulative reward when the episode ends after the execution of subtask $M_i$ .
+
+%TODO: $Q_r$ 
+
+%Our objective is to prove that we can learn the optimal policy if we use HORDQ \cite{HORDQ} on the subtasks which 
+%belong to a total leaf cover.
+
+%The node queries its children node to get the value of $V^{\pi}(a, s)$.
+$Q_r^{\pi}$ can be computed as:
+\begin{equation}
+    Q_r^{\pi}(i, s, a) = 
+    \left\{\begin{array}{ll}
+        Q_r^{\pi}(a, s, \pi_a(s)) + Q_c^{\pi}(a, s, \pi_a(s))& \mbox{if $a$ is composite} \\
+        \Sigma_{s'} P(s'|s, a)R(s'|s, a) & \mbox{if $a$ is primitive} \\  
+    \end{array} \right.
+    \label{eq:Qr}
+\end{equation}
+%In our example, to compute $Q^{\pi}(MaxRoot, s, GotoExit)$, "MaxRoot" node would query 
+%"MaxExit" node to get $V^{\pi}(GotoExit, s)$.
+
+$Q_c^{\pi}$ can be computed as:
+\begin{equation}
+    Q_c^{\pi}(i, s, a) = \sum_{s', N} P_{S_i}^{\pi}(i, s', N|s, a)\gamma^N[Q_r^{\pi}(i, s', \pi_i(s')) + Q_c^{\pi}(i, s', \pi(s'))],
+    \label{eq:Qc}
+\end{equation}
+where $P_{S_i}^{\pi}(i, s', N|s, a)$ is the probability that $s'$ is the first state in $S_i$ which
+is encountered after the execution of action $a$ which takes exactly $N$ steps to finish. 
+
+%Note that $P(s'|s, \pi(s))$ and $V^{\pi}(a, s)$ are provided by the child Max nodes.
+And $Q_e^{\pi}$:
+\begin{equation}
+    Q_e^{\pi}(i, s, a) = \sum_{s', N} P_{T_i}^{\pi}(k, s', N|s, a)\gamma^N[Q^{\pi}(k, s', \pi_k(s'))],
+    \label{eq:Qe}
+\end{equation}
+where $k$ is the index of parent subtask which invoked subtask $M_i$.
+
+To guarantee the optimality, we cannot use the Q-value of parent subtask $M_k$ to update $Q_e^{\pi}$ of subtask $M_i$ because the 
+Q-value might not be correct due to the biased model.  Instead, 
+we update $Q_e^{\pi}$ with the Q-value of next subtask in $TC(H)$.
+Hence, we modify equation \ref{eq:Qe} as:
+
+\begin{equation}
+    Q_e^{\pi}(i, s, a) = \sum_{s', N} P_{T_i}(i', s', N|s, a)\gamma^N[Q^{\pi}(i', s', \pi_{i'}(s')],
+    \label{eq:OptQe}
+\end{equation}
+where $i'$ is the next subtask in $TC(H)$ that will be invoked, $P_{T_i}^{\pi}(i', s', N|s, a)$ is the probability that $s'$ is the first state in $T_i$ which
+is encountered after the execution of action $a$ which takes exactly $N$ steps to finish. 
+Note that the property of leaf cover ensures that we can always find such subtask $M_{i'}$ before any primitive
+action is executed. %TODO: (why?).
+
+\begin{theorem}
+    Let $C(H)$ be a leaf cover of hierarchy $H$, if $Q^{\pi} = Q_r^{\pi} + Q_c^{\pi} + Q_e^{\pi}$ and
+    $Q_r^{\pi}$, $Q_c^{\pi}$,and $Q_e^{\pi}$ follow equations (\ref{eq:Qr}-\ref{eq:Qc}) and (\ref{eq:OptQe}), we have $Q^{\pi}$ satisfies:
+    \begin{equation*}
+    Q^{\pi}(i, s, a) = 
+    \left\{\begin{array}{ll}
+        \sum_{s'}P(s'|s, a)[R(s'|s, a) + \gamma Q^{\pi}(i', s', \pi_{i'}(s'))], &\mbox{if $a$: primitive} \\
+        Q^{\pi}(a, s', \pi_{a}(s')), &\mbox{if $a$:composite}
+    \end{array} \right.
+    \end{equation*}
+    \label{thm:Bell}
+\end{theorem}
+Although we changed the formula for $Q_e^{\pi}$, the argument of Theorem 10 in \cite{HORDQ} still holds.
+We do not repeat the proof here. 
 
 %TODO: not all s are defined in Q(i, s, a) (focus on si instead of all i)
 %TODO: what if pi_c_bar may change for every step?
@@ -293,130 +272,163 @@ The execution path tells us the order of subtasks which will be invoked for stat
 %TODO: provide the reason why we need to acceess all primitive action (because of the dumb and never learn planner)
 %TODO: show that I can convert any MDP problem to hierarchy one, thus we can always combine approximated model-based approach with HORDQ.
 
-\begin{theorem}
-    If $\mathbb{C}(H)$ is a total leaf cover, we have $Q^*(i, s, a) = Q^*(s, a), \forall i \in \mathbb{C}(H)$
-\end{theorem}
-Proof: Let $\pi_{\bar{\mathbb{C}}}: \mathbb{C}(H) \times S \rightarrow \mathbb{C}(H)$ be the policy to invoke
-the next subtask $j = \pi_{\bar{\mathbb{C}}}(i, s)$ which belongs to $\mathbb{C}(H)$. It is determined
-by the policy of subtasks which do not belong to $\mathbb{C}(H)$ and terminate predicate $T_i$. Follow Bellman's equation, we have:
-\begin{align}
-    Q^{\pi}(i, s, a) &= \sum_{s'} P^{\pi}(\pi_{\bar{\mathbb{C}}}(i, s'), s'|i, s, a) [R(s', s, a) + \gamma Q^{\pi}(\pi_{\bar{\mathbb{C}}}(i, s'), s', \pi_i(s'))]\\
-    &=\sum_{s'}P^{\pi}(\pi_{\bar{\mathbb{C}}}(i, s')| i, s, a, s') P(s' | i, s, a)  [R(s', s, a) + \gamma Q^{\pi}(\pi_{\bar{\mathbb{C}}}(i, s'), s', \pi_i(s'))]\\
-    &\mbox{since $\pi_{\bar{\mathbb{C}}}$ is a deterministic policy}\\
-    &=\sum_{s'} P(s' | s, a) [R(s', s, a) + \gamma Q^{\pi}(\pi_{\bar{\mathbb{C}}}(i, s'), s', \pi_i(s'))]
-    \label{eq:MaxIrr}
-\end{align}
 
-Compare to the Bellman equation of the flat MDP:
+With Theorem \ref{thm:Bell}, we can prove that the optimal policy can be learned if there exists a 
+total leaf cover for the hierarchy:
+\begin{theorem}
+    %$\forall \pi_{N}: A_{TC} \times S \rightarrow A_{TC}$,   
+    %TODO: state that the proof does not require
+    Given an MDP $M$ and a hierarchy $H$ that decomposes $M$ into a finite set of subtasks $M' = \{M_0, M_1, \dots, M_n\}$,
+    let $A_p$ denote the set of primitive actions for $M$, $Q^*(i, s, a)$ be the optimal Q-function for subtask $M_i$, and
+    $Q^*(s, a)$ be the optimal Q-function for $M$. If $TC(H)$ is a total leaf cover of $H$,
+    we have $Q^*(i, s, a) = Q^*(s, a), \forall s \in S_i, a \in A_p, M_i \in TC(H)$
+    \label{thm:opt}
+\end{theorem}
+\textbf{Proof:} 
+    Let $\pi_f: S \rightarrow A_p$ be a policy for $M$. We can construct a hierarchical policy $\pi$, such that
+    $\pi_i(s) = \pi_f(s) = a$, if $a \in A_p$, $\forall M_i \in TC(H)$ (if $a$ is not directly accessible by $M_i$, we can
+    let $\pi_i(s)$ be one of its composite actions).
+    From Theorem \ref{thm:Bell}, we know: 
+    \begin{equation}
+        Q^{\pi}(i, s, a) = \sum_{s'}P(s'|s, a)[R(s'|s, a) + \gamma Q^{\pi}(i', s', \pi_{i'}(s'))].
+    \end{equation}
+    If $a_2= \pi_{i'}(s')$ is a composite action, we have $Q^{\pi}(i', s', a_2) = Q^{\pi}(a_2, s', \pi_{a_2}(s'))$. 
+    We can keep applying the substitution until $\pi_{a_k}(s') \in A_p$, for some $k$. Since there are no
+    indirect or direct recursive calls allowed in the hierarchy, the substitution can be done in finite 
+    steps. Now we have:
+    \begin{equation}
+        Q^{\pi}(i, s, a) = \sum_{s'}P(s'|s, a)[R(s'|s, a) + \gamma Q^{\pi}(a_k, s', \pi_{a_k}(s'))].
+        \label{eq:MaxIrr}
+    \end{equation}
+    Note that $a_k \in TC(H)$ because all subtasks which have direct access to primitive actions belong to $TC(H)$.
+    By the construction of $\pi$, we have $\pi_{a_k}(s') = \pi_f(s')$.
+    
+    Compare (\ref{eq:MaxIrr}) to the Bellman equation of the flat MDP:
+    \begin{equation}
+        Q^{\pi_f}(s, a) = \sum_{s'}P(s'|s, a)[R(s'| s, a) + \gamma Q^{\pi_f}(s', \pi_f(s'))].
+        \label{eq:bellman}
+    \end{equation}
+
+    Equations (\ref{eq:MaxIrr}) and (\ref{eq:bellman}) are identical except for the Q values.
+    Due to the uniqueness of the Bellman equation, we have $Q^{\pi_f}(s, a) = Q^{\pi}(i, s, a), \forall s \in S_i, a \in A_p, i \in TC(H)$. 
+    If $\pi_f(s) = \pi^*_f(s)$, $Q^*(s, a)$ is a solution to equation (\ref{eq:MaxIrr}). So we have $Q^*(i, s, a) \geq Q^*(s, a)$.
+    Since a hierarchical policy cannot be better than an optimal policy, we have $Q^*(s, a) \geq Q^*(i, s, a)$.
+    Thus we have $Q^*(i, s, a) = Q^*(s, a)$. \textbf{Q.E.D.}
+
+Note that the above proof does not pose any constraints on the policy of subtasks $M_i \notin TC(H)$. 
+If we adopt any learning algorithms for such subtasks, we still have the same optimality guarantee. 
+We can compute the optimal policy using either policy iteration or value iteration algorithms. The arguments of
+Theorem 11 and 13 of \cite{HORDQ} hold in our case. We do not repeat the arguments here.
+ 
+%Because we do not usually have the complete knowledge of reward function and transition function,
+%it is more desirable if we can estimate the $Q$ value in an online fashion.
+The previous equations assume we have complete knowledge about the problem and can compute
+the Q-value with dynamic programming. If not, we can estimate the Q-value with
+the hierarchically optimal recursive Q-learning (HORDQ) \footnote{Also called ALispQ-learning in \cite{OptimalQ}} \cite{HORDQ} 
+update rules:
+%use temporal difference learning instead:
+%TODO: the discount term compared the Bellman 
+%TODO: the value iteration here!!!
+
 \begin{equation}
-    Q^{\pi_f}(s, a) = \sum_{s'}P(s'|s, a)[R(s', s, a) + \gamma Q^{\pi_f}(s', \pi_f(s'))].
-    \label{eq:bellman}
+    Q_r^{t+1}(i, s, a) =
+    %\left\{\begin{array}{ll}
+    (1 - \alpha_t)Q_r^t(i, s, a) + \alpha_t R_t(s'| s, a)   \mbox{ if $a$ is primitive} \\
+    \label{eq:TdQr}
 \end{equation}
+%\begin{equation}
+    %\tilde{Q}_r^{t+1}(i, s, a) \leftarrow
+    %\tilde{Q}_r^{t}(i', s, a') + \tilde{Q}_c^{t}(i', s, a')  \mbox{if $a$ is composite} \\
+    %%\end{array} \right.
+    %\label{eq:TdQr}
+%\end{equation}
+\begin{equation}
+    Q_c^{t+1}(i, s, a) =
+    %\left\{\begin{array}{ll}
+    (1 - \alpha_t)Q_c^t(i, s, a) + \alpha_t \gamma^N[Q_r^{t}(i', s', a') + Q_c^t(i', s', a')] \\
+    \label{eq:TdQc}
+\end{equation}
+%\begin{equation}
+    %\tilde{Q}_c^{t+1}(i, s, a) \leftarrow
+    %(1 - \alpha)\tilde{Q}_c^{t}(i, s, a) + \alpha \gamma^N[\tilde{Q}_r^{t}(i', s', a')]   \mbox{if $s' \in T_i$} \\
+    %%\end{array} \right.
+    %\label{eq:TdQc}
+%\end{equation}
 
-The equations \ref{eq:MaxIrr} and \ref{eq:bellman} are identical except for the Q values.
-Due to uniqueness of Bellman equation, if $\pi_i(s) = \pi_f(s), \forall s$, we will have $Q^{\pi_f}(s, a) = Q^{\pi_f}(i, s, a)$. 
-If $\pi_i(s) = \pi^*_f(s)$, $Q^*(s, a)$ is a solution and also an optimal solution (why?) of equation \ref{eq:MaxIrr}.
-Thus we have $Q^*(i, s, a) = Q^*(s, a)$. \textbf{QED.}
+\begin{equation}
+    Q_e^{t+1}(i, s, a) =
+    \left\{\begin{array}{ll}
+    (1 - \alpha_t)Q_e^{t}(i, s, a) + \alpha_t \gamma^N[Q_e^{t}(i', s', a')]  \mbox{ if $s' \in S_i$} \\
+    (1 - \alpha_t)Q_e^{t}(i, s, a) + \alpha_t \gamma^N[Q^{t}(i', s', a')]  \mbox{ if $s' \in T_i$} \\
+    \end{array} \right.
+    \label{eq:TdQe}
+\end{equation}
+where $i'$ is the index of next subtask in $TC(H)$ that will be invoked, $a' = arg max_b Q^t(i', s', b)$.
 
-%\begin{definition}
-    %$\mathbb{C}(H) = \{N_1, N_2, \dots, N_k\}$ is a leaf cover of MaxQ hierarchy $H$ if 
-    %we can divide H into several disjoint partitions $P = \{P_1, \dots P_m\}$ after removing all nodes in $\mathbb{C}(H)$.
-    %And the root node does not share the partition with any leaf nodes. 
-    %$\exists N_i \in \mathbb{C(H)} \suchthat N_i$ is an ancestor of $l$.
-%\end{definition}
-
-%\begin{definition}
-    %A subtask policy $\pi_i$ is optimal if $\pi_i^{hg*}(s)=\pi_p^*(s) \forall s \in S_i$,
-    %where $\pi_p^*(s)$ is the flat optimal policy.
-%\end{definition}
-
-
-%\begin{theorem}
-    %If the corresponding subtask policy $\pi_i$ is optimal $\forall N_i \in \mathbb{C}(H)$,
-    %the policy $\pi_j$ of the ancestor of $N_i$ is also optimal for all possible $\pi_j$.
-%\end{theorem}
-%Proof: $\forall N_j$: the ancestor of some node $\in \mathbb{C}(H)$, policy $\pi_j(s)$ would invoke some 
-%node $N_i$ and execute its policy $\pi_i^{hg*}(s)$. Since the policy is optimal, $\pi_j^{hg*}(s)=\pi_p^*(s)$.
-
-%\begin{center}
-%\begin{tabular}{@{}lp{6cm}@{}}
-%\hline
-%Algorithm: ExecuteHGPolicy\\
-%\hline
-%Initialize $\hat{Q_0}$ arbitrarily\\
-%$t \leftarrow 0$\\
-%Repeat (for each episode)\\
-%\ \ \ \ \ \ Initialize $s$\\
-%\ \ \ \ \ \ Choose $a$ based on $s$ using policy derived from $\hat{Q_t}$ (e.g., $\epsilon$-greedy method)\\
-%\ \ \ \ \ \ Repeat (for each step of episode):\\
-%\ \ \ \ \ \ \ \ \ \ \ \ Take action $a$, obtain reward $r$ and next state $s'$ from the environment\\
-%\ \ \ \ \ \ \ \ \ \ \ \ Choose $a'$ based on $s'$ using policy derived from $\hat{Q_t}$ (e.g., $\epsilon$-greedy method)\\
-%\ \ \ \ \ \ \ \ \ \ \ \ $\hat{q_t} \leftarrow \hat{Q_t}(s, a) + \alpha [r + \gamma \hat{Q_t}(s', a')-\hat{Q_t}(s, a)]$ \\
-%\ \ \ \ \ \ \ \ \ \ \ \ Update $\hat{Q_t}$ with $(s, a, \hat{q_t})$ by online L1 regression to produce $\hat{Q_{t+1}}$\\
-%\ \ \ \ \ \ \ \ \ \ \ \ $s \leftarrow s'$\\
-%\ \ \ \ \ \ \ \ \ \ \ \ $a \leftarrow a'$\\
-%\ \ \ \ \ \ \ \ \ \ \ \ $t \leftarrow t+1$\\
-%\ \ \ \ \ \ Until $s$ is terminal\\
-%\hline  
-%\end{tabular}
-%\end{center}
-
-%Note that Q function is:
-%\begin{align}
-    %Q^{\pi}(s, \pi(s)) &= Q^{\pi}(i, s, \pi(s)) + Q_E^{\pi}(i, s, \pi(s))\\
-    %&= V^{\pi}(\pi(s), s) + C^{\pi}(i, s, \pi(s)) + Q_E^{\pi}(i, s, \pi(s))
-%\end{align}
-
-%Andre and Russell then prove:
-%\begin{theorem}
-    %If $V^{*}, C^*, Q_E^*$ are solutions to equation \ref{eq:V}, \ref{eq:C},
-    %and \ref{eq:QE} for $\pi^*$, then $Q^* = V^{*} + C^* + Q_E^*$ is a solution
-    %to the standard Bellman equation.
-%\end{theorem}
-%\begin{theorem}
-    %Decomposed value iteration and policy iteration algorithms derived from equation
-    %\ref{eq:V}, \ref{eq:C}, and \ref{eq:QE} converge to $V^{*}, C^*, Q_E^*$, and $\pi^*$.
-%\end{theorem}
-
-%However, we need something stronger:
-%\begin{theorem}
-    %Let $\mathbb\{C\} = \{N_1, N_2, \dots\}$. If 
-    %(a) $\forall N_i \in \mathbb{C}$, the descendants of Max node $N_i$ covers all primitive Max nodes
-    %and (b) for all path from root node to leaf node must pass at least one of the nodes in $\mathbb{C}$,
-    %then the agent has hierarchical optimal policy $\pi^*$ when the policy of node $j \in \{j | j \in subtree(N_i), \forall N_i \in \mathbb{C}\}$.
-%\end{theorem}
-
-In Fig. \ref{fig:MazeH}, the agent has an hierarchical optimal policy when "MaxGoal" and "MaxExit"
-have the hierarchical optimal policy regardless of the policy of "MaxRoot".
-
-If we let all nodes which are the parent of some primitive Max nodes to have access
-to all primitive actions, we can construct $\mathbb{C}$ by including all 
-such nodes. Since the optimal policy does not depend on any nodes not in $\mathbb{C}$, 
-we can safely replace all such nodes by our approximated model-based nodes.
-
-For example, if we replace "MaxRoot" with approximated model-based nodes,
-the policy is still optimal. 
-
-The problem of this hierarchical optimal approach is that policy $\pi_i$ of $i$-th
-node is determined by the expected cumulative reward, not by the expected pseudo reward as
-MaxQ. Due to the lack of pseudo reward, each subtask $M_i$ lacks the motivation to 
-pursue the goal state defined by the hierarchy, thus it makes the hierarchical 
-design useless. 
-It is necessary to add some pseudo reward to encourage each subtask to pursue 
-the goal. Nevertheless, it should be done carefully, otherwise we will lose
-the optimality.
-
-Here we show a way to add the pseudo reward without violating the hierarchical 
-optimal constraint:
+Unfortunately, the convergence of HORDQ is an open problem (Conjecture 1 of \cite{HORDQ}).
+However, if we let all subtasks in $TC(H)$ have access to all primitive actions directly, 
+the convergence to the optimal policy can be guaranteed. 
 \begin{theorem}
-    Let $x$ be some terminal state of subtask $M_i$, $R(x)$ be the reward
-    when the agent arrives state $x$, $\tilde{R}(x) = R(x) - r$ be the pseudo reward
-    and $r$ be the penalty term.
-    If $P(x| s, \pi_i^*(s)) = 0$, we have $Q^*(i, s, \pi^*(s)) = \tilde{Q}^*(s, \tilde{\pi}(s))$.
+    Let $TC(H)$ be a total leaf cover for a hierarchy $H$, and $Q^t = Q_r^t + Q_c^t + Q_e^t$.
+    If we use equations (\ref{eq:TdQr}-\ref{eq:TdQe}) to update the Q-values for all subtasks in $TC(H)$, 
+    we have $lim_{t \rightarrow \infty} Q^t(i, s, a) = Q^*(i, s, a)$
+    if the following conditions hold:
+    \begin{itemize}{}
+    \item Every subtask in $TC(H)$ has access to all primitive actions and can only execute primitive actions
+    \item A greedy in the limit with infinite exploration (GLIE) exploration policy is followed by every subtask in $TC(H)$
+    \item $Var\{R_t(s' | s, a)\}$ is finite 
+    \item $\sum_t \alpha_t = \infty$ and  $\sum_t \alpha_t^2 \le \infty$
+    \item $0 < \gamma < 1$ or $\gamma=1$ and all policies $\pi_i$ are proper
+    \end{itemize}
+    %TODO: cite Neuro-Dynamic Programming 1996
+%above learning algorithm will converge (with appropriately
+%decaying learning rates and exploration method) to a
+%hierarchically optimal policy
+ 
 \end{theorem}
+%If we let all nodes which are the parent of some primitive Max nodes to have access
+%to all primitive actions, we can construct $\mathbb{C}$ by including all 
+%such nodes. 
+\textbf{Proof:} 
+\begin{align*}
+    Q^{t+1}(i, s, a) = &Q_r^{t+1}(i, s, a) + Q_c^{t+1}(i, s, a) + Q_e^{t+1}(i, s, a) \\
+                     = &(1 - \alpha_t){Q}_r^{t}(i, s, a) + \alpha_t R_t(s'| s, a) \ +\\
+                       &(1 - \alpha_t){Q}_c^{t}(i, s, a) + \alpha_t \gamma^N[{Q}_r^{t}(i', s', a') + {Q}_c^t(i', s', a')] \ +\\
+                       &(1 - \alpha_t){Q}_e^{t}(i, s, a) + \alpha_t \gamma^N[{Q}_e^{t}(i', s', a')]\\
+                      =&(1 - \alpha_t)[{Q}_r^{t}(i, s, a) + {Q}_c^{t}(i, s, a) + {Q}_e^{t}(i, s, a)] \ +\\
+                       &\alpha_t[ R_t(s'| s, a) + \gamma^N[{Q}_r^{t}(i', s', a') + {Q}_c^t(i', s', a') + {Q}_e^{t}(i', s', a')]] \\
+                      =&(1 - \alpha_t) {Q}^{t}(i, s, a) + \alpha_t[ R_t(s'| s, a) + \gamma^N  {Q}^{t}(i', s', a') ]
+\end{align*}
+    Since $a$ and $a'$ are primitive actions, the HORDQ rule identical to the standard Q-learning update rule.
+    Therefore, it converges under the same condition as Q-learning. \textbf{Q.E.D.}
 
-The above theorem says that the optimal policy does not change 
-if some penalty is applied at some terminal states which are not part of the optimal path.
+One of the problem of hierarchical optimal learning algorithms is that policy $\pi_i$ of subtask $M_i$
+is determined by the reward of original MDP. There are no pseudo rewards which are allowed as
+in MAXQ. Due to the lack of pseudo reward, each subtask $M_i$ lacks the motivation to 
+pursue the subgoal defined by the hierarchy, thus it makes the hierarchical 
+design useless. It is necessary to add some pseudo reward to encourage each subtask to pursue 
+the subgoal. However, we cannot guarantee optimality with a nonzero pseudo reward.
+A practical approach is to use positive reward to encourage the effective exploration
+in the early stage, and gradually decrease it to 0. 
+
+%The penalty term serves as a mechanism to enforce the subtask to follow the hierarchy.
+%The subtask will strictly follow the subgoal defined by the hierarchy if the penalty term is large.
+%On the other hand, if the penalty term is small, the subtask is more likely to go rouge and try to 
+%solve the whole problem on its own. Here we have a engineering decision: if we trust our hierarchy design, 
+%we should increase the penalty term to let the agent find the optimal policy as fast as it can; 
+%if not, a low penalty term allows the agent to find the optimal policy when the hierarchy doesn't work.
+
+%Here we show a way to add the pseudo reward without violating the hierarchical 
+%optimal constraint:
+%\begin{theorem}
+    %Let $x$ be some terminal state of subtask $M_i$, $R(x)$ be the reward
+    %when the agent arrives state $x$, $\tilde{R}(x) = R(x) - r$ be the pseudo reward
+    %and $r$ be the penalty term.
+    %If $P(x| s, \pi_i^*(s)) = 0$, we have $Q^*(i, s, \pi^*(s)) = \tilde{Q}^*(s, \tilde{\pi}(s))$.
+%\end{theorem}
+
+%The above theorem says that the optimal policy does not change 
+%if some penalty is applied at some terminal states which are not part of the optimal path.
 
 
 %We need the penalty for the hierarchy to work. 
@@ -424,181 +436,208 @@ if some penalty is applied at some terminal states which are not part of the opt
 %wrong states and lose the optimality. But we do not always require 
 
 
-The idea of our work is to use the approximated model-based node to 
-compute the plan for the agent, and let the hierarchical optimal model-free node
-to execute the plan. If everything works as the plan, the agent would converge to the optimal
-policy in a short time. If not (following the plan is worse than the penalty term),
-the model-free node will take control and find the optimal policy on its own.
+%The idea of our work is to use the approximated model-based node to 
+%compute the plan for the agent, and let the hierarchical optimal model-free node
+%to execute the plan. If everything works a李世光s the plan, the agent would converge to the optimal
+%policy in a short time. If not (following the plan is worse than the penalty term),
+%the model-free node will take control and find the optimal policy on its own.
 
-The penalty term serves as a mechanism to enforce the subtask to follow the hierarchy.
-The subtask will strictly follow the subgoal defined by the hierarchy if the penalty term is large.
-On the other hand, if the penalty term is small, the subtask is more likely to go rouge and try to 
-solve the whole problem on its own. Here we have a engineering decision: if we trust our hierarchy design, 
-we should increase the penalty term to let the agent find the optimal policy as fast as it can; 
-if not, a low penalty term allows the agent to find the optimal policy when the hierarchy doesn't work.
+\section{Planning with Static Assumptions}
+\label{se:Model}
 
-%show that the exact condition (the certain hierarchy) for the conjecture to work (iff)
-%Show that use decision tree to predict next state is bad (because the planning envelope is too big)
-%if a coin is 20 steps away, and there is a random walk monster, the planning envelope is 2^20
-%use this to motivate why we need to assume something does not change
-%Also show that the drawback of peter stone's work on approximated model based approach
+Based on the results of the previous section, we can safely use any approximate model-based method 
+to learn the Q-values of subtasks which do not belong to $TC(H)$ without worrying
+that it will violate the optimality condition. Model-based RL requires the enumeration of all possible states during the planning process.
+However, it is not feasible when the state space is too large.
+Previous methods (\cite{ApproxDyna}, \cite{ApproxTree}) rely on function approximation
+techniques to predict the next state. Their model is biased because it is possible 
+to encounter different next states given the same state and policy for a stochastic problem. If we 
+predict one of them, we ignore the stochastic nature of the problem. If we predict
+several, the number of states under consideration may grow exponentially with the number of simulating steps
+and become intractable after a few steps.
 
-%\section{Temporal Difference Learning}
+We notice that, for some applications, there are some variables which are more important
+than others. Take the mobile robot navigation problem, for example; the location of the robot 
+is the key to the planning process, while the movement of other objects in the environment is less important.
+Our idea is to separate the variables into planning variables 
+and environment variables. During the planning process, we enumerate all possible values of the planning variables, while assuming 
+the remaining environment variables are static throughout the process. 
+If we limit the number of planning variables to be small, the enumeration process can be efficient.
+It also simplifies the learning of the transition and reward functions, since we only need to learn
+the dynamics and reward models for the planning variables.
 
-%The RL agent estimates the $Q_{E}$ by SARSA algorithm -- after the RL agent takes the action $a$
-%and observes next state $s'$, reward $r$ and next action $a'$, the $Q_{E}$ is updated by:
-%\begin{equation}
-    %Q_{E}^{g, t}(s, a) \leftarrow  Q_{E}^{g, t}(s, a) + \alpha [r + \gamma Q_{E}^{g, t-1}(s', a') - Q_{E}^{g, t}(s, a)]
-%\end{equation}
+Let state $s = (x, y)$, where $x$ consists of planning variables and $y$ consists of environment
+variables. Following the MAXQ approach, we decompose the Q-function as:
+\begin{equation}
+    Q^{\pi}(i, x, j) = Q_r^{\pi}(i, x, j) + Q_c^{\pi}(i, x, j),
+    \label{eq:biasedMaxQ}
+\end{equation}
+where $Q_r^{\pi}(i, x, j)$ is provided by the child subtask $M_j$.
 
-%The RL agent estimates the probability to achieve the goal by the same equation:
-%\begin{equation}
-    %P^{g, t}(s, a) \leftarrow  P^{g, t}(s, a) + \alpha [\delta + \gamma P^{g, t-1}(s', a') - P^{g, t}(s, a)]
-%\end{equation}
+The task of subtask $M_i$ is to compute $Q_c^{\pi}(i, x, j)$ by:
+\begin{equation}
+    Q_c^{\pi}(i, x, j) = \sum_{x'} P_m^{\pi}(x'|s, j)[Q_r^{\pi}(i, x', \pi_i(x')) + Q_c^{\pi}(i, x', \pi(x'))],
+    \label{eq:biasedQc}
+\end{equation}
 
+With the formula above, the Q-values can be computed by dynamic programming.
 
-%\section{The Problem of Unsafe State Abstraction}
-%1. introduce poison problem
-%2. why unsafe abstraction cannot do
-%3. how to relief the burden by incorporation of model free node
-%4. Why relief (what it cannot do)
-%5. Motivating the hierarchical node (no pseudo reward)
-%6. Achieve optimality with biased model
-%7, The problem of hierarchical optimal approach
-%8. Show that how the degree of hierary penalty changes the behavior of the agent (by the experiment)
+For simplicity, we use the multi-time model \cite{SMDP} to model the transition function: 
+\begin{equation}
+    P_m(x|s, j) = \sum^{\infty}_{N=1} \gamma^N P(x, N|s, j).
+    \label{eq:multiProb}
+\end{equation}
 
-%\section{Hierarchical Optimality}
-%To compensate the incapability to predict the movement of the monsters in the long run, 
-%we exploits the model-free approach to handle the dynamic of the environment in the short period.
-%The choice
+$P_m(x|s, j)$ can be estimated by:
+\begin{equation}
+    \tilde{P}_m(x|s, j) = (1-\alpha)\tilde{P}_m(x|s, j) + \alpha [ \gamma^N \delta_{x'x}],
+    \label{eq:approxP}
+\end{equation}
+for all $x \in S_i$, where $\delta_{x'x}=1$ if $x' = x$ and is 0 otherwise.
 
-%Besides, the model-free layer still operates with the full observation of the state. 
-%If we put more features into the model-based layer, we would get a more precise plan at the cost
-%of more samples required to estimate the model parameter and more time spent on computing the plan.
-%Therefore, the number of features included in the model-based layer depends on the available 
-%computation resources.
-%The objective of our work is not to show how to find the optimal arrangement of features, but to indicate
-%that there is a trade-off between model-based and model-free approaches.
-%By adjusting the arrangement of features, we can maximize the performance of the agent without exceeding
-%the capacity of available computational resources.
+\section{Experimental Results}
+%TODO: Say how do we update the model (just for three iteration) with Bellman equation
+%TODO: say we use MaxQ for model based approach
 
-%\section{Estimation of the transition probability}
+\begin{figure}[t]
+%\begin{center}
+ \begin{minipage}[b]{0.5\linewidth}
+    \begin{center}
+    %\includegraphics[height=11em, width=6em]{eli_bend.eps}
+    \includegraphics[width=2.0in] {./figures/BusSmall.eps}
+    %\caption{(a)}
+\end{center}
+\end{minipage}
+\begin{minipage}[b]{0.5\linewidth}
+    \begin{center}
+    \includegraphics[width=2.0in] {./figures/BusHierarchy.eps}
+\end{center}
+\end{minipage}
+\begin{minipage}[b]{0.5\linewidth} \centering (a) \end{minipage}
+\begin{minipage}[b]{0.5\linewidth} \centering (b) \end{minipage}
 
-%Each max node (except the top one) needs to compute the state transition probability
-%from the given state $s$ to some terminal state $x$.
-%It can be done by querying the transition probability from the child layers.
-%Same for the reward.
+%\end{center}
+\caption{(a) The school bus domain (b) A task graph for the school bus domain.}
+\label{fig:bus}
+\end{figure}
 
-%Each model-free layer with a parent model-based layer also needs to compute the transition probability.
-%Since the child layers of model-free layer do not provide such information, the model-free layer
-%needs to estimate the probability based on its current policy.
+Figure \ref{fig:bus}(a) shows the school bus domain. The school bus starts at school $S$. Its task 
+is to pickup all passengers marked as $P$ and return to the school.
+The bus can move North, South, East, or West. There is a reward of -1 applied for each action.
+There is 0.1 probability for the bus to move in a random direction. It stays put 
+when trying to cross a wall. 
+The passengers are picked up automatically when the bus moves into
+the location of a passenger. The passengers can be picked up in any order.
+The episode ends when it finishes the task.  
+There are two possible locations for road construction. They are marked as 
+$A$ and $B$. If the bus passes a construction site, it will get damaged with probability 1 and has the probability
+of 0.25 to break down for each step afterwards. There is a reward of -50 if the bus breaks down and the episode ends immediately. 
+At the beginning of an episode, the status of the road is randomly chosen from no construction, $A$ is under construction,
+or $B$ is under construction. There is a 0.05 probability for the road status to change after the episode begins.
+The world is divided into six areas. There are six subtasks $Move(1), \dots,$ and $Move(6)$ which move the
+bus to the corresponding area.
+Subtask $Move(t)$ can only be invoked if $t$ is the adjacent area.
+The subtask terminates if the bus exits the current area.
+When it terminates, a pseudo-reward $\tilde{r}$ is applied if the bus arrives at designated area $t$ and 0 otherwise.
+The task hierarchy is shown in Figure \ref{fig:bus}(b). 
 
-%TODO: the grid world example--> assuming monster does not move is correct
-%TODO: show that approximation is necessary--> the planning envelope is exponentially huge wrt the number of monsters
+A state can be described by the 8-tuple $(x, y, h, p_1, p_2, p_3, a, b)$, where $(x, y)$ is the location of 
+bus, $h$ shows if the bus is damaged, $p_i$ indicates if the corresponding passenger has been picked up or not,
+and $a$ and $b$ are binary variables which indicate the status of the construction sites.
+The planning variables of our model are $\{x, y, p_1, p_2, p_3\}$, while the damage
+status and road conditions are assumed to be static during the planning process.
+Our model can learn that a large penalty will be received when the bus is damaged.  
+%Since the damage status is assumed static during the planning process, 
+However, our model cannot learn that the bus will get damaged if it passes through
+a construction site. The model is certainly biased in this case, thus
+it cannot learn the optimal policy. The objective of 
+the experiment is to show that the optimal policy can still be learned
+if we combine the model-based approach with HORDQ. 
 
+Since the six subtasks $Move(1), \dots,$ and $Move(6)$ cover all primitive actions, they form a total leaf cover of the hierarchy.
+We used HORDQ in the subtasks to guarantee the convergence to the optimal
+policy. Subtask $Root$ adopted our approximate model-based method. 
 
+%The planning variables include 
+%the location of bus and the status of passengers. The environment variables are the 
+%damage status of bus and the status of road. 
+%TODO: total leaf cover always exist
+%The world is divided by 6 areas. 
 
+\begin{figure}[t]
+%\begin{center}
+ \begin{minipage}[b]{0.5\linewidth}
+     \begin{center}
+    %\includegraphics[height=11em, width=6em]{eli_bend.eps}
+    \includegraphics[width=2.5in] {./figures/Approx.eps}
+\end{center}
+    %\caption{(a)}
+\end{minipage}
+\begin{minipage}[b]{0.5\linewidth}
+     \begin{center}
+    \includegraphics[width=2.5in] {./figures/Random.eps}
+\end{center}
+\end{minipage}
+\begin{minipage}[b]{0.5\linewidth} \centering (a) \end{minipage}
+\begin{minipage}[b]{0.5\linewidth} \centering (b) \end{minipage}
 
-%This stochastic natural of the game makes it natural to formulate the problem as a stochastic shortest path
-%problem. A stochastic shortest-path (SSP) problem is a MDP problem with a absorbing goal state and positive costs.
-%A solution of a SSP problem is a policy from the initial state to the goal state with minimum expected cost.
+%\end{center}
+\caption{The learning curve for the school bus domain, averaged over 400 episodes. (a) With our model-based approach. (b) With random planner.
+The pseudo-reward is shown in parentheses. The parameters are $\alpha=0.1$ and $\gamma=1$. All algorithms follow an $\epsilon$-greedy exploration policy
+with $\epsilon = 0.1$.}
+\label{fig:res}
+\end{figure}
 
-%A work by Zucker et al. \cite{Planner} introduced a two-level approach to solve a maze problem.
-%The planner uses the shortest path algorithm to find a path from the current state to the goal state.
-%The cost of each step is estimated by Q value, which is computed by the SARSA algorithm.
+Figure \ref{fig:res}(a) shows the learning curves with different level of pseudo-rewards.
+With pseudo-reward +60, it learned a suboptimal policy because
+the pseudo-reward is too large to make subtask $Move(t)$ ignore 
+the penalty of breakdown. As a result, the subtask followed 
+the instruction of its parent too strictly.
 
-%A issue occurred when we want to apply this approach to general MDP problems: we do not know the 
-%goal state. The objective of MDP is to find a sequence of actions which can maximize the overall 
-%rewards. There are no clearly defined "goal" for the MDP problems.
+On the other hand, if we do not impose any pseudo-reward, 
+the optimal policy can be learned, but the learning rate is
+slower than SARSA(0) learning. Since the subtask has no
+incentive to follow the instruction from the hierarchy, 
+the learning process is similar to SARSA(0) learning 
+except it has six different Q-functions to learn (one for each subtask) instead of one.
+Thus it takes longer to learn the optimal policy. 
 
-%A possible way to adopt the planning technique to the MDP problems is to choose a sequence 
-%of goals which can maximize the overall rewards. The goal can be chosen to be the state
-%with the highest expected reward. To achieve this, an agent needs to learn 
-%the probability to move from one state to another, and the reward to be received
-%from each state. 
+With the appropriate pseudo-reward, we can get a near-optimal policy
+while the learning rate is faster than SARSA(0)
+Our experiment shows that a pseudo-reward of +5 is enough to make the subtask follow 
+the order of $Root$ in most of the times, but it is not enough for the subtask to ignore
+the breakdown penalty. For example, when $Root$ executes $Move(4)$ to move the bus from area 
+3 to area 4 and the road at location $A$ is under construction, $Move(4)$ subtask
+will learn it is a bad decision with HORDQ.
+Instead of moving to area 4, $Move(4)$ may move to area 1 or 5 to avoid
+the breakdown penalty. In turn, $Root$ learns $Move(4)$ cannot be executed in 
+such a scenario, thus it will seek an alternate plan if the same scenario
+is encountered.
 
-%The approach is two fold. In the beginning, the planner selects a path from the current 
-%state to the goal state with the highest expected reward. The path consists of several
-%nodes, which are considered as the subgoals of the plan. The RL agent finds the subgoal 
-%right after the current state, and chooses a sequence of actions which can lead the agent
-%to the subgoal. The result can be either success or failure, and the probability of the successful
-%rate of a plan would be updated accordingly. The planner then use the updated information to 
-%compute a new path.
+The combination of our approximate model-based approach and MAXQ learns 
+a suboptimal policy similar to HORDQ with high pseudo-reward. MAXQ does not estimate the consequence of its action outside its own subtask, therefore
+$Move(t)$ will move to area $t$ at any cost.
 
-%%\section{The task hierarchy of eat-food-and-avoid-monster game}
-%%\section{Training the RL agent}
-%The training is done in $5 \times 5$ with one food and one monster.
-%A goal is assigned to the agent at the beginning of the episode. 
-%The goal is the desired next position of the agent.
-%%The goal is the position difference of 
-%%the current position and the next position. It can be either $(0, 1), (0, -1), 
-%%(1, 0) or (-1, 0)$.
-%The action of the agent terminates after 1 step regardless if the agent achieves the goal 
-%or not. The task of the RL agent is to find an optimal policy to achieve the goal. 
-%Although the optimal policy is obviously corresponding to the four primitive actions (north, south, west or east) 
-%, the agent doesn't have any prior knowledge of it. Moreover, the agent should not always comply to the indication of the goal.
-%If the goal asks the agent to go north but there is a monster at north of the agent, it is unwise to go north to achieve the goal.
+To simulate the performance of the combination of a poorly-approximated model-based method and 
+HORDQ, we replaced our model-based approach with a random policy.
+The result is shown in Figure \ref{fig:res}(b). In this case, SARSA(0) has the fastest
+learning rate. It takes more time for $Move(t)$ to realize that the policy of $Root$ is bad with higher pseudo rewards.
+Nevertheless, it will eventually learn a near-optimal policy.
+The combination of random policy and MAXQ has the worst result.
 
-%To construct a RL agent which may follow the instruction of the planner when possible, 
-%we give the reward of the RL agent $+20$ when it achieves the goal and $0$ otherwise.
-%If the agent gets into a monster, it receives $-30$ reward as usual.
+The result shows that a good approximate model 
+can help increase the learning rate with the combination of HORDQ. 
+If the model is poor, HORDQ serves as a fail-safe mechanism to stop 
+the agent repeating the same poor policy over and over again.
+On the other hand, MAXQ learned a poor policy in both cases.  
+The result suggests that in order to construct a robust HRL 
+algorithm, it is beneficial to incorporate HORDQ in the hierarchy.
 
-%The planner makes the plan based on the state transition probability and the corresponding reward for each transition.
-%The RL agent needs to provides such an information to the planner (note that the state transition probability and the reward
-%depends on the current RL agent policy).
-%The information must be learned as well. 
-%The reward given by the planner (like the reward for achieving the goal) is called internal reward.
-%The internal reward is constructed to get the desired behavior of the RL agent.
+%On the contrary, the combination of MAXQ and a poor approximated model has
+%a performance similar to random policy.
 
-%The reward given by the game itself is called external reward.  It is what the
-%planner tries to maximize. The expected external reward for the agent to move
-%from current state $s$ to the goal state $g$ within $t$ steps is:
-
-%\begin{equation}
-    %R_{E}(g, s, t) = Q_{E}^{g, t}(s, \pi(s)), 
-%\end{equation}
-%where $\pi$ is the policy of the RL agent which directs it agent to go to the goal state within $t$ steps.
-%$\pi(s)$ is one of the primitive actions.
-%$Q_{E}$ is the expected external reward function for the agent to get at state $s$ if 
-%the RL agent takes action $\pi(s)$.
-
-%The RL agent estimates the $Q_{E}$ by SARSA algorithm -- after the RL agent takes the action $a$
-%and observes next state $s'$, reward $r$ and next action $a'$, the $Q_{E}$ is updated by:
-%\begin{equation}
-    %Q_{E}^{g, t}(s, a) \leftarrow  Q_{E}^{g, t}(s, a) + \alpha [r + \gamma Q_{E}^{g, t-1}(s', a') - Q_{E}^{g, t}(s, a)]
-%\end{equation}
-
-%The RL agent estimates the probability to achieve the goal by the same equation:
-%\begin{equation}
-    %P^{g, t}(s, a) \leftarrow  P^{g, t}(s, a) + \alpha [\delta + \gamma P^{g, t-1}(s', a') - P^{g, t}(s, a)]
-%\end{equation}
-
-%$\delta$ is 1 when the RL agent achieves the goal state (if $s'$ is the goal state) and 0 otherwise.
-
-%The policy $\pi(s)$ of the RL agent is determined by the expected internal reward function $Q_{I}$.
-%\begin{equation}
-    %\pi(s) = argmax_a Q_{I}^{g, t}(s, a), 
-%\end{equation}
-%Similarly, $Q_{I}$ can be estimated by SARSA algorithm.
-
-%\begin{figure}[h]
-    %\centering
-    %\begin{minipage}[t]{0.9\linewidth}
-        %\centering
-        %\includegraphics[width=\textwidth] {./figures/PlanGraph.eps}
-    %\end{minipage}
-    %\caption{The transition probability and reward for the game in Fig. \ref{fig:MonsterPlan}}
-    %\label{fig:PlanGraph}
-%\end{figure}
-
-%To construct a plan, the planner uses shortest-path algorithm to find a path with maximum expected reward.
-%For example, the plan in Fig. \ref{fig:MonsterPlan} corresponding to the expected reward of 
-%$18*0.9^5$ with the estimated transition probability and)reward shown in Fig. \ref{fig:PlanGraph}.
-%In general, the expected reward of the plan $p = (s_1, s_2, \dots, s_n)$ can be computed by: 
-%\begin{equation}
-    %R_P(p) = R_E(s_2, s_1, t) + R_E(s_3, s_2, t)P^{s_2, t}(s1, \pi(s1)) + \dots + R_E(s_n, s_{n-1}, t)P^{s_n, t}(s_{n-1}, \pi(s_{n-1})) \dots P^{s_2, t}(s1, \pi(s1))
-%\end{equation}
-
+%TODO: add random agent experiment
+%TODO: if I set the pseudo reward to zero, will the whole stuff breaks down again?
 
 
 \endinput

@@ -1,15 +1,30 @@
 %% The following is a directive for TeXShop to indicate the main file
 %%!TEX root = diss.tex
 
+%Introduction
+%RL->MDP, Q, SARSA, SMDP, 
+%MAXQ, hierarchical optimal vs recursive optimal, HORDQ, Relational,  Model-based RL
+%the problem of HO
+%Optimal planning, model the differences
+%scale to large problems
+%The power of model-based RL and relational approach--> use a maze to illustrate this(model the difference)
+%Linear SARSA
+%Super Mario
 \chapter{Abstract}
 
-We introduce a new relational template selection approach as 
-an effective approach to solve relational Markov decision problems
-with large state spaces. Our algorithm uses L1-regularized regression
-to select and learn a set of local functions defined over relational templates
-and we approximate the value function as the linear combination of these local
-functions. We present experiments using avoid-trap-and-eatfood problem and Atari 2600 games.
-The result shows that our approach achieves higher learning rate than non-relational methods.
+Model-based reinforcement learning methods make efficient use of samples by 
+building a model of the environment and planning with it.
+Compared to model-free methods, they usually take fewer samples to converge to the optimal policy.
+Despite that efficiency, model-based methods
+need to enumerate all possible states during planning process,
+thus it is impractical to apply model-based methods to large domains.
+In this paper, we propose a simple approach that assumes most of the variables 
+are static during the planning process and focuses on modeling the few dynamic variables.
+By combining this approach with 
+hierarchically optimal recursive Q-learning under 
+a hierarchical reinforcement learning framework, we show that
+the proposed approach learns the optimal policy even when
+the assumptions of the model are not satisfied.
 
 % Embed version information inline -- you should remove this from your
 % dissertation

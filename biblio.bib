@@ -21,6 +21,15 @@
 } 
 
 
+@ARTICLE{SMDP,
+    author = {Richard Sutton and Doina Precup and Satinder Singh},
+    title = {Between {MDP}s and {S}emi-{MDP}s: A Framework for Temporal Abstraction in Reinforcement Learning},
+    journal = {Artificial Intelligence},
+    year = {1999},
+    volume = {112},
+    pages = {181--211}
+}
+
 @INPROCEEDINGS{HAMQ,
     author = {Ronald Parr and Stuart Russell},
     title = {Reinforcement Learning with Hierarchies of Machines},
@@ -73,9 +82,104 @@
     publisher = {AAAI Press}
 }
 
+@INPROCEEDINGS{Dyna,
+    author = {Richard S. Sutton},
+    title = {Integrated Architectures for Learning, Planning, and Reacting Based on Approximating Dynamic Programming},
+    booktitle = {Proceedings of the Seventh International Conference on Machine Learning},
+    year = {1990},
+    pages = {216--224},
+    publisher = {Morgan Kaufmann}
+}
+
+
+@INPROCEEDINGS{ApproxDyna,
+    author = {Richard S. Sutton and Csaba Szepesvári and Alborz Geramifard and Michael Bowling},
+    title = {Dyna-style planning with linear function approximation and prioritized sweeping},
+    booktitle = {Proceedings of the 24th Conference on Uncertainty in Artificial Intelligence},
+    year = {2008}
+}
+
+@INPROCEEDINGS{ApproxTree,
+    author = {Thomas Degris and Olivier Sigaud},
+    title = {Learning the structure of factored Markov decision processes in reinforcement learning problems},
+    booktitle = {Proceedings of the 23rd international conference on Machine learning},
+    year = {2006},
+    pages = {257--264}
+}
+@INPROCEEDINGS{ApproxFactor,
+    author = {Carlos Guestrin and Relu Patrascu and Dale Schuurmans},
+    title = {Algorithm-Directed Exploration for Model-Based Reinforcement Learning in Factored {MDP}s},
+    booktitle = {Proceedings of the International Conference on Machine Learning},
+    year = {2002},
+    pages = {235--242},
+    publisher = {Morgan Kaufmann Publishers Inc}
+}
+
+@INPROCEEDINGS{HexQ,
+    author = {Bernhard Hengst},
+    title = {Discovering Hierarchy in Reinforcement Learning with {HEXQ}},
+    booktitle = {Proceedings of the Nineteenth International Conference on Machine Learning},
+    year = {2002},
+    pages = {243--250},
+    publisher = {Morgan Kaufmann}
+}
+
+@InProceedings{ApproxProb,
+  author={Todd Hester and Peter Stone},
+  title={An Empirical Comparison of Abstraction in Models of Markov Decision Processes},
+  booktitle = {Proceedings of the ICML/UAI/COLT Workshop on Abstraction in Reinforcement Learning},
+  location = {Montreal, Canada},
+  month = {June},
+  year = {2009}
+}
+
+@INPROCEEDINGS{LSTD99,
+    author = {Justin A. Boyan},
+    title = {Least-Squares Temporal Difference Learning},
+    booktitle = {Proceedings of the Sixteenth International Conference on Machine Learning},
+    year = {1999},
+    pages = {49--56},
+    publisher = {Morgan Kaufmann}
+}
+
+
+@INPROCEEDINGS{SPUDD,
+    author = {Jesse Hoey and Robert St-Aubin and Alan Hu and Craig Boutilier},
+    title = {{SPUDD}: Stochastic planning using decision diagrams},
+    booktitle = {Proceedings of the Fifteenth Conference on Uncertainty in Artificial Intelligence},
+    year = {1999},
+    pages = {279--288},
+    publisher = {Morgan Kaufmann}
+}
+
+@phdthesis{HORDQ,
+    author = {David Andre},
+    title = {Programmable Reinforcement Learning Agents},
+    year = {2003},
+    url = {http://www.davidandre.com/diss.html},
+    school = {University of California at Berkeley},
+}
+@mastersthesis{Vlad,
+    author = {Vlad M. Cora },
+    title = {Model-Based Active Learning in Hierarchical Policies},
+    year = {2008},
+    url = {https://circle.ubc.ca/handle/2429/737},
+    school = {University of British Columbia},
+}
+
+
+@INPROCEEDINGS{HybridPolicy,
+    author = {Mohammad Ghavamzadeh and Sridhar Mahadevan},
+    title = {Hierarchical policy gradient algorithms},
+    booktitle = {Proceedings of the Twentieth International Conference on Machine Learning},
+    year = {2003},
+    pages = {226--233},
+    publisher = {AAAI Press}
+}
+
 @inproceedings{RMaxQ,
     author = {Jong, Nicholas K. and Stone, Peter},
-    title = {Hierarchical model-based reinforcement learning: R-max + MAXQ},
+    title = {Hierarchical model-based reinforcement learning: {R}-max + {MAXQ}},
     booktitle = {Proceedings of the 25th international conference on Machine learning},
     series = {ICML '08},
     year = {2008},
@@ -93,17 +197,17 @@
 
 @ARTICLE{MaxQJ,
     author = {Thomas G. Dietterich},
-    title = {Hierarchical Reinforcement Learning with the MAXQ Value Function Decomposition},
+    title = {Hierarchical Reinforcement Learning with the {MAXQ} Value Function Decomposition},
     journal = {Journal of Artificial Intelligence Research},
     year = {2000},
     volume = {13},
     pages = {227--303}
 }
 
-@incollection{MaxQ,
+@incollection{MaxQNoUse,
     author = {Dietterich, Thomas},
     affiliation = {Oregon State University Corvallis Oregon USA},
-    title = {An Overview of MAXQ Hierarchical Reinforcement Learning},
+    title = {An Overview of {MAXQ} Hierarchical Reinforcement Learning},
     booktitle = {Abstraction, Reformulation, and Approximation},
     series = {Lecture Notes in Computer Science},
     editor = {Choueiry, Berthe and Walsh, Toby},
@@ -113,6 +217,7 @@
     volume = {1864},
     year = {2000}
 }
+
 
 @INPROCEEDINGS{ComplexityMDP,
     author = {Michael L. Littman and Thomas L. Dean and Leslie Pack Kaelbling},
@@ -487,6 +592,15 @@
     school = {University of Alberta},
 }
 
+@article{KeepAway,
+    author = {Stone, P. and Sutton, R. S. and Kuhlmann, G.},
+    title = {Reinforcement learning for robocup soccer keepaway},
+    journal = {Adaptive Behavior},
+    volume = {13},
+    number = {3},
+    year = {2005},
+    pages = {165--188},
+}
 
 @article{Modding,
     author = {El-Nasr, Magy Seif and Smith, Brian K.},
@@ -501,15 +615,6 @@
     address = {New York, NY, USA},
 }
 
-@article{KeepAway,
-    author = {Stone, P. and Sutton, R. S., and Kuhlmann, G.},
-    title = {Reinforcement learning for robocup soccer keepaway},
-    journal = {Adaptive Behavior},
-    volume = {13},
-    number = {3},
-    year = {2005},
-    pages = {165--188},
-}
 
 
 @Book{lamport-1994-ladps,
