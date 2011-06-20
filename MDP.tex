@@ -1,4 +1,12 @@
 
+%RL->MDP, Q, SARSA, SMDP, 
+%MDP
+%Model-based
+%dynamic programming
+%Dyna
+%Model-free
+%Q
+%SARSA
 \chapter{Reinforcement Learning}
 \label{ch:RL}
 \section{Model Formulation}
@@ -11,24 +19,26 @@ In this work, we address the finite state Markov decision process (MDP) problem:
  the reward after executing a certain action at a certain state.
 \end{definition}
 
-Given a state of the environment, a policy $\pi: S \times A$ dictates what action should be performed at that state. 
+Given a state of the environment, a policy $\pi: S \rightarrow A$ dictates what action should be performed at that state. 
 The Q-function represents the expected cumulative reward after action $a$ is executed in state $s$ and 
 policy $\pi$ is followed thereafter.
-%The value function $V^{\pi}: S \rightarrow \mathbb{R}$ represents the expected cumulative reward when 
-%policy $\pi$ is followed from state $s$.
+The value function $V^{\pi}: S \rightarrow \mathbb{R}$ represents the expected cumulative reward when 
+policy $\pi$ is followed from state $s$.
 
-The Q-function satisfies the Bellman equation:
-%\begin{equation}
-    %V^{\pi}(s) = \sum_{s'}P(s'|s, \pi(s))[R(s'|s, \pi(s)) + \gamma V^{\pi}(s')],
-    %\label{eq:V}
-%\end{equation}
-
-%Similarly, we define the action-value function (or Q function) as:
+The value function satisfies the Bellman equation:
 \begin{equation}
-    Q^{\pi}(s, a) = \sum_{s'}P(s'|s, a)[R(s'|s, a) + \gamma Q^{\pi}(s', \pi(s'))],
-    \label{eq:Q}
+    V^{\pi}(s) = \sum_{s'}P(s'|s, \pi(s))[R(s, \pi(s)) + \gamma V^{\pi}(s')],
+    \label{eq:V}
 \end{equation}
 where $\gamma \in [0, 1]$ is the discount factor which discounts the future reward to the present value.
+
+Similarly, we define the action-value function (or Q function) as:
+\begin{equation}
+    Q^{\pi}(s, a) = \sum_{s'}P(s'|s, a)[R(s'|s, a) + \gamma Q^{\pi}(s', \pi(s'))].
+    \label{eq:Q}
+\end{equation}
+The Q function represents the expected cumulative reward after action $a$ is executed at state $s$ and 
+policy $\pi$ is followed thereafter.
 
 %\begin{equation}
     %Q^{\pi}(s, a) = \sum_{s', N}P(s', N|s, a)[R(s', N|s, a) + \gamma^N Q^{\pi}(s', \pi(s'))].
@@ -50,6 +60,106 @@ where $\gamma \in [0, 1]$ is the discount factor which discounts the future rewa
 %Let's set $gamma=1$ from now on.
 %TODO: (how MaxQ solve it?).
 
+In reinforcement learning, the environment can be modeled as an MDP but
+this MDP is unknown to the RL-agent. The task of reinforcement learning
+consists of nding an optimal policy for the associated MDP. We will therefore
+refer to the underlying MDP as the model of the environment (or simply model
+if it is clear from the context which meaning of model is intended). The optimal
+policy is denoted by  and the corresponding utility function by V .
+
+The lack of an apriori known model generates a need to sample the MDP to
+gather statistical knowledge about this unknown model. Depending on the kind
+of knowledge that is gathered, a distinction is made between model-based and
+model-free solution techniques.
+2.2.1 Model-Based Solution Techniques
+Although the term model-based reinforcement learning is sometimes used to
+refer to solution methods for problems where the MDP is known, we use modelbased
+RL in the traditional sense where methods are considered that do not
+know the model of the world a priori but that do operate by learning this
+model2. This category of approaches is especially important for applications
+where computation is considered to be cheap and real-world experience costly.
+2Another term for these kind of algorithms is indirect reinforcement learning.
+2.2. SOLUTION METHODS 17
+2.2.1.1 Certainty Equivalent Method
+One straightforward method that falls within this category is the certainty
+equivalent method. The idea is to learn the transition and reward function
+by exploring the environment and keeping statistics about the results of each
+action. Once these functions are learned, a dynamic programming approach can
+be used to compute an optimal policy. Dynamic programming (DP) refers to
+a class of algorithms that are able to compute optimal policies given a perfect
+model of the environment as an MDP. Since this dissertation only deals with
+the reinforcement learning setting of the sequential decision making problem,
+dynamic programming techniques are only briey discussed.
+Central in dynamic programming techniques is the so-called Bellman Equation
+[Bellman, 1965] or dynamic programming equation. This equation arises
+from rewriting the denition of the value function. Assuming the discounted
+cumulative future reward as optimality criterium (Equation 2.1), the following
+Bellman Equation is obtained:
+V (s) := R(s; (s)) + 
+X
+s02S
+T(s; (s); s0)V (s0) (2.2)
+The solution for this set of equations (there is one equation for every state)
+gives the optimal value function V . Note that this solution is unique, but there
+can be several dierent policies that have the same value function. Usually
+an iterative algorithm is used to compute a solution. The two basic methods
+are value iteration [Bellman, 1957] and policy iteration [Howard, 1960]. Value
+iteration (shown in Algorithm 2.1) uses the Bellman equation to iteratively
+compute the optimal value function. The policy iteration algorithm (shown in
+Algorithm 2.2) interleaves a policy evaluation step, which computes the value
+function for the current policy using Equation 2.2, and a policy improvement
+step which changes the policy by choosing a better action in a certain state
+based on the policy evaluation.
+Algorithm 2.1 Value Iteration
+1:    some small value
+2: V1   initial value function
+3: k   1
+4: repeat
+5: for s 2 S do
+6: Vk+1(s)   maxa
+
+R(s; a) + 
+P
+s02S T(s; a; s0)Vk(s0)
+
+7: end for
+8: k   k + 1
+9: until maximal update smaller than 
+18 CHAPTER 2. REINFORCEMENT LEARNING
+Algorithm 2.2 Policy Iteration
+1: 1   initial policy
+2: k   1
+3: repeat
+4: //Compute the value function of policy k by solving the equations
+5: V k (s) := R(s; k(s)) + 
+P
+s02S T(s; k(s); s0)V k (s0)
+6: for s 2 S do
+7: // Policy improvement step
+8: k+1(s)   argmaxa2A
+P
+s0 T(s; a; s0) [R(s; a) + V k (s0)]
+9: k   k + 1
+10: end for
+11: until k = k􀀀1 // convergence
+The most important drawback of the certainty equivalent method is the
+crisp devision between the learning phase and the acting phase: the agent will
+only start to show intelligent behavior once he has learned a full and perfect
+model. It has furthermore been shown that random exploration might not be
+very ecient to gather information that can build the full model [Koenig and
+Simmons, 1993].
+2.2.1.2 The Dyna Architecture
+A more ecient model-based approach is the Dyna architecture [Sutton, 1991].
+The idea of the Dyna architecture is to use a model-free solution technique
+(such as the ones that will be described in the next section), but at the same
+time learn a model of the environment as in the certainty equivalent method.
+This model can then be used to generate extra experience through simulation.
+There are some other methods that build on this idea. Prioritized sweeping
+[Moore and Atkeson, 1993] for instance does not use a uniform distribution
+when generating extra experience but prioritizes them based on their change
+in values.
+
+%-------------------------------------------------------------------------
 
 Given a reward function, reinforcement learning algorithms can
 search over possible action space and find a sequence of actions 
