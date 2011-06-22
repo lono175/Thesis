@@ -35,15 +35,15 @@ The subtask policy $\pi_i: S_i \rightarrow A_i$ maps an active state to an actio
 \begin{center}
     \includegraphics[width=4in] {./figures/Maze.eps}
 \end{center}
-\caption{The task hierarchy of the taxi domain \cite{MaxQJ}.}
-\label{fig:taxi}
+\caption{A simple maze problem \cite{MaxQJ}.}
+\label{fig:Maze}
 \end{figure}
 \begin{figure}[t]
 \begin{center}
     \includegraphics[width=4in] {./figures/MazeH.eps}
 \end{center}
-\caption{The task hierarchy of the taxi domain \cite{MaxQJ}.}
-\label{fig:taxi}
+\caption{The task hierarchy of the simple maze problem.}
+\label{fig:MazeH}
 \end{figure}
 
 There are three definitions of optimality of hierarchical reinforcement learning:
@@ -53,17 +53,68 @@ There are three definitions of optimality of hierarchical reinforcement learning
     among all policies for the MDP.
 \end{definition}
 \begin{definition}
-    \textbf{Hierarchical Optimality:} Given $Pi_H$, which is the set of all policies consistent with hierarchy $H$, 
-    then a hierarchical optimal policy for MDP $M$ is a policy $\pi^* \in Pi_H$ that achieves the highest cumulative reward
-    among all policies $\pi \in Pi_H$.
-\end{definition}
-\begin{definition}
-    \textbf{Recursive Optimality:} A recursive optimal policy for MDP $M$ with hierarchical 
+    \textbf{Recursive Optimality:} A recursively optimal policy for MDP $M$ with hierarchical 
     decomposition $M' = \{M_0, M_1, \dots, M_n\}$ is a policy $\pi = \{\pi_0, \pi_1, \dots, \pi_n\}$ such
     that each policy $\pi_i$ achieves the highest cumulative pseudo-reward for the corresponding subtask $M_i$,
     assuming fixed policies for its action $A_i$, 
 \end{definition}
+\begin{definition}
+    \textbf{Hierarchical Optimality:} Given $Pi_H$, which is the set of all policies consistent with hierarchy $H$, 
+    then a hierarchically optimal policy for MDP $M$ is a policy $\pi^* \in Pi_H$ that achieves the highest cumulative reward
+    among all policies $\pi \in Pi_H$.
+\end{definition}
 
+An optimal policy is what we want to find for any MDP $M$. However, it may not be possible to 
+be found due to the constraints imposed by the hierarchy. Instead of seeking optimality, 
+we can seek hierarchical optimality or recursive optimality, which are two important 
+optimality guarantee in hierarchical reinforcement learning.
+
+Recursive optimality guarantees that the policy of each subtask is optimal given the policies of its child subtasks.
+In this form of optimality, each subtask learns the optimal policy while ignoring the policy from its ancestors
+and the all subsequent rewards after the agent arrives the terminal states of the subtask.
+Recursive optimality allows the policy of subtask to be reused for different hierarchies. Since
+each subtask only needs to seek the optimality within its own subproblem, it is also possible
+to adopt state abstraction by ignoring the state variables which are irrelevant
+to the subproblem. The MAXQ-Q \cite{MaxQJ} algorithm converges to a recursively optimal policy. 
+
+A hierarchically optimal policy is the policy which achieves the highest cumulative reward given the
+hierarchical constraints. The hierarchically optimal policy is a stronger form of optimality. It
+may achieve a higher cumulative reward than a recursively optimal policy. In hierarchical optimality, 
+the policy of each subtask may not be optimal within its own subproblem, but the overall policy 
+of the entire hierarchy is optimal. The HAMQ \cite{HAMQ}, SDMP \cite{SMDP}, tracked Q and HORDQ \cite{HORDQ} algorithms learn
+a hierarchically optimal policy.
+
+%TODO: pros and cons for HO and RO
+Dietterich \cite{MaxQJ} demonstrates the difference of recursively and hierarchically optimal policies 
+with a simple Maze problem (Fig. \ref{fig:Maze}). A robot starts at left room and it needs to reach 
+the goal $G$ in the right room. It has three primitive actions, North, South and East.  
+There are two subtasks, Exit and GotoGoal. Subtask Exit terminates when the robot exits the left room,
+and GotoGoal exits when the robot reaches the goal. The arrows in Figure \ref{fig:Maze} show the 
+recursively optimal policy. The arrows in the left room indicates a policy which seeks to exit
+the left room with minimum steps. The arrows in the right room seeks a shortest path to the goal.
+Note that in the shaded area, 
+
+%The following example from (Dietterich, 2000) demon-
+%strates the dierence between recursively and hierar-
+%chically optimal policies. Consider the simple maze
+%problem in gure 1. Suppose a robot starts somewhere
+%in the left room and it must reach the goal G in the
+%right room. In addition to three primitive actions,
+%North, South and East, the robot has a high level task
+%Exit Room in the left room and a high level task Go to
+%Goal in the right room. Exit Room terminates when
+%the robot exits the left room and Go to Goal termi-
+%nates when the robot reaches the goal G. The arrows
+%in gure 1(a) show the locally optimal policy within
+%each room. The arrows in the left room seek to exit
+%the room by the shortest path. The arrows in the right
+%room follow the shortest path to the goal. However,
+%the resulting policy is not hierarchically optimal. Fig-
+%ure 1(b) shows the hierarchically optimal policy that
+%would always exit the left room by the upper door.
+%This policy would not be locally optimal because the
+%states in the shaded region would not follow the short-
+%est path to the doorway.
 
 %Recursive and hierarchical optimality are two impor-
 %tant forms of optimality in hierarchical reinforcement
@@ -494,151 +545,6 @@ $P_m(x|s, j)$ can be estimated by:
     \label{eq:approxP}
 \end{equation}
 for all $x \in S_i$, where $\delta_{x'x}=1$ if $x' = x$ and is 0 otherwise.
-
-\section{Experimental Results}
-%TODO: Say how do we update the model (just for three iteration) with Bellman equation
-%TODO: say we use MaxQ for model based approach
-
-\begin{figure}[t]
-%\begin{center}
- \begin{minipage}[b]{0.5\linewidth}
-    \begin{center}
-    %\includegraphics[height=11em, width=6em]{eli_bend.eps}
-    \includegraphics[width=2.0in] {./figures/BusSmall.eps}
-    %\caption{(a)}
-\end{center}
-\end{minipage}
-\begin{minipage}[b]{0.5\linewidth}
-    \begin{center}
-    \includegraphics[width=2.0in] {./figures/BusHierarchy.eps}
-\end{center}
-\end{minipage}
-\begin{minipage}[b]{0.5\linewidth} \centering (a) \end{minipage}
-\begin{minipage}[b]{0.5\linewidth} \centering (b) \end{minipage}
-
-%\end{center}
-\caption{(a) The school bus domain (b) A task graph for the school bus domain.}
-\label{fig:bus}
-\end{figure}
-
-Figure \ref{fig:bus}(a) shows the school bus domain. The school bus starts at school $S$. Its task 
-is to pickup all passengers marked as $P$ and return to the school.
-The bus can move North, South, East, or West. There is a reward of -1 applied for each action.
-There is 0.1 probability for the bus to move in a random direction. It stays put 
-when trying to cross a wall. 
-The passengers are picked up automatically when the bus moves into
-the location of a passenger. The passengers can be picked up in any order.
-The episode ends when it finishes the task.  
-There are two possible locations for road construction. They are marked as 
-$A$ and $B$. If the bus passes a construction site, it will get damaged with probability 1 and has the probability
-of 0.25 to break down for each step afterwards. There is a reward of -50 if the bus breaks down and the episode ends immediately. 
-At the beginning of an episode, the status of the road is randomly chosen from no construction, $A$ is under construction,
-or $B$ is under construction. There is a 0.05 probability for the road status to change after the episode begins.
-The world is divided into six areas. There are six subtasks $Move(1), \dots,$ and $Move(6)$ which move the
-bus to the corresponding area.
-Subtask $Move(t)$ can only be invoked if $t$ is the adjacent area.
-The subtask terminates if the bus exits the current area.
-When it terminates, a pseudo-reward $\tilde{r}$ is applied if the bus arrives at designated area $t$ and 0 otherwise.
-The task hierarchy is shown in Figure \ref{fig:bus}(b). 
-
-A state can be described by the 8-tuple $(x, y, h, p_1, p_2, p_3, a, b)$, where $(x, y)$ is the location of 
-bus, $h$ shows if the bus is damaged, $p_i$ indicates if the corresponding passenger has been picked up or not,
-and $a$ and $b$ are binary variables which indicate the status of the construction sites.
-The planning variables of our model are $\{x, y, p_1, p_2, p_3\}$, while the damage
-status and road conditions are assumed to be static during the planning process.
-Our model can learn that a large penalty will be received when the bus is damaged.  
-%Since the damage status is assumed static during the planning process, 
-However, our model cannot learn that the bus will get damaged if it passes through
-a construction site. The model is certainly biased in this case, thus
-it cannot learn the optimal policy. The objective of 
-the experiment is to show that the optimal policy can still be learned
-if we combine the model-based approach with HORDQ. 
-
-Since the six subtasks $Move(1), \dots,$ and $Move(6)$ cover all primitive actions, they form a total leaf cover of the hierarchy.
-We used HORDQ in the subtasks to guarantee the convergence to the optimal
-policy. Subtask $Root$ adopted our approximate model-based method. 
-
-%The planning variables include 
-%the location of bus and the status of passengers. The environment variables are the 
-%damage status of bus and the status of road. 
-%TODO: total leaf cover always exist
-%The world is divided by 6 areas. 
-
-\begin{figure}[t]
-%\begin{center}
- \begin{minipage}[b]{0.5\linewidth}
-     \begin{center}
-    %\includegraphics[height=11em, width=6em]{eli_bend.eps}
-    \includegraphics[width=2.5in] {./figures/Approx.eps}
-\end{center}
-    %\caption{(a)}
-\end{minipage}
-\begin{minipage}[b]{0.5\linewidth}
-     \begin{center}
-    \includegraphics[width=2.5in] {./figures/Random.eps}
-\end{center}
-\end{minipage}
-\begin{minipage}[b]{0.5\linewidth} \centering (a) \end{minipage}
-\begin{minipage}[b]{0.5\linewidth} \centering (b) \end{minipage}
-
-%\end{center}
-\caption{The learning curve for the school bus domain, averaged over 400 episodes. (a) With our model-based approach. (b) With random planner.
-The pseudo-reward is shown in parentheses. The parameters are $\alpha=0.1$ and $\gamma=1$. All algorithms follow an $\epsilon$-greedy exploration policy
-with $\epsilon = 0.1$.}
-\label{fig:res}
-\end{figure}
-
-Figure \ref{fig:res}(a) shows the learning curves with different level of pseudo-rewards.
-With pseudo-reward +60, it learned a suboptimal policy because
-the pseudo-reward is too large to make subtask $Move(t)$ ignore 
-the penalty of breakdown. As a result, the subtask followed 
-the instruction of its parent too strictly.
-
-On the other hand, if we do not impose any pseudo-reward, 
-the optimal policy can be learned, but the learning rate is
-slower than SARSA(0) learning. Since the subtask has no
-incentive to follow the instruction from the hierarchy, 
-the learning process is similar to SARSA(0) learning 
-except it has six different Q-functions to learn (one for each subtask) instead of one.
-Thus it takes longer to learn the optimal policy. 
-
-With the appropriate pseudo-reward, we can get a near-optimal policy
-while the learning rate is faster than SARSA(0)
-Our experiment shows that a pseudo-reward of +5 is enough to make the subtask follow 
-the order of $Root$ in most of the times, but it is not enough for the subtask to ignore
-the breakdown penalty. For example, when $Root$ executes $Move(4)$ to move the bus from area 
-3 to area 4 and the road at location $A$ is under construction, $Move(4)$ subtask
-will learn it is a bad decision with HORDQ.
-Instead of moving to area 4, $Move(4)$ may move to area 1 or 5 to avoid
-the breakdown penalty. In turn, $Root$ learns $Move(4)$ cannot be executed in 
-such a scenario, thus it will seek an alternate plan if the same scenario
-is encountered.
-
-The combination of our approximate model-based approach and MAXQ learns 
-a suboptimal policy similar to HORDQ with high pseudo-reward. MAXQ does not estimate the consequence of its action outside its own subtask, therefore
-$Move(t)$ will move to area $t$ at any cost.
-
-To simulate the performance of the combination of a poorly-approximated model-based method and 
-HORDQ, we replaced our model-based approach with a random policy.
-The result is shown in Figure \ref{fig:res}(b). In this case, SARSA(0) has the fastest
-learning rate. It takes more time for $Move(t)$ to realize that the policy of $Root$ is bad with higher pseudo rewards.
-Nevertheless, it will eventually learn a near-optimal policy.
-The combination of random policy and MAXQ has the worst result.
-
-The result shows that a good approximate model 
-can help increase the learning rate with the combination of HORDQ. 
-If the model is poor, HORDQ serves as a fail-safe mechanism to stop 
-the agent repeating the same poor policy over and over again.
-On the other hand, MAXQ learned a poor policy in both cases.  
-The result suggests that in order to construct a robust HRL 
-algorithm, it is beneficial to incorporate HORDQ in the hierarchy.
-
-%On the contrary, the combination of MAXQ and a poor approximated model has
-%a performance similar to random policy.
-
-%TODO: add random agent experiment
-%TODO: if I set the pseudo reward to zero, will the whole stuff breaks down again?
-
 
 \endinput
 %Most of the previous work on RL focus on model-free approaches for several reasons. 
