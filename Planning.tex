@@ -109,10 +109,14 @@ Dietterich \cite{MaxQJ} demonstrates the difference of recursively and hierarchi
 with a simple Maze problem (Fig. \ref{fig:Maze}). A robot starts at left room and it needs to reach 
 the goal $G$ in the right room. It has three primitive actions, North, South and East.  
 There are two subtasks, Exit and GotoGoal. Subtask Exit terminates when the robot exits the left room,
-and GotoGoal exits when the robot reaches the goal. The arrows in Figure \ref{fig:Maze} show the 
-recursively optimal policy. The arrows in the left room indicates a policy which seeks to exit
-the left room with minimum steps. The arrows in the right room seeks a shortest path to the goal.
-Note that in the shaded area, 
+and GotoGoal terminates when the robot reaches the goal. The arrows in Figure \ref{fig:Maze} show the 
+recursively optimal policy. The arrows in the left room indicate a policy which seeks to exit
+the left room with minimum steps. The arrows in the right room seek a shortest path to the goal.
+Note that the policy in the shaded area is a recursively optimal but not hierarchically optimal and also not
+optimal. 
+
+%TODO: why do we need HO to do the optimal planning
+
 
 %The following example from (Dietterich, 2000) demon-
 %strates the dierence between recursively and hierar-
@@ -253,7 +257,7 @@ the learning rate, so the time to learn the optimal policy might still decrease 
 %hierarchical optimal learning algorithms such as HAMQ\cite{HAMQ} or tracked decomposed Q-learning\cite{HORDQ}. However, HORDQ can be easily integrated with 
 %the existing MAXQ hierarchy, while the decomposed representation of Q-function is preserved.
 
-Andre and Russell \cite{OptimalQ}\cite{HORDQ} introduced hierarchical optimal recursive decomposed Bellman equations
+Andre and Russell \cite{OptimalQ, HORDQ} introduced hierarchical optimal recursive decomposed Bellman equations
 which extend the decomposition of MAXQ in a way that hierarchical optimality
 can be guaranteed.
 
@@ -520,7 +524,7 @@ Based on the results of the previous section, we can safely use any approximate 
 to learn the Q-values of subtasks which do not belong to $TC(H)$ without worrying
 that it will violate the optimality condition. Model-based RL requires the enumeration of all possible states during the planning process.
 However, it is not feasible when the state space is too large.
-Previous methods (\cite{ApproxDyna}, \cite{ApproxTree}) rely on function approximation
+Previous methods (\cite{ApproxDyna, ApproxTree}) rely on function approximation
 techniques to predict the next state. Their model is biased because it is possible 
 to encounter different next states given the same state and policy for a stochastic problem. If we 
 predict one of them, we ignore the stochastic nature of the problem. If we predict

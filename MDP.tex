@@ -32,12 +32,12 @@ The value function satisfies the Bellman equation:
 \end{equation}
 where $\gamma \in [0, 1]$ is the discount factor which discounts the future reward to the present value.
 
-Similarly, we define the action-value function (or Q function) as:
+Similarly, we define the action-value function (or Q-function) as:
 \begin{equation}
     Q^{\pi}(s, a) = \sum_{s'}P(s'|s, a)[R(s'|s, a) + \gamma Q^{\pi}(s', \pi(s'))].
     \label{eq:Q}
 \end{equation}
-The Q function represents the expected cumulative reward after action $a$ is executed at state $s$ and 
+The Q-function represents the expected cumulative reward after action $a$ is executed at state $s$ and 
 policy $\pi$ is followed thereafter.
 
 %\begin{equation}
@@ -153,24 +153,36 @@ policy $\pi$ is followed thereafter.
 
 %-------------------------------------------------------------------------
 
-Given a reward function, reinforcement learning algorithms can
-search over possible action space and find a sequence of actions 
-which can maximize the rewards. The reinforcement learning is an ideal choice
-to develop a learning agent for video games.
+%Given a reward function, reinforcement learning algorithms can
+%search over possible action space and find a sequence of actions 
+%which can maximize the rewards. The reinforcement learning is an ideal choice
+%to develop a learning agent for video games.
 
-We briefly introduce the basic concept of reinforcement learning in this chapter. 
-For a more completed introduction of reinforcement learning, please refer to
-\cite{SuttonIntro} and \cite{KevinIntro}.
+%In reinforcement learning, the environment can be modeled as an MDP but
+%this MDP is unknown to the RL-agent. The task of reinforcement learning
+%consists of nding an optimal policy for the associated MDP. We will therefore
+%refer to the underlying MDP as the model of the environment (or simply model
+%if it is clear from the context which meaning of model is intended). The optimal
+%policy is denoted by  and the corresponding utility function by V .
 
-The objective of reinforcement learning algorithm is to build a learning agent. The learning agent will take
-actions based on the current state. In the beginning, the agent does not know anything about 
+%The lack of an apriori known model generates a need to sample the MDP to
+%gather statistical knowledge about this unknown model. Depending on the kind
+%of knowledge that is gathered, a distinction is made between model-based and
+%model-free solution techniques.
+
+%We briefly introduce the basic concept of reinforcement learning in this chapter. 
+%For a more completed introduction of reinforcement learning, please refer to
+%\cite{SuttonIntro} and \cite{KevinIntro}.
+
+In the reinforcement learning (RL) setting, the environment is modeled as an MDP problem.
+However, the MDP is unknown to the RL agent. The objective of reinforcement learning is to 
+learn an optimal policy for the MDP. Since the MDP is unknown in the beginning, 
+the agent needs to sample the MDP to acquire the knowledge about the MDP.
+The learning agent will take actions based on the current state. For the first step, the agent does not know anything about 
 the environment, therefore the agent has to choose the first action randomly. After the environment
 receives the action, it will provide a reward to the agent as a feedback. The reward can be either
-positive or negative.
-
-The agent adjusts the value function to maximize the expected reward in the future.
-The value function represent the expected reward when the agent takes certain action in the current
-state, and it is used to estimate the "quality" of an action. The initial value of value function is 
+positive or negative. The agent adjusts the value function to maximize the expected reward in the future.
+The initial value of value function is 
 usually 0, but it is possible to set it to some high enough value to encourage exploration.
 It is important to evaluate the value function 
 correctly. If some actions with low expected reward are estimated as high, it degrades the
@@ -191,7 +203,7 @@ agent. The agent then decides an new action for the new state. After several ite
 
 \section{Temporal Difference}
 \label{sec:TD}
-There are 3 types of reinforcement learning algorithms -- dynamic programming(DP), Monte Carlo 
+There are 3 types of reinforcement learning algorithms -- dynamic programming (DP), Monte Carlo 
 methods, and temporal-difference (TD). Dynamic programming can compute the optimal policy, but it 
 requires a precise model of the environment. In most of the cases, the environment
 is too complex to be modeled precisely, and it is not easy to get the complete information about
