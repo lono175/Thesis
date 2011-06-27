@@ -108,14 +108,20 @@ a hierarchically optimal policy.
 Dietterich \cite{MaxQJ} demonstrates the difference of recursively and hierarchically optimal policies 
 with a simple Maze problem (Fig. \ref{fig:Maze}). A robot starts at left room and it needs to reach 
 the goal $G$ in the right room. It has three primitive actions, North, South and East.  
+The robot receives a reward of -1 for each move.
 There are two subtasks, Exit and GotoGoal. Subtask Exit terminates when the robot exits the left room,
 and GotoGoal terminates when the robot reaches the goal. The arrows in Figure \ref{fig:Maze} show the 
 recursively optimal policy. The arrows in the left room indicate a policy which seeks to exit
 the left room with minimum steps. The arrows in the right room seek a shortest path to the goal.
 Note that the policy in the shaded area is a recursively optimal but not hierarchically optimal and also not
-optimal. 
+optimal. A hierarchically optimal policy should exit the left room by the upper door, but a recursively 
+optimal policy always exits the room with minimum moves since
+a recursively optimal policy ignores the consequences after the subgoal is achieved. 
 
 %TODO: why do we need HO to do the optimal planning
+Despite the fact that a hierarchically optimal policy is better than a recursively optimal policy, 
+the algorithms which learn the hierarchically optimal policy do not always yield a speedup over
+the flat algorithms such as Q-learning or SARSA \cite{MaxQJ, Andre02}. 
 
 
 %The following example from (Dietterich, 2000) demon-
