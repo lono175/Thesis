@@ -2,7 +2,7 @@
 
 %TODO: Say how do we update the model (just for three iteration) with Bellman equation
 %TODO: say we use MaxQ for model based approach
-
+\section{Bus Domain}
 \begin{figure}[t]
 %\begin{center}
  \begin{minipage}[b]{0.5\linewidth}
@@ -144,6 +144,63 @@ algorithm, it is beneficial to incorporate HORDQ in the hierarchy.
 %TODO: if I set the pseudo reward to zero, will the whole stuff breaks down again?
 
 
+\section{Super Mario Brothers}
+
+%reward system here
+%and pseudo reward
+\subsection{Planner}
+We adopt our static assumption on all objects except Mario. The state of Mario 
+can be described by a 4-tuple $(x, y, dx, dy)$, where are the location and speed of Mario. 
+The ranges of $x$, $y$, $dx$ and $dy$ are $[0, 21]$, $[0, 15]$, $[-2, 2]$, and $[-2, 2]$.
+These variable are continuous, so it is not possible to enumerate all possible states
+of Mario. It is possible to discretize the variables, but the resulting state space 
+is still too large if we want to predict the dynamics of Mario in fine detail.
+It makes it impossible to adapt the dynamic programming technique to Super Mario Bros.
+
+Instead of enumerating all possible states of Mario, the planner in our experiment 
+is a $K$-step lookahead greedy search algorithm. The planner searches the states
+which can be reached from the current state within $K$ steps and returns a sequence of
+steps which achieve the highest reward.
+
+%details
+In our experiment, we do not assume the planner has the prior knowledge about 
+the dynamics of Super Mario Bros. To learn the dynamics of Mario, we use regression trees
+to predict the future position and speed of Mario. 
+The features are represented by the speed of Mario and the tiles within 5 by 5 
+area around Mario. There are 27 variables. 
+Since each action has different dynamics, 
+We build different trees for different actions. 
+Given the current state and action, the regression trees should predict 
+the x-speed and y-speed of the following state. It is possible to predict
+the next x-position and y-position of Mario, but 
+it can be more generalizable if we predict difference of the positions $\epsilon_x = x' - x$ and 
+$\epsilon_y = y' - y$. The 4 variables are the class variables for the regression trees.
+For simplicity, we separately build regression trees for different class variables. 
+In our current implementation, there are 9 actions and 4 class variables, so we 
+have 36 regression trees to model the dynamics of Mario. 
+
+It is crucial for the planning process to learn when Mario is going to be killed. 
+However, the number of samples right before Mario getting killed is limited by the
+number of episodes, which is much smaller than the number of steps. 
+To efficiently use the available samples, we use a single regression tree to learn the 
+reward function.
+
+%lookahead planning
+We adopt greedy search in our planning process.
+The planning process begins with a state of Mario. 
+Then it iteratively acquires the next states by applying
+the 9 actions to the state. To avoid fully expand the whole search tree to 
+the depth $K$, which is time-consuming and unnecessary, we expand the state
+with the largest predicted reward. 
+The process stops after we acquire $M$ nodes, then the planner returns 
+a sequence of actions which achieves the highest predicted reward.
+Since we may not search the tree fully, it is possible to have 
+
+
+%TODO: add model the difference here (Peter's paper)
+%
+
+\subsection{}
 \endinput
 %Most of the previous work on RL focus on model-free approaches for several reasons. 
 %The most 
