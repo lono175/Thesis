@@ -14,24 +14,48 @@
 %5. the offiline one
 %6. Respect the hierarchy
 
+%chapter 5:
+%1. why my modification, the hierarchy will not be destoryed (the overhead of adding additional action is small)
+%2. The hierarchy is destoryed with HORDQ
+%3. The pseudo reward can enforce the hierarchical policy
+
 %MAXQ (include the algorithm), hierarchical optimal vs recursive optimal, HORDQ, Relational,  Model-based RL (cite Peter Stone's Model based approach and a brief intro of it, include the algorithm)
 %the problem of HO
 %Optimal planning, model the differences
 
 \chapter{Planning}
 
+The theoretical result is introduced in this chapter. 
+The main idea is to exploit the fact that a hierarchically optimal RL method allows 
+a subtask to know the "consequence" of its own action, thus it will pursue a subgoal
+only when it leads to the optimal policy. It allows the subtask to act optimally 
+regardless of the subgoal which is set by its parent subtask.
+
+
+The difference of recursively optimal policy and hierarchically optimal policy is explained
+in section \ref{se:ROHO}. 
+
+However, a hierarchically optimal method alone cannot guarantee that the optimal 
+policy can be always learned. To ensure that the optimal policy can be learned, 
+we need to "patch" the hierarchy to allow some subtasks to be able to solve
+the whole MDP problem on their own. 
+The result is presented in section \ref{se:OptimalPlanning}.
+
+
 In this work, we follow the same hierarchical formulation as in MAXQ \cite{MaxQJ}:
 \begin{definition}
     Given a MDP $M$, the hierarchical reinforcement learning decomposes $M$ into a finite
     set of subtasks $M' = \{M_0, M_1, \dots, M_n\}$, where $M_0$ is the root subtask. 
     Each subtask is defined by 3 tuples $<U_i, A_i, \tilde{R}_i>$. 
-    $U_i$ is a termination predicate. It partitions the state space $S$ into active states $S_i$ and
+    \begin{itemize}
+    \item $U_i$ is a termination predicate. It partitions the state space $S$ into active states $S_i$ and
                 terminal states $T_i$. If subtask $M_i$ enters any terminal state, it terminates immediately
                 and returns control to the parent subtask. 
-    $A_i$ is a set of actions which are accessible to subtask $M_i$. An action can be either primitive or composite.
+    \item $A_i$ is a set of actions which are accessible to subtask $M_i$. An action can be either primitive or composite.
                 If it is composite, it simply invokes the corresponding subtask. No recursive calls 
                 are allowed in the hierarchy.
-    $\tilde{R}_i(s'|s, a)$ is the pseudo reward function. 
+    \item $\tilde{R}_i(s'|s, a)$ is the pseudo reward function. 
+    \end{itemize}
 \end{definition}
 A hierarchical policy $\pi = \{\pi_0, \pi_1, \dots, \pi_n\}$ is a set which contains all subtask policies. 
 The subtask policy $\pi_i: S_i \rightarrow A_i$ maps an active state to an action to execute.
@@ -51,6 +75,7 @@ The subtask policy $\pi_i: S_i \rightarrow A_i$ maps an active state to an actio
 %the hierarchical optimal policy is equal to the optimal policy.
 
 \section{Recursive Optimality and Hierarchical Optimality}
+\label{se:ROHO}
 \begin{figure}[t]
 \begin{center}
     \includegraphics[width=2in] {./figures/Maze.eps}
@@ -194,6 +219,7 @@ the flat algorithms such as Q-learning or SARSA \cite{MaxQJ, Andre02}.
 %TODO: HORDQ which approach is HO and we choose HORDQ
 %TODO: the problem of HO
 \section{Optimal Planning with Task Hierarchy}
+\label{se:OptimalPlanning}
 \begin{figure}[t]
 \begin{center}
     \includegraphics[width=4in] {./figures/TaxiHierarchy.eps}
@@ -523,58 +549,7 @@ in the early stage, and gradually decrease it to 0.
 %policy in a short time. If not (following the plan is worse than the penalty term),
 %the model-free node will take control and find the optimal policy on its own.
 
-\section{Planning with Static Assumptions}
-\label{se:Model}
-
-Based on the results of the previous section, we can safely use any approximate model-based method 
-to learn the Q-values of subtasks which do not belong to $TC(H)$ without worrying
-that it will violate the optimality condition. Model-based RL requires the enumeration of all possible states during the planning process.
-However, it is not feasible when the state space is too large.
-Previous methods (\cite{ApproxDyna, ApproxTree}) rely on function approximation
-techniques to predict the next state. Their model is biased because it is possible 
-to encounter different next states given the same state and policy for a stochastic problem. If we 
-predict one of them, we ignore the stochastic nature of the problem. If we predict
-several, the number of states under consideration may grow exponentially with the number of simulating steps
-and become intractable after a few steps.
-
-We notice that, for some applications, there are some variables which are more important
-than others. Take the mobile robot navigation problem, for example; the location of the robot 
-is the key to the planning process, while the movement of other objects in the environment is less important.
-Our idea is to separate the variables into planning variables 
-and environment variables. During the planning process, we enumerate all possible values of the planning variables, while assuming 
-the remaining environment variables are static throughout the process. 
-If we limit the number of planning variables to be small, the enumeration process can be efficient.
-It also simplifies the learning of the transition and reward functions, since we only need to learn
-the dynamics and reward models for the planning variables.
-
-Let state $s = (x, y)$, where $x$ consists of planning variables and $y$ consists of environment
-variables. Following the MAXQ approach, we decompose the Q-function as:
-\begin{equation}
-    Q^{\pi}(i, x, j) = Q_r^{\pi}(i, x, j) + Q_c^{\pi}(i, x, j),
-    \label{eq:biasedMaxQ}
-\end{equation}
-where $Q_r^{\pi}(i, x, j)$ is provided by the child subtask $M_j$.
-
-The task of subtask $M_i$ is to compute $Q_c^{\pi}(i, x, j)$ by:
-\begin{equation}
-    Q_c^{\pi}(i, x, j) = \sum_{x'} P_m^{\pi}(x'|s, j)[Q_r^{\pi}(i, x', \pi_i(x')) + Q_c^{\pi}(i, x', \pi(x'))],
-    \label{eq:biasedQc}
-\end{equation}
-
-With the formula above, the Q-values can be computed by dynamic programming.
-
-For simplicity, we use the multi-time model \cite{SMDP} to model the transition function: 
-\begin{equation}
-    P_m(x|s, j) = \sum^{\infty}_{N=1} \gamma^N P(x, N|s, j).
-    \label{eq:multiProb}
-\end{equation}
-
-$P_m(x|s, j)$ can be estimated by:
-\begin{equation}
-    \tilde{P}_m(x|s, j) = (1-\alpha)\tilde{P}_m(x|s, j) + \alpha [ \gamma^N \delta_{x'x}],
-    \label{eq:approxP}
-\end{equation}
-for all $x \in S_i$, where $\delta_{x'x}=1$ if $x' = x$ and is 0 otherwise.
+\section{Pseudo Reward}
 
 \endinput
 %Most of the previous work on RL focus on model-free approaches for several reasons. 

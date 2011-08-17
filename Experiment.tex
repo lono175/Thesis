@@ -2,6 +2,59 @@
 
 %TODO: Say how do we update the model (just for three iteration) with Bellman equation
 %TODO: say we use MaxQ for model based approach
+
+\section{Planning with Static Assumptions}
+\label{se:Model}
+
+Based on the results of the previous section, we can safely use any approximate model-based method 
+to learn the Q-values of subtasks which do not belong to $TC(H)$ without worrying
+that it will violate the optimality condition. Model-based RL requires the enumeration of all possible states during the planning process.
+However, it is not feasible when the state space is too large.
+Previous methods (\cite{ApproxDyna, ApproxTree}) rely on function approximation
+techniques to predict the next state. Their model is biased because it is possible 
+to encounter different next states given the same state and policy for a stochastic problem. If we 
+predict one of them, we ignore the stochastic nature of the problem. If we predict
+several, the number of states under consideration may grow exponentially with the number of simulating steps
+and become intractable after a few steps.
+
+We notice that, for some applications, there are some variables which are more important
+than others. Take the mobile robot navigation problem, for example; the location of the robot 
+is the key to the planning process, while the movement of other objects in the environment is less important.
+Our idea is to separate the variables into planning variables 
+and environment variables. During the planning process, we enumerate all possible values of the planning variables, while assuming 
+the remaining environment variables are static throughout the process. 
+If we limit the number of planning variables to be small, the enumeration process can be efficient.
+It also simplifies the learning of the transition and reward functions, since we only need to learn
+the dynamics and reward models for the planning variables.
+
+Let state $s = (x, y)$, where $x$ consists of planning variables and $y$ consists of environment
+variables. Following the MAXQ approach, we decompose the Q-function as:
+\begin{equation}
+    Q^{\pi}(i, x, j) = Q_r^{\pi}(i, x, j) + Q_c^{\pi}(i, x, j),
+    \label{eq:biasedMaxQ}
+\end{equation}
+where $Q_r^{\pi}(i, x, j)$ is provided by the child subtask $M_j$.
+
+The task of subtask $M_i$ is to compute $Q_c^{\pi}(i, x, j)$ by:
+\begin{equation}
+    Q_c^{\pi}(i, x, j) = \sum_{x'} P_m^{\pi}(x'|s, j)[Q_r^{\pi}(i, x', \pi_i(x')) + Q_c^{\pi}(i, x', \pi(x'))],
+    \label{eq:biasedQc}
+\end{equation}
+
+With the formula above, the Q-values can be computed by dynamic programming.
+
+For simplicity, we use the multi-time model \cite{SMDP} to model the transition function: 
+\begin{equation}
+    P_m(x|s, j) = \sum^{\infty}_{N=1} \gamma^N P(x, N|s, j).
+    \label{eq:multiProb}
+\end{equation}
+
+$P_m(x|s, j)$ can be estimated by:
+\begin{equation}
+    \tilde{P}_m(x|s, j) = (1-\alpha)\tilde{P}_m(x|s, j) + \alpha [ \gamma^N \delta_{x'x}],
+    \label{eq:approxP}
+\end{equation}
+for all $x \in S_i$, where $\delta_{x'x}=1$ if $x' = x$ and is 0 otherwise.
 \section{Bus Domain}
 \begin{figure}[t]
 %\begin{center}
@@ -118,9 +171,11 @@ the breakdown penalty. In turn, $Root$ learns $Move(4)$ cannot be executed in
 such a scenario, thus it will seek an alternate plan if the same scenario
 is encountered.
 
-The combination of our approximate model-based approach and MAXQ learns 
-a suboptimal policy similar to HORDQ with high pseudo-reward. MAXQ does not estimate the consequence of its action outside its own subtask, therefore
-$Move(t)$ will move to area $t$ at any cost.
+To illustrate the undesirable result when some suboptimal subtasks exist in 
+the hierarchy and the MAXQ framework is adopted, we combine our approximate model-based approach
+and MAXQ-Q learning in our experiment. The combination learns a suboptimal policy similar to HORDQ with high pseudo-reward. 
+Since MAXQ does not estimate the consequence of its action outside its own subtask,
+$Move(t)$ will move to area $t$ at any cost. It leads to the frequent damage of the school bus.
 
 To simulate the performance of the combination of a poorly-approximated model-based method and 
 HORDQ, we replaced our model-based approach with a random policy.
