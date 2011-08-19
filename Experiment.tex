@@ -217,6 +217,23 @@ is a $K$-step lookahead greedy search algorithm. The planner searches the states
 which can be reached from the current state within $K$ steps and returns a sequence of
 steps which achieve the highest reward.
 
+%why model-free approach is necessary
+Since we only model the dynamics of Mario, the dynamics of other objects as well as 
+the interactions between objects are ignored. 
+
+The effects are listed below:
+%Handle the interaction between objects
+%Not everything can be modeled
+%Monster can be killed
+%Turtle -> shell
+%Kick the shell may kill monsters
+%Kick the shell may kill Mario
+%Monsters come out from the right edge of the screen
+%Fiery Mario can attack with fireballs
+%Fireball kills the monster
+It is possible to learn 
+
+
 %details
 In our experiment, we do not assume the planner has the prior knowledge about 
 the dynamics of Super Mario Bros. To learn the dynamics of Mario, we use regression trees
@@ -255,7 +272,6 @@ Since we may not search the tree fully, it is possible to have
 %TODO: add model the difference here (Peter's paper)
 %
 
-\subsection{}
 \endinput
 %Most of the previous work on RL focus on model-free approaches for several reasons. 
 %The most 
