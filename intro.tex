@@ -12,15 +12,15 @@ Reinforcement learning (RL) addresses the problem of finding an optimal policy i
 In the RL setting, an agent interacts with the environment, optimizing its behavior to
 maximize the received rewards.
 RL methods can be broadly classified into two classes: model-based and
-model-free. Model-based RL learns an effective policy by
+model-free. Model-based methods learn an effective policy by
 constructing the model from samples and simulating experiences from the model. It
 generally requires fewer samples to learn the optimal policy. However, when the
 state space is too large, we cannot build the exact model anymore. Instead, we
-have to approximate the model with techniques such as function approximation. Little 
-research has been done to address the problem of model-based reinforcement learning with approximation in
-an online setting.
+have to approximate the model with techniques such as function approximation. 
+%Little 
+%research has been done to address the problem of model-based reinforcement learning with approximation in
+%an online setting.
 %TODO
-
 Methods based on factored Markov decision processes (FMDPs) assume the problem has some factored structure, and use 
 specialized algorithms that exploit the structure \cite{ApproxFactor} \cite{SPUDD}. 
 However, these methods require prior knowledge
@@ -68,6 +68,7 @@ To combine both methods, we need a framwork
 
 %TODO: state that it is fine if we do not learn the transition function or reward function correctly
 
+%\section{Related work}
 We are not the first to try to combine different RL methods within the HRL framework.  
 Ghavamzadeh and Mahadevan \cite{HybridPolicy} combined value function-based RL and policy gradient RL to handle
 continuous MDP problems. Cora \cite{Vlad} incorporated model-based, model-free and Bayesian active learning into the MAXQ framework.
@@ -78,6 +79,8 @@ In contrast, our method learns the optimal policy without the requirement that
 all of the policies of the subtasks need be optimal. It is thus more robust and allows us to incorporate approximate
 approaches into the same framework.
 
+
+\section{Contribution}
 We are the first to address the problem of learning the optimal policy when some 
 suboptimal subtasks are present in the hierarchy.
 Our contribution includes: 
@@ -88,6 +91,7 @@ Our contribution includes:
 \item Introduced the concept of pseudo-reward to HORDQ algorithm and experimentally showed that the existence of pseudo-reward is neccessary for HORDQ to learn faster than the flat Q-learning
 \end{itemize}
 
+\section{Thesis organization}
 %say the benefit of model-based RL (peter's model based HRL, 
 %illustrate the problem of model-based RL
 
