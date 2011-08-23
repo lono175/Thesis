@@ -1,6 +1,8 @@
 %% The following is a directive for TeXShop to indicate the main file
 %%!TEX root = diss.tex
 
+%TODO: it's possible to learn the opitmal policy with positive pseudo-reward with assumptions on MDP problem
+
 \chapter{Introduction}
 \label{ch:intro}
 
@@ -43,6 +45,14 @@ applied to large domains \cite{LSTD99}\cite{KeepAway}.
 %The problem is the curse of dimensionality
 %supervised learning-> 
 %cannot model everything->
+
+In this thesis, we investigate the possibility to combine both model-based and model-free methods 
+and get the best of it--simulate the experiences from samples to increase the learning rate
+and learn an optimal policy even when the assumption of model is not satisfied. 
+
+We need a framework which can incorporate difference RL algorithms.
+One possible choice is 
+To combine both methods, we need a framwork 
 
 %In this work, we combine model-based and model-free methods with the hierarchical 
 %reinforcement learning (HRL) framework. We propose a simple approximate approach which 

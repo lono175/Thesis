@@ -1,8 +1,43 @@
 \chapter{Experimental Results}
 
+We show the effectiveness of our approach with 
+Bus domain and Super Mario Bros. 
+Bus domain is a 6 by 6 grid world problem. 
+The number of states for bus domain is
+2,304, so it is small enough to apply the table lookup Q-learning to learn
+the optimal policy. In this experiment, we combine table lookup HORDQ and an approximate model-based method 
+to illustrate how to increase the learning rate and learn a near-optimal policy with our approach.
+
+Bus domain is a kind of toy problem with few thousand states and can be handled by table lookup
+Q-learning. For large problems with more than millions of states, it is not possible to adopt
+table lookup methods to learn the optimal policy.
+Instead, it is necessary to adopt function approximation techniques to learn the policy.
+With function approximation, it is not possible to learn the optimal policy anymore.
+However, the optimality guarantee of Theorem \ref{thm:opt} relies on table lookup methods and 
+does not hold for function approximation techniques.
+We iilustrate our work with Super Mario Bros. to show that despite the optimality guarantee is lost in
+large problems, we can still use model-free methods to help model-based methods handle.the effects which
+are not included in the model. 
+Since both model-free and model-based methods may not learn the optimal policy, it is possible to 
+combine both methods to learn a better one.
+
+
+%For large problems, both model-based and model-free methods may learn a suboptimal policy. 
+
+
+%On the other hand, the state space of Super Mario Bros. is too large to adopt table lookup
+%methods. 
+%However, the learned policy of Q-learning with function approximation might not be optimal.
+
+%TODO: why not classical planning?
+%TODO: Why it is bad to put too much information to the model?
+%TODO: why it is bad to put pit information?
+
+
 %TODO: Say how do we update the model (just for three iteration) with Bellman equation
 %TODO: say we use MaxQ for model based approach
 \section{Bus Domain}
+\label{se:domain}
 \begin{figure}[t]
  \begin{minipage}[b]{0.5\linewidth}
     \begin{center}
@@ -17,12 +52,12 @@
 \begin{minipage}[b]{0.5\linewidth} \centering (a) \end{minipage}
 \begin{minipage}[b]{0.5\linewidth} \centering (b) \end{minipage}
 
-\caption{(a) The school bus domain (b) A task graph for the school bus domain.}
+\caption{(a) The bus domain (b) A task graph for the bus domain.}
 \label{fig:bus}
 \end{figure}
 
-Figure \ref{fig:bus}(a) shows the school bus domain. The school bus starts at school $S$. Its task 
-is to pickup all passengers marked as $P$ and return to the school.
+Figure \ref{fig:bus}(a) shows the bus domain. The bus starts at $S$. Its task 
+is to pickup all passengers marked as $P$ and return to the .
 The bus can move North, South, East, or West. There is a reward of -1 applied for each action.
 There is 0.1 probability for the bus to move in a random direction. It stays put 
 when trying to cross a wall. 
@@ -140,7 +175,7 @@ for all $x \in S_i$, where $\delta_{x'x}=1$ if $x' = x$ and is 0 otherwise.
 \begin{minipage}[b]{0.5\linewidth} \centering (b) \end{minipage}
 
 %\end{center}
-\caption{The learning curve for the school bus domain, averaged over 400 episodes. (a) With our model-based approach. (b) With random planner.
+\caption{The learning curve for the bus domain, averaged over 400 episodes. (a) With our model-based approach. (b) With random planner.
 The pseudo-reward is shown in parentheses. The parameters are $\alpha=0.1$ and $\gamma=1$. All algorithms follow an $\epsilon$-greedy exploration policy
 with $\epsilon = 0.1$.}
 \label{fig:res}
@@ -176,7 +211,7 @@ To illustrate the undesirable result when some suboptimal subtasks exist in
 the hierarchy and the MAXQ framework is adopted, we combine our approximate model-based approach
 and MAXQ-Q learning in our experiment. The combination learns a suboptimal policy similar to HORDQ with high pseudo-reward. 
 Since MAXQ does not estimate the consequence of its action outside its own subtask,
-$Move(t)$ will move to area $t$ at any cost. It leads to the frequent damage of the school bus.
+$Move(t)$ will move to area $t$ at any cost. It leads to the frequent damage of the bus.
 
 To simulate the performance of the combination of a poorly-approximated model-based method and 
 HORDQ, we replaced our model-based approach with a random policy.
