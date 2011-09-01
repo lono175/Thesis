@@ -6,9 +6,135 @@
 %Model-free
 %Q
 %SARSA
-\chapter{Reinforcement Learning}
+\chapter{Background}
 \label{ch:RL}
-\section{Model Formulation}
+
+In this chapter, we introduce the basic concept of reinforcement learning (RL)
+and the Markov decision process (MDP) and semi-Markov decision process (SMDP) formalisms.
+We describe the solution methods of MDPs and SMDPs, that include model-free and model-based 
+methods. Then we review the concepts and algorithms in hierarchical reinforcement learning (HRL) frameworks. 
+We present the brief introduction of previous work in the RL field.
+For more comprehensive introduction of MDP, SMDP and RL, please refer to standard text
+\cite{howard1960, Puterman94, SuttonIntro, KevinIntro}.
+Bertsekas and Tsitsiklis \cite{Neurodynamic} introduce RL from a more theoretic perspective.
+A more detailed introduction of HRL can be found in \cite{HRLSurvey}.
+
+\section{Reinforcement Learning}
+Reinforcement learning (RL) addresses the problem for an agent to execute a sequence of actions
+in a stochastic environment to maximize its rewards. 
+
+In the RL setting, the environment can be modeled in several formalisms.
+One of the most commonly adopted formalisms is Markov decision processes (MDPs).
+An MDP assumes that the state of the environment is fully observable, and each action takes a single
+step to finish. Semi-Markov decision processes (SMDPs) remove the latter assumption and allow
+the action to take several time steps. Partially observable Markov decision processes (POMDPs) remove
+the former assumption and the agent needs to decide the actions without access to the full state
+of the environment.
+
+Regardless of the underlying models of the environment, the objective of an RL method is
+to find an optimal policy for the model. MDPs and SMDPs are introduced in Sections \ref{se:MDP} and \ref{se:SMDP}.
+
+
+We will cover MDPs and SMDPs in detail
+in Sections 2.2 and 2.3. POMDPs will be presented more briefly, as the subject of partial
+observability is almost (but not completely) orthogonal to the main contributions of this
+dissertation.
+, but
+the MDP is unknown to the agent in the beginning. 
+The task of reinforcement learning
+consists of nding an optimal policy for the associated MDP. We will therefore
+refer to the underlying MDP as the model of the environment (or simply model
+if it is clear from the context which meaning of model is intended). The optimal
+policy is denoted by  and the corresponding utility function by V .
+
+%The lack of an apriori known model generates a need to sample the MDP to
+%gather statistical knowledge about this unknown model. Depending on the kind
+%of knowledge that is gathered, a distinction is made between model-based and
+%model-free solution techniques.
+
+
+
+Reinforcement learning (RL) (Sutton and Barto, 1998) refers to a collection of methods
+that allow an agent (a system) to learn how to make good decisions by observing its
+own behavior, and improves its actions through a reinforcement mechanism. There are
+many formal specifications of this kind of problems that have been developed over the last
+fifty years. The most commonly used is the Markov decision processes (MDPs). An
+MDP assumes that the agent has full access to the state of the world and each of its actions
+
+%RL methods can be broadly classified into two classes: model-based
+%and model-free. Model-based RL learns an effective policy by constructing the model from samples
+%and simulating experiences from the model. It generally requires fewer samples to learn the optimal
+%policy. However, when the state space is too large, we cannot build the exact model anymore.
+%Instead, we have to approximate the model with techniques such as function approximation. Little
+%research has been done to address the problem of model-based RL with approximation in an online
+%setting.
+
+%TODO: why RL
+%TODO: the challenge of RL
+
+%Given a reward function, reinforcement learning algorithms can
+%search over possible action space and find a sequence of actions 
+%which can maximize the rewards. The reinforcement learning is an ideal choice
+%to develop a learning agent for video games.
+
+%In reinforcement learning, the environment can be modeled as an MDP but
+%this MDP is unknown to the RL-agent. The task of reinforcement learning
+%consists of nding an optimal policy for the associated MDP. We will therefore
+%refer to the underlying MDP as the model of the environment (or simply model
+%if it is clear from the context which meaning of model is intended). The optimal
+%policy is denoted by  and the corresponding utility function by V .
+
+%The lack of an apriori known model generates a need to sample the MDP to
+%gather statistical knowledge about this unknown model. Depending on the kind
+%of knowledge that is gathered, a distinction is made between model-based and
+%model-free solution techniques.
+
+
+In the RL setting, the environment is modeled as an MDP problem.
+However, the MDP is unknown to the RL agent. The objective of reinforcement learning is to 
+learn an optimal policy for the MDP. Since the MDP is unknown in the beginning, 
+the agent needs to sample the MDP to acquire the knowledge about the MDP.
+The learning agent will take actions based on the current state. For the first step, the agent does not know anything about 
+the environment, therefore the agent has to choose the first action randomly. After the environment
+receives the action, it will provide a reward to the agent as a feedback. The reward can be either
+positive or negative. The agent adjusts the value function to maximize the expected reward in the future.
+The initial value of value function is 
+usually 0, but it is possible to set it to some high enough value to encourage exploration.
+It is important to evaluate the value function 
+correctly. If some actions with low expected reward are estimated as high, it degrades the
+performance of agent.
+
+Reinforcement learning (RL) (Sutton and Barto, 1998) refers to a collection of methods
+that allow an agent (a system) to learn how to make good decisions by observing its
+own behavior, and improves its actions through a reinforcement mechanism. There are
+many formal specifications of this kind of problems that have been developed over the last
+fifty years. The most commonly used is the Markov decision processes (MDPs). An
+MDP assumes that the agent has full access to the state of the world and each of its actions
+takes a single time step. Semi-Markov decision processes (SMDPs) relax the latter
+assumption and allow actions that take several time steps. Finally, partially observable
+Markov decision processes (POMDPs) relax the former assumption by allowing the agent
+to receive observations that do not necessarily reveal the entire state of the environment.
+When a problem is modeled using one of the above, the goal of an RL method is to find a
+good (possibly optimal) policy for the model. We will cover MDPs and SMDPs in detail
+in Sections 2.2 and 2.3. POMDPs will be presented more briefly, as the subject of partial
+observability is almost (but not completely) orthogonal to the main contributions of this
+dissertation.
+
+
+The agent can select an action which leads to the highest value of value function. However, 
+this strategy does not allow the agent to explore the states which are not visited before.
+A better approach is to use $\epsilon$-greedy method. The method allows the agent to abandon the
+best action and choose
+a random action with a very small probability $\epsilon$. The higher the probability, the more
+likely that the agent would explore the new actions. However, if the exploration probability 
+is too high, it will increase the time to converge.
+
+After the agent takes an action, the environment will provide a reward and a state to the
+agent. The agent then decides an new action for the new state. After several iterations
+, the agent will learn a correspondence between the action and state. The correspondence is called 
+"policy". 
+
+\section{Markov Decision Processes}
 
 In this work, we address the finite state Markov decision process (MDP) problem:
 %\subsection{Model Formulation}
@@ -17,7 +143,7 @@ In this work, we address the finite state Markov decision process (MDP) problem:
     \item $S$ is a finite set of states of the environment.
     \item $A$ is a finite set of actions.
     \item $P:S \times A \times S \rightarrow [0, 1]$ is the transition function which defines a probability distribution over the possible next states.
-    \item $R:S \times A \rightarrow \mathbb{R}$ is the reward function which defines the reward after executing a certain action at a certain state.
+    \item $R:S \times A \times S \rightarrow \mathbb{R}$ is the reward function which defines the reward after executing a certain action at a certain state.
  \end{itemize}
 \end{definition}
 
@@ -29,7 +155,7 @@ policy $\pi$ is followed from state $s$.
 
 The value function satisfies the Bellman equation:
 \begin{equation}
-    V^{\pi}(s) = \sum_{s'}P(s'|s, \pi(s))[R(s, \pi(s)) + \gamma V^{\pi}(s')],
+    V^{\pi}(s) = \sum_{s'}P(s'|s, \pi(s))[R(s'|s, \pi(s)) + \gamma V^{\pi}(s')],
     \label{eq:V}
 \end{equation}
 where $\gamma \in [0, 1]$ is the discount factor which discounts the future reward to the present value.
@@ -64,54 +190,10 @@ policy $\pi$ is followed thereafter.
 
 %-------------------------------------------------------------------------
 
-%Given a reward function, reinforcement learning algorithms can
-%search over possible action space and find a sequence of actions 
-%which can maximize the rewards. The reinforcement learning is an ideal choice
-%to develop a learning agent for video games.
 
-%In reinforcement learning, the environment can be modeled as an MDP but
-%this MDP is unknown to the RL-agent. The task of reinforcement learning
-%consists of nding an optimal policy for the associated MDP. We will therefore
-%refer to the underlying MDP as the model of the environment (or simply model
-%if it is clear from the context which meaning of model is intended). The optimal
-%policy is denoted by  and the corresponding utility function by V .
-
-%The lack of an apriori known model generates a need to sample the MDP to
-%gather statistical knowledge about this unknown model. Depending on the kind
-%of knowledge that is gathered, a distinction is made between model-based and
-%model-free solution techniques.
-
-%We briefly introduce the basic concept of reinforcement learning in this chapter. 
-%For a more completed introduction of reinforcement learning, please refer to
-%\cite{SuttonIntro} and \cite{KevinIntro}.
-
-In the reinforcement learning (RL) setting, the environment is modeled as an MDP problem.
-However, the MDP is unknown to the RL agent. The objective of reinforcement learning is to 
-learn an optimal policy for the MDP. Since the MDP is unknown in the beginning, 
-the agent needs to sample the MDP to acquire the knowledge about the MDP.
-The learning agent will take actions based on the current state. For the first step, the agent does not know anything about 
-the environment, therefore the agent has to choose the first action randomly. After the environment
-receives the action, it will provide a reward to the agent as a feedback. The reward can be either
-positive or negative. The agent adjusts the value function to maximize the expected reward in the future.
-The initial value of value function is 
-usually 0, but it is possible to set it to some high enough value to encourage exploration.
-It is important to evaluate the value function 
-correctly. If some actions with low expected reward are estimated as high, it degrades the
-performance of agent.
-
-The agent can select an action which leads to the highest value of value function. However, 
-this strategy does not allow the agent to explore the states which are not visited before.
-A better approach is to use $\epsilon$-greedy method. The method allows the agent to abandon the
-best action and choose
-a random action with a very small probability $\epsilon$. The higher the probability, the more
-likely that the agent would explore the new actions. However, if the exploration probability 
-is too high, it will increase the time to converge.
-
-After the agent takes an action, the environment will provide a reward and a state to the
-agent. The agent then decides an new action for the new state. After several iterations
-, the agent will learn a correspondence between the action and state. The correspondence is called 
-"policy". 
-
+\subsection{Solution Method for MDPs}
+\subsubsection{Model-Free Methods}
+\subsubsection{Model-Based Methods}
 \section{Temporal Difference}
 \label{sec:TD}
 There are 3 types of reinforcement learning algorithms -- dynamic programming (DP), Monte Carlo 
@@ -197,71 +279,71 @@ Repeat (for each episode):\\
 \end{center}
 
 
-\section{}
-SARSA is a on-policy TD approach. On-policy indicates that it learns from the current policy.
-Different from other TD approaches, SARSA updates the Q value of the current state-action from the next state-action.
-The Q value is updated by:
-\begin{displaymath}
-    Q(s_t, a_t) \leftarrow Q(s_t, a_t) + \alpha [r_{t+1} + \gamma Q(s_{t+1}, a_{t+1})-Q(s_t, a_t)],
-\end{displaymath}
-where $Q(s, a)$ is the value function for state-pair, and it is the expected reward when the agent takes
-the action $a$ at the state $s$. $\alpha$ is step-wise, which controls the learning rate. 
-$\gamma$ is the discount factor.
+%\section{}
+%SARSA is a on-policy TD approach. On-policy indicates that it learns from the current policy.
+%Different from other TD approaches, SARSA updates the Q value of the current state-action from the next state-action.
+%The Q value is updated by:
+%\begin{displaymath}
+    %Q(s_t, a_t) \leftarrow Q(s_t, a_t) + \alpha [r_{t+1} + \gamma Q(s_{t+1}, a_{t+1})-Q(s_t, a_t)],
+%\end{displaymath}
+%where $Q(s, a)$ is the value function for state-pair, and it is the expected reward when the agent takes
+%the action $a$ at the state $s$. $\alpha$ is step-wise, which controls the learning rate. 
+%$\gamma$ is the discount factor.
 
-\begin{center}
-\begin{tabular}{@{}lp{6cm}@{}}
-\hline
-Algorithm: Dyna-Q\\
-\hline
-Initialize $Q(s, a)$ and $Model(s, a)$\\
-Repeat (for each episode):\\
-\ \ \ \ Repeat (for each step of episode):\\
-\ \ \ \ \ \ \ \ $s \leftarrow$ the current state\\
-\ \ \ \ \ \ \ \ Choose $a$ based on $s$ using policy derived from $Q$ (e.g., $\epsilon$-greedy method)\\
-\ \ \ \ \ \ \ \ Take action $a$, obtain reward $r$ and next state $s'$ from the environment\\
-\ \ \ \ \ \ \ \ $Q(s, a) \leftarrow Q(s, a) + \alpha [r + \gamma max_{a'} Q(s', a')-Q(s, a)]$\\
-\ \ \ \ \ \ \ \ $Model(s, a) \leftarrow s', r$
-\ \ \ \ \ \ \ \ Repeat $N$ times:
-\ \ \ \ \ \ \ \ \ \ \ \ $s \leftarrow $ random previously observed state
-\ \ \ \ \ \ \ \ \ \ \ \ $a \leftarrow $ random action previously taken in $s$
-\ \ \ \ \ \ \ \ \ \ \ \ $s', r \leftarrow Model(s, a)$ 
-\ \ \ \ \ \ \ \ \ \ \ \ $Q(s, a) \leftarrow Q(s, a) + \alpha [r + \gamma max_{a'} Q(s', a')-Q(s, a)]$\\
-\hline  
-\end{tabular}
-\end{center}
+%\begin{center}
+%\begin{tabular}{@{}lp{6cm}@{}}
+%\hline
+%Algorithm: Dyna-Q\\
+%\hline
+%Initialize $Q(s, a)$ and $Model(s, a)$\\
+%Repeat (for each episode):\\
+%\ \ \ \ Repeat (for each step of episode):\\
+%\ \ \ \ \ \ \ \ $s \leftarrow$ the current state\\
+%\ \ \ \ \ \ \ \ Choose $a$ based on $s$ using policy derived from $Q$ (e.g., $\epsilon$-greedy method)\\
+%\ \ \ \ \ \ \ \ Take action $a$, obtain reward $r$ and next state $s'$ from the environment\\
+%\ \ \ \ \ \ \ \ $Q(s, a) \leftarrow Q(s, a) + \alpha [r + \gamma max_{a'} Q(s', a')-Q(s, a)]$\\
+%\ \ \ \ \ \ \ \ $Model(s, a) \leftarrow s', r$
+%\ \ \ \ \ \ \ \ Repeat $N$ times:
+%\ \ \ \ \ \ \ \ \ \ \ \ $s \leftarrow $ random previously observed state
+%\ \ \ \ \ \ \ \ \ \ \ \ $a \leftarrow $ random action previously taken in $s$
+%\ \ \ \ \ \ \ \ \ \ \ \ $s', r \leftarrow Model(s, a)$ 
+%\ \ \ \ \ \ \ \ \ \ \ \ $Q(s, a) \leftarrow Q(s, a) + \alpha [r + \gamma max_{a'} Q(s', a')-Q(s, a)]$\\
+%\hline  
+%\end{tabular}
+%\end{center}
 
-\section{The Dyna Architecture}
-SARSA is a on-policy TD approach. On-policy indicates that it learns from the current policy.
-Different from other TD approaches, SARSA updates the Q value of the current state-action from the next state-action.
-The Q value is updated by:
-\begin{displaymath}
-    Q(s_t, a_t) \leftarrow Q(s_t, a_t) + \alpha [r_{t+1} + \gamma Q(s_{t+1}, a_{t+1})-Q(s_t, a_t)],
-\end{displaymath}
-where $Q(s, a)$ is the value function for state-pair, and it is the expected reward when the agent takes
-the action $a$ at the state $s$. $\alpha$ is step-wise, which controls the learning rate. 
-$\gamma$ is the discount factor.
+%\section{The Dyna Architecture}
+%SARSA is a on-policy TD approach. On-policy indicates that it learns from the current policy.
+%Different from other TD approaches, SARSA updates the Q value of the current state-action from the next state-action.
+%The Q value is updated by:
+%\begin{displaymath}
+    %Q(s_t, a_t) \leftarrow Q(s_t, a_t) + \alpha [r_{t+1} + \gamma Q(s_{t+1}, a_{t+1})-Q(s_t, a_t)],
+%\end{displaymath}
+%where $Q(s, a)$ is the value function for state-pair, and it is the expected reward when the agent takes
+%the action $a$ at the state $s$. $\alpha$ is step-wise, which controls the learning rate. 
+%$\gamma$ is the discount factor.
 
-\begin{center}
-\begin{tabular}{@{}lp{6cm}@{}}
-\hline
-Algorithm: Dyna-Q\\
-\hline
-Initialize $Q(s, a)$ and $Model(s, a)$\\
-Repeat (for each episode):\\
-\ \ \ \ Repeat (for each step of episode):\\
-\ \ \ \ \ \ \ \ $s \leftarrow$ the current state\\
-\ \ \ \ \ \ \ \ Choose $a$ based on $s$ using policy derived from $Q$ (e.g., $\epsilon$-greedy method)\\
-\ \ \ \ \ \ \ \ Take action $a$, obtain reward $r$ and next state $s'$ from the environment\\
-\ \ \ \ \ \ \ \ $Q(s, a) \leftarrow Q(s, a) + \alpha [r + \gamma max_{a'} Q(s', a')-Q(s, a)]$\\
-\ \ \ \ \ \ \ \ $Model(s, a) \leftarrow s', r$
-\ \ \ \ \ \ \ \ Repeat $N$ times:
-\ \ \ \ \ \ \ \ \ \ \ \ $s \leftarrow $ random previously observed state
-\ \ \ \ \ \ \ \ \ \ \ \ $a \leftarrow $ random action previously taken in $s$
-\ \ \ \ \ \ \ \ \ \ \ \ $s', r \leftarrow Model(s, a)$ 
-\ \ \ \ \ \ \ \ \ \ \ \ $Q(s, a) \leftarrow Q(s, a) + \alpha [r + \gamma max_{a'} Q(s', a')-Q(s, a)]$\\
-\hline  
-\end{tabular}
-\end{center}
+%\begin{center}
+%\begin{tabular}{@{}lp{6cm}@{}}
+%\hline
+%Algorithm: Dyna-Q\\
+%\hline
+%Initialize $Q(s, a)$ and $Model(s, a)$\\
+%Repeat (for each episode):\\
+%\ \ \ \ Repeat (for each step of episode):\\
+%\ \ \ \ \ \ \ \ $s \leftarrow$ the current state\\
+%\ \ \ \ \ \ \ \ Choose $a$ based on $s$ using policy derived from $Q$ (e.g., $\epsilon$-greedy method)\\
+%\ \ \ \ \ \ \ \ Take action $a$, obtain reward $r$ and next state $s'$ from the environment\\
+%\ \ \ \ \ \ \ \ $Q(s, a) \leftarrow Q(s, a) + \alpha [r + \gamma max_{a'} Q(s', a')-Q(s, a)]$\\
+%\ \ \ \ \ \ \ \ $Model(s, a) \leftarrow s', r$
+%\ \ \ \ \ \ \ \ Repeat $N$ times:
+%\ \ \ \ \ \ \ \ \ \ \ \ $s \leftarrow $ random previously observed state
+%\ \ \ \ \ \ \ \ \ \ \ \ $a \leftarrow $ random action previously taken in $s$
+%\ \ \ \ \ \ \ \ \ \ \ \ $s', r \leftarrow Model(s, a)$ 
+%\ \ \ \ \ \ \ \ \ \ \ \ $Q(s, a) \leftarrow Q(s, a) + \alpha [r + \gamma max_{a'} Q(s', a')-Q(s, a)]$\\
+%\hline  
+%\end{tabular}
+%\end{center}
 
 %--------------------------------
 
@@ -379,8 +461,90 @@ Repeat (for each episode):\\
 %\end{tabular}
 %\end{center}
 
+\section{Semi-Markov Decision Processes}
 
 \section{Hierarchical Reinforcement Learning}
+
+Hierarchical reinforcement learning (HRL) framework assume an MDP problem can be decomposed 
+into several smaller MDPs and 
+Temporal abstraction is an important technique which has been studied extensively in
+clasicial AI and RL fields. The idea of hierarchical reinforcement learning (HRL) 
+is to decompose one monolith task into several smaller subtasks. Each subtask is 
+responsible to learn a policy of part of original state space. It allows reuse 
+the policy for 
+Reasoning and learning about temporally extended actions has been studied extensively
+in several fields including classical AI, control theory, and RL. In this section, we look at
+the historical development of hierarchy and temporal abstraction in classical AI, control,
+and RL
+Work in HRL has followed three main trends: focusing on
+subsets of the state space in a divide-and conquer approach (state space decomposition),
+34
+grouping sequences or sets of actions together (temporal abstraction), and ignoring differences
+between states based on the context (state abstraction). Much of the work falls into
+several of these categories.
+
+
+%average reward
+In this chapter, we introduce a general hierarchical reinforcement learning (HRL) framework
+for simultaneous learning of policies at multiple levels of hierarchy. Our treatment
+builds upon the existing approaches such as HAMs (Parr, 1998), options (Sutton et al.,
+1999; Precup, 2000), MAXQ (Dietterich, 2000), and PHAMs (Andre and Russell, 2002;
+Andre, 2003), especially the MAXQ value function decomposition. In our framework,
+we add three-part value function decomposition (Andre and Russell, 2002) to guarantee
+hierarchical optimality, and reward shaping (Ng et al., 1999) to reduce the burden of exploration,
+to the MAXQ method. Rather than redundantly explain MAXQ and then our
+hierarchical framework, we will present our model and note throughout this chapter where
+the key pieces were inspired by or are directly related to Dietterich’s MAXQ work. In the
+following chapters, we first extend this framework to the average reward model, then we
+generalize it to be applicable to problems with continuous state and/or action spaces, and
+finally broaden it to be appropriate for domains with multiple cooperative agents.
+
+The difficulty with using the above methods was that decisions in HRL are no longer
+made at synchronous time steps, as is traditionally assumed in RL. Instead, agent makes decision
+in epochs of variable length, such as when a distinguishing state is reached (e.g., an
+intersection in a robot navigation task), or a subtask is completed (e.g., the elevator arrives
+on the first floor). Fortunately, a well-known statistical model is available to treat variable
+length actions: the SMDP model described in Section 2.3. Here, state transition dynamics
+is specified not only by the state where an action was taken, but also by parameters
+specifying the length of time since the action was taken. Early work in RL on the SMDP
+model studied extensions of algorithms such as Q-learning to continuous-time (Bradtke and
+Duff, 1995; Mahadevan et al., 1997b). The early work on SMDP model was then expanded
+to include hierarchical task models over fully or partially specified lower level subtasks,
+which led to developing powerful HRL models such as hierarchies of abstract machines
+(HAMs) (Parr, 1998), options (Sutton et al., 1999; Precup, 2000), MAXQ (Dietterich,
+2000), and programmable HAMs (PHAMs) (Andre and Russell, 2001; Andre, 2003). In
+the options model (at least in its simplest form), Sutton et. al. studied how to learn policies
+given fully specified policies for executing subtasks. In the HAMs formulation, Parr
+
+showed how hierarchical learning could be achieved even when the policies for lower-level
+subtasks were only partially specified. The MAXQ model is one of the first methods to
+combine temporal abstraction with state abstraction. It provides a more comprehensive
+framework for hierarchical learning where instead of policies for subtasks, the learner is
+given pseudo-reward functions. Unlike options and HAMs, MAXQ does not rely directly
+on reducing the entire problem to a single SMDP. Instead, a hierarchy of SMDPs is created
+whose solutions can be learned simultaneously. The key feature of MAXQ is the decomposed
+representation of the value function. Dietterich views each subtask as a separate
+MDP, and thus represents the value of a state within that MDP as composed of the reward
+for taking an action at that state (which might be composed of many rewards along a trajectory
+through a subtask) and the expected reward for completing the subtask. To isolate
+the subtask from the calling context, Dietterich uses the notion of a pseudo-reward. At the
+terminal states of a subtask, the agent is rewarded according to the pseudo-reward, which
+is set a priori by the designer, and does not depend on what happens after leaving the current
+subtask. Each subtask can then be treated in isolation from the rest of the problem
+with the caveat that the solutions learned are only recursively optimal. Each action in the
+recursively optimal policy is optimal with respect to the subtask containing the action, all
+descendant subtasks, and the pseudo-reward chosen by the designer of the system. Another
+important contribution of Dietterich’s work is the idea that state abstraction can be done
+separately on the different components of the value function, which allows one to perform
+more abstraction. We investigate the MAXQ framework and its related concepts such as
+pseudo-reward, recursive optimality, value function decomposition, and state abstraction in
+more details in Chapter 3. In the PHAMs model, Andre and Russell extended HAMs and
+presented an agent design language for RL. Andre and Russell (2002) also addressed the
+issue of safe state abstraction in HRL. Their method yields state abstraction while maintaining
+hierarchical optimality.
+
+
+\subsection{Taxi Domain}
 %Logic of Adaptive Behavior ->Options, SMDP, MAXQ, HORDQ, HAMQ
 MAXQ. The MAXQ algorithm (Dietterich, 1998, 2000b,a) can be seen as an extension
 of the HSMQ algorithm. It relies on the theory of SMDPs but unlike e.g. the options

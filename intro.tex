@@ -10,21 +10,159 @@
 %cannot give any optimality guarantees,
 Reinforcement learning (RL) addresses the problem of finding an optimal policy in a stochastic environment.
 In the RL setting, an agent interacts with the environment, optimizing its behavior to
-maximize the received rewards.
+maximize the received rewards. For many applications, it is expensive and time-consuming to 
+acquire samples from the environment, so it is important to for the agent 
+to learn an effective policy in as few actions as possible. 
+
 RL methods can be broadly classified into two classes: model-based and
-model-free. Model-based methods learn an effective policy by
+model-free.
+Model-based methods learn an effective policy by
 constructing the model from samples and simulating experiences from the model. It
-generally requires fewer samples to learn the optimal policy. However, when the
-state space is too large, we cannot build the exact model anymore. Instead, we
-have to approximate the model with techniques such as function approximation. 
+generally requires fewer samples to learn the optimal policy.
+
+R-MAX \cite{RMaxQ} learns the model by exploring parts of the domain.
+To learn an accurate model, the agent needs to explore every state $m$ times.
+Thus, it is impractical to apply such method to large domains.
+
+%In R-max, the agent always maintains a
+%complete, but possibly inaccurate model of its environment and acts based on the optimal
+%policy derived from this model. The model is initialized in an optimistic fashion: all actions
+%in all states return the maximal possible reward (hence the name).
+
+For large domains, it is necessary to apply machine learning algorithms to generalize
+the knowledge to unvisited states. Learning the model is a supervised learning problem:
+given the agent's current state and action, the learning algorithm needs to predict
+the next state and reward. Many supervised learning algorithms can generalize 
+over unvisited states. Therefore  
+
+
+Methods based on factored Markov decision processes (FMDPs) assume the problem has some factored structure, and use 
+specialized algorithms that exploit the structure \cite{ApproxFactor, SPUDD}. 
+However, these methods require prior knowledge
+of the structure of the problem, which may not be available in practice.
+
+Hester and Stone \cite{Hester09} observed that the relative transition effects of actions
+is more generalizable than absolute values. They propose RL-DT to model relative
+effects with decision trees.
+
+%OOMDP problem (relational)
+%How to learn all effects
+
+STRIPS domains [8] are made up of a set of objects
+O, a set of predicates P, and a set of actions A. The
+actions have conjunctive (over P) preconditions and
+effects specified by ADD and DELETE (DEL) lists,
+which specify what predicates are added and deleted
+from the world state when the action occurs. Stochastic
+STRIPS operators generalize this representation
+
+
+In relational domain, the environment is composed of objects.
+
+Walsh et al. proposed KWIK linear regression to learn the 
+transition function and 
+the probabilities of action
+outcomes in Stochastic STRIPS and Object
+Oriented MDPs, none of which have been
+proven to be efficiently learnable in the RL
+setting before.
+
+
+
+
+%One way to learn the model of the domain quickly is to 
+%introduce generalizationintothelearningofthemodel using 
+%modern machine learning techniques. Learning the model is 
+%essentially a supervised learning problem where the input 
+%is the agents current state and action, and the learning alg
+%orithm has to predict the agents next state and reward. 
+%Markov Decision ProcessesMany existing supervised learning algorithms are able to 
+%generalize their predictions to new or unseen parts of the 
+%state space. By applying these methods, the algorithm can 
+%learn a model of the domain with far fewer state visits than 
+%an algorithm like r-max. 
+
+%Unlike many traditional supervised learning problems, in 
+%reinforcement learning, the algorithm has control of which 
+%training examples it receives. Learning the model efficiently 
+%requires a combination of a fast learning algorithm and a 
+%policythat acquiresthenecessary training examplesquickly. 
+%The agent can target states for exploration that it expects 
+%will improve the model. These states could be where the 
+%agent has not visited frequently or where the model has low 
+%confidence in its predictions. 
+
+%In R-max, the agent always maintains a
+%complete, but possibly inaccurate model of its environment and acts based on the optimal
+%policy derived from this model. The model is initialized in an optimistic fashion: all actions
+%in all states return the maximal possible reward (hence the name).
+
+
+
+%Twoofthemainapproachestowardsthis goal aretoincorpor
+%ate generalization(function approximation)intomodel-free 
+%methods and to develop model-based algorithms. Model-
+%based methods achieve high sample efficiency by learning 
+%a model of the domain and simulating experiences in their 
+%model, thus saving precious samples in the real world. 
+
+%Once a model-based reinforcement learning method has 
+%built an accurate model of the domain, it can quickly find 
+%an optimal policy by performing value iteration within its 
+%model. Thus the key to making model-based methods more 
+%sample efficient is to make their model learning more effic
+%ient. 
+
+%Methods such as r-max 
+%[2] attempt to learn the modeleffi
+%ciently by driving the agenttoexplorepartsofthedomain 
+%where the model needs improvement. Still, r-max 
+%requires 
+%that the agent exhaustively explore every state m times in 
+%ordertofullylearn an accuratemodelofthedomain. Particu
+%larly in large domains, this exploration can be impractical. 
+
+%One way to learn the model of the domain quickly is to 
+%introduce generalizationintothelearningofthemodel using 
+%modern machine learning techniques. Learning the model is 
+%essentially a supervised learning problem where the input 
+%is the agents current state and action, and the learning alg
+%orithm has to predict the agents next state and reward. 
+%Many existing supervised learning algorithms are able to 
+%generalize their predictions to new or unseen parts of the 
+%state space. By applying these methods, the algorithm can 
+%learn a model of the domain with far fewer state visits than 
+%an algorithm like r-max. 
+
+%Unlike many traditional supervised learning problems, in 
+%reinforcement learning, the algorithm has control of which 
+%training examples it receives. Learning the model efficiently 
+%requires a combination of a fast learning algorithm and a 
+%policythat acquiresthenecessary training examplesquickly. 
+%The agent can target states for exploration that it expects 
+%will improve the model. These states could be where the 
+%agent has not visited frequently or where the model has low 
+%confidence in its predictions. 
+
+%An interesting thought experiment is to consider how a 
+%human might behave if put into a gridworld environment 
+%with unknown actions and unknown goals. One might try 
+%each of the actions a few times to determine what they do, 
+%and then assume they will behave roughly the same across 
+%the remaining states. Then the person may explore all the 
+%states of the domain exhaustively searching for rewarding 
+%states. At some point, the human will decide that she has 
+%done enough exploration and exploit what she has learned. 
+
 %Little 
 %research has been done to address the problem of model-based reinforcement learning with approximation in
 %an online setting.
 %TODO
-Methods based on factored Markov decision processes (FMDPs) assume the problem has some factored structure, and use 
-specialized algorithms that exploit the structure \cite{ApproxFactor} \cite{SPUDD}. 
-However, these methods require prior knowledge
-of the structure of the problem, which may not be available in practice.
+
+%TODO: model-based
+%DBN
+
+%Dyna
 Degris and Sigaud \cite{ApproxTree} extended Dyna \cite{Dyna} with the approximation of decision trees.
 Sutton et al. \cite{ApproxDyna} introduced linear Dyna -- a combination 
 of Dyna and linear function approximation. 
@@ -36,15 +174,28 @@ in a stochastic environment. It is possible to have
 several possible next states given the same state and policy in a stochastic environment.
 If we predict the most likely one, we will not find the optimal policy because of the bias in our model.
 
+%deterministic
+
+%TODO: model-free
 On the other hand, model-free methods learn the Q-function directly. 
 There are no simulation steps for model-free methods and modeling is unnecessary. 
 The existing linear function approximation algorithms for model-free methods have been successfully 
 applied to large domains \cite{LSTD99}\cite{KeepAway}. 
 
+%However, when the
+%state space is too large, we cannot build the exact model anymore. Instead, we
+%have to approximate the model with techniques such as function approximation. 
 
 %The problem is the curse of dimensionality
 %supervised learning-> 
 %cannot model everything->
+
+%Model-Based:
+%1. Faster learning rate
+%2. Possibly worse policy because of structural modeling assumptions
+%3. Rapid adaptation to new problems
+
+
 
 In this thesis, we investigate the possibility to combine both model-based and model-free methods 
 and get the best of it--simulate the experiences from samples to increase the learning rate
@@ -66,9 +217,12 @@ To combine both methods, we need a framwork
 %designed manually or learned by automatic hierarchy discovery techniques \cite{HexQ}.
 
 
+%TODO: the source of suboptimality (frame assumption and more) the relation between model-based approach and classical planning
 %TODO: state that it is fine if we do not learn the transition function or reward function correctly
 
 %\section{Related work}
+%Model-based + HRL
+%Model-based + Model-free + HRL
 We are not the first to try to combine different RL methods within the HRL framework.  
 Ghavamzadeh and Mahadevan \cite{HybridPolicy} combined value function-based RL and policy gradient RL to handle
 continuous MDP problems. Cora \cite{Vlad} incorporated model-based, model-free and Bayesian active learning into the MAXQ framework.
@@ -81,15 +235,26 @@ approaches into the same framework.
 
 
 \section{Contribution}
-We are the first to address the problem of learning the optimal policy when some 
-suboptimal subtasks are present in the hierarchy.
+%We are the first to address the problem of learning the optimal policy when some 
+%suboptimal subtasks are present in the hierarchy.
+We developed a HRL theory which allows the agent to learn the optimal policy 
+when some of the policy of subtasks in the task hierarchy are suboptimal.
+
 Our contribution includes: 
 \begin{itemize}
-\item Derived the condition that the hierarchically optimal policy is equal to the optimal policy when some of the policy of subtasks in the hierarcy are suboptimal
+\item Derived the condition of a task hierarchy that the hierarchically optimal policy is equal to the optimal policy 
 \item Developed a hierarchical reinforcement learning framework which allows unsafe state abstraction without the loss of optimality guarantee
 \item TODO: Model based here
-\item Introduced the concept of pseudo-reward to HORDQ algorithm and experimentally showed that the existence of pseudo-reward is neccessary for HORDQ to learn faster than the flat Q-learning
+\item Introduced pseudo-reward to HORDQ algorithm and showed that it can improve
+      the learning rate of HORDQ algorithm. 
+\item We are the first to combine 
 \end{itemize}
+%\begin{itemize}
+%\item Derived the condition that the hierarchically optimal policy is equal to the optimal policy when some of the policy of subtasks in the hierarcy are suboptimal
+%\item Developed a hierarchical reinforcement learning framework which allows unsafe state abstraction without the loss of optimality guarantee
+%\item TODO: Model based here
+%\item Introduced the concept of pseudo-reward to HORDQ algorithm and experimentally showed that the existence of pseudo-reward is neccessary for HORDQ to learn faster than the flat Q-learning
+%\end{itemize}
 
 \section{Thesis organization}
 %say the benefit of model-based RL (peter's model based HRL, 
