@@ -1,3 +1,6 @@
+%TODO: add maze problem with invisible trap as illustration for transfer learning, so the location of trap is important. Otherwise, the learning rate may decrease.
+%TODO: show that bus domain is an example for delayed death.
+
 \chapter{Experimental Results}
 
 We show the effectiveness of our approach with 
@@ -15,7 +18,7 @@ Instead, it is necessary to adopt function approximation techniques to learn the
 With function approximation, it is not possible to learn the optimal policy anymore.
 However, the optimality guarantee of Theorem \ref{thm:opt} relies on table lookup methods and 
 does not hold for function approximation techniques.
-We iilustrate our work with Super Mario Bros. to show that despite the optimality guarantee is lost in
+We ilustrate our work with Super Mario Bros. to show that despite the optimality guarantee is lost in
 large problems, we can still use model-free methods to help model-based methods handle.the effects which
 are not included in the model. 
 Since both model-free and model-based methods may not learn the optimal policy, it is possible to 
@@ -94,7 +97,7 @@ policy. Subtask $Root$ adopted our approximate model-based method.
 \section{Planning with Static Assumptions}
 \label{se:Model}
 
-We adopted model-based approach 
+%We adopted model-based approach 
 
 %TODO: dyanmic programming
 %TODO: add free + free HORDQ to show that HORDQ makes the hierarchical process useless

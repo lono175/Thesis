@@ -27,6 +27,8 @@
 %proof, , but the benefit of HORDQ is ...
 \chapter{Planning}
 
+%An overview here
+In this chapter, we are going to introduce an approach which 
 The theoretical result is introduced in this chapter. 
 The main idea is to exploit the fact that a hierarchically optimal RL method allows 
 a subtask to know the "consequence" of its own action, thus it will pursue a subgoal
@@ -56,7 +58,8 @@ In this work, we follow the same hierarchical formulation as in MAXQ \cite{MaxQJ
     \item $A_i$ is a set of actions which are accessible to subtask $M_i$. An action can be either primitive or composite.
                 If it is composite, it simply invokes the corresponding subtask. No recursive calls 
                 are allowed in the hierarchy.
-    \item $\tilde{R}_i(s'|s, a)$ is the pseudo reward function. 
+    %TODO: add external reward and internal reward to say the difference with MAXQ
+    \item $\tilde{R}_i(s'|s, a)$ is the pseudo reward function.The reward function may not be the same as the reward function of original MDP $M$. 
     \end{itemize}
 \end{definition}
 A hierarchical policy $\pi = \{\pi_0, \pi_1, \dots, \pi_n\}$ is a set which contains all subtask policies. 

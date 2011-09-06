@@ -1,10 +1,93 @@
-\chapter{Discussion}
+\chapter{Analysis and Discussion and Limitation and Future Works}
+
 In this work, we propose an approach to combine the approximate model-based method with the
 model-free method (HORDQ) under the HRL framework. We are able to show that our approach
-can learn the optimal policy even when the model is biased. Furthermore, we show that the optimality
+can learn the optimal policy even when the assumption of model is not satisfied. Furthermore, we show that the optimality
 is guaranteed for any subtask policy as long as the subtask does not belong to the total leaf
 cover of given hierarchy. Our result suggests the possibility incorporating a wide range of planning
 techniques such as STRIPS [11] or object-oriented RL [16] into the HRL framework without the
 loss of optimality. One future direction is to investigate the applicability of combining our method
 with such techniques.
+%It is not a problem to find a hierarchy
+
+
+%Model-free may fail
+%Our work relies on that model-free methods can learn the optimal action
+%in the states where model-based methods cannot. It is true when the state space of the problem is small
+%enough to adopt table lookup approaches as our method-free methods, since they can learn the optimal action for every state. 
+%For large problems, we cannot use Q-
+%This imposes 
+
+%\section{Design of pseudo-reward}
+%It is important to choose an appropriate pseudo-reward. If we choose a reward which is too low, 
+%the agent will not follow 
+%the learned policy will be 
+
+%The performance of our approach depends on 
+%Large enough so that the model-free approach will pursue the subgoal
+%When the model-based approach doesn’t have enough samples to build an approximately good model
+%Small enough to pass the control to model-free approach when the model-based approach doesn’t work
+
+%Combine both model-free and model-based approaches
+%Overcome the structure assumption of model-based approaches
+%Learns a better policy by mixing these approaches
+%Designing pseudo-reward requires insight of the problem
+%No theory yet!
+
+
+%model-based or model-free is too good
+
+%We have presented a learning algorithm for agile, integrated whole-body
+%skills of physically-simulated characters. The algorithm uses a nature-inspired
+%online, active exploration of the character action space to nd reliable mo-
+%tions that give rise to parameterized skills. We further demonstrated that
+%our algorithm works for a family of simple characters without requiring any
+%algorithm or parameter modications. In addition, we experimented with
+%a complex dog character in 3-D and showed that our approach generalizes
+%to this character, given appropriate changes in the motor abstractions used
+%during the learning process. Finally, we showed that the resulting parame-
+%terized skills can be eectively used for high-level tasks, such as traversing
+%a terrain.
+%5.1 Discussion
+%While a learning approach to acquiring skills possesses many benets, it also
+%comes with its own set of limitations.
+%Mainly, we found that the learning process requires occasional super-
+%vision to ensure that the intended skills are actually being learned. For
+%example in one case, a character learned a Flip motion that made it launch
+%into air, fall down, and then get back up very quickly. On a dierent oc-
+%casion, the character learned a double-ip instead of a ip. It thus became
+%necessary to supervise the learning process and restart it on a few occasions.
+%The majority of skill and character combinations (roughly 90%) did not re-
+%quire any interventions. We believe that these issues could be alleviated by
+%better quantifying when a particular trial should count as being successful
+
+%for every skill.
+%In addition, the phase 1 reward functions may be dicult to specify in
+%some cases. In particular, we found the GetUp skill to be the most trou-
+%blesome. If the character fails at getting up after some Motor Action, how
+%should one assign a score for how close the attempt was? Specifying a bad
+%phase 1 reward function could lead to long computation times in phase 1,
+%because the character is essentially left searching randomly in the motor
+%space for a successful action. Even worse, the optimization in phase 1 could
+%be repeatedly led astray with an inappropriately specied phase 1 reward
+%function.
+%The main challenges for the quadruped character were aesthetic in na-
+%ture. Unlike the Acrobot's motions, a dog's leap is a specic type of motion
+%that we are all familiar with from nature. Even though the learning al-
+%gorithm produced leaps that accomplished all desired goals, they did not
+%always resemble leaps that one would expect to see from a real dog. For
+%example, dogs exhibit a tendency to lift their front feet while in mid-ight,
+%but this motion did not emerge in the actions that were produced by the
+%algorithm. Instead, the dog left its front feet outstretched during the leap,
+%producing a motion that felt qualitatively strange despite achieving all task
+%goals. In the end, we opted to include these details into the leap controller
+%manually to achieve a more familiar style of motion.
+%5.2 Limitations and future work
+%Even though the learning algorithm described in this thesis works well for
+%our characters and the set of skills we considered, we make no claims to
+%have addressed the general problem of motor learning. In this section, we
+%discuss possible extensions of the proposed framework that can bring us
+%closer toward the nal goal of matching human or animal abilities.
+%To begin with, several immediate improvements can be made to the
+%framework by addressing some of the simplications that were made mostly
 
