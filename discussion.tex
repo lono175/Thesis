@@ -1,27 +1,172 @@
 \chapter{Analysis and Discussion and Limitation and Future Works}
 
+%Our result suggests the possibility incorporating a wide range of planning
+%techniques such as STRIPS [11] or object-oriented RL [16] into the HRL framework without the
+%loss of optimality. One future direction is to investigate the applicability of combining our method
+%with such techniques.
+
+Model-based methods are powerful tools. It allows us to predict the outcome 
+of the agent behavior and plan over it. They can effectively reduce the number of 
+trial-and-errors which are required to find the optimal policy.
+However, model-based methods may not be able to learn the transition function correctly.
+The possible reasons are:
+\begin{itemize}
+\item The inaccuracy in the supervised learning algorithms
+\item The numerical imprecision in the continuous case
+\item It is not possible to learn all the effects
+\item It would be time-consuming if we compute all possible effects during planning process
+\end{itemize}
+
 In this work, we propose an approach to combine the approximate model-based method with the
 model-free method (HORDQ) under the HRL framework. We are able to show that our approach
 can learn the optimal policy even when the assumption of model is not satisfied. Furthermore, we show that the optimality
 is guaranteed for any subtask policy as long as the subtask does not belong to the total leaf
-cover of given hierarchy. Our result suggests the possibility incorporating a wide range of planning
-techniques such as STRIPS [11] or object-oriented RL [16] into the HRL framework without the
-loss of optimality. One future direction is to investigate the applicability of combining our method
-with such techniques.
+cover of given hierarchy.
+%In this thesis, we describe an approach to use model-free methods to 
+%compensate the scenarios when model-based methods are failed to learn the optimal policy.
+%In small problems which we can use table-lookup methods, it is guaranteed to learn the optimal
+%policy. 
+%For large problems, there are no guarantee, but we should 
+%The choice of features of model-free methods effect the overall performance
+%If we put too much irrelevant features, the qualify of learned policy will be severed.
+
+\section{System design}
+
+An important design principle of the system is to design the model-based method first,
+and model-free method later. 
+We need to decide the features used by the
+model-based methods, the underlying supervised learning algorithms and most
+important, the effects which we would like to include in our model. Then we
+run the experiments, and observe the scenarios where the model-based methods
+are failed. 
+Then we design a set of features for model-free methods to handle
+these scenarios. Note that we don't need to design a set of features to handle
+the whole problems, but only part of it since we only need model-free methods
+to take control when model-based methods fail. To this end, we can reduce the
+number of features for model-free methods and let the overall system
+successfully handle all scenarios.
+
+%//There are other alternative approaches to overcome their limitation.
+Since our work is about how to combine with model-free methods to learn the optimal policy,
+it is not necessary to adopt our work if the model-based method can learn the optimal policy
+on its own.
+Our work is not the only remedy to the failure of model-based methods,
+another alternative is to improve the quality of the model by incorporate more domain knowledge.
+For example, in our Super Mario Bros. experiment, we do not include any effects 
+of the interactions between monsters and Mario. It is possible to include such effects
+by hand-coded the preconditions and postconditions of these effects, as suggested by Walsh et al. \cite{Walsh09}.
+In fact, the source code of Super Mario Bros. is publicly available,
+%(TODO: source code)
+there are no need to use model-based RL to learn the model. Instead,
+we can simulate the experiences of the agent with the simulator of Super Mario Bros.
+Since the model and the environment are identical, there are no biases which will be 
+introduced during the simulation process.
+We can follow Baumgarten's work \cite{robin09} to adopt $A*$ to search for the optimal action sequences.
+With the complete domain knowledge, it is unlikely for any RL methods to outperform his work.
+
+However, the key idea of RL is to build an adaptive agent.
+Not only do we want the agent to perform well in a problem which we have the complete knowledge,
+but we also want the agent to adapt itself to novel problems which we cannot foresee when we design the agent.
+If we too much domain knowledge into the agent's design, we forbids it from adapting 
+itself when the knowledge does not hold in novel problems. 
+In this work, we provide an alternative approach -- we let model-free methods to 
+handle novel problems instead of designing a omnipotent model-based agent.
+
+%We want the agent to adapt itself to novel scenarios and find the optimal policy.
+%If we put too much domain knowledge into the design of the model, the agent 
+%will not be able to adapt when the knowledge does not hold in these scenarios.
+%If we put too less, the model may be poor-approximated, 
+%and hinder the learning process. 
+%(TODO: my school bus exp)
+%Our work tries to find a balance between 
+
+
+%TODO: relationship with HRL (no 
+%Although we use HRL framework to incorporate model-based and model-free methods, 
+%TODO: the choice of model-free methods (not only HORDQ), anything that can know its consquences  
 %It is not a problem to find a hierarchy
 
+\section{Choose an appropriate pseudo-reward}
+It is important to choose an appropriate pseudo-reward. If we choose a pseudo-reward which is too small, 
+the policy of the agent will be similar to the model-free method and we will lose the 
+benefit of faster learning rate. On the other hand, if the pseudo-reward is too large, 
+the policy will be similar to the model-model method, which may be suboptimal due
+to the structure assumptions of the model.
 
-%Model-free may fail
-%Our work relies on that model-free methods can learn the optimal action
-%in the states where model-based methods cannot. It is true when the state space of the problem is small
-%enough to adopt table lookup approaches as our method-free methods, since they can learn the optimal action for every state. 
-%For large problems, we cannot use Q-
-%This imposes 
+It is easy to determine when a pseudo-reward is too large by
+looking at the difference between the expected reward of the optimal policy and the policy of model-based method.
+If a pseudo-reward is large than the difference, the model-free method will follow the policy
+of the model-based method strictly, and the combined policy will be the same as 
+the policy of model-based method.
 
-%\section{Design of pseudo-reward}
-%It is important to choose an appropriate pseudo-reward. If we choose a reward which is too low, 
-%the agent will not follow 
-%the learned policy will be 
+In our experiments \ref{se:domain, se:MarioExp}, a pseudo-reward larger than the expected death penalty is considered "too large", 
+since it will let the model-free method follow the instruction of model-based method even 
+when it will lead to the death of the agent. Any pseudo-reward which is smaller it can prevent the
+death of the agent.
+
+It is more difficult to decide if the pseudo-reward is large enough. 
+For small problems, if we adopt table-lookup HORDQ as the model-free method,
+the optimal policy will be learned when the pseudo-reward is decreased to zero.
+So a viable strategy is to choose some pseudo-reward, which is not too large, and
+gradually decrease it to zero.
+For large problems, we have adopt model-free methods with function approximation techniques
+, therefore the optimal policy might not be learned when the pseudo-reward is zero.
+Instead, we need to find out an optimal pseudo-reward which can maximize the expected reward.
+A way to decide it is to conduct the experiment with the model-free method,
+and choose a pseudo-reward which is large enough in most of states to let
+the model-free method to follow the policy of model-based one.
+%It is necessary to have a large pseudo-reward in the beginning since 
+%the model-based method does not have enough samples to build a good model,
+%it is possible for it to compute very poor policy.
+
+\section{Limitation and Future Work}
+
+The quality of learned policy depends on the chosen model-free method,
+the model-based method and the pseudo-reward. 
+Since we can control the pseudo-reward to decide if the combined
+policy should be similar to model-free or model-based one,
+the combined policy can never be worse than any of them. 
+
+Since our work is a combination of two,  Our work will fail in scenarios where both methods fail, 
+It is a limitation of current RL techniques, and it is only possible to 
+resolve it by applying better model-free or model-based methods. 
+
+If we adopt the task hierarchy in \ref{se:MarioExp}, we can apply our work
+to any reinforcement learning problems.  
+The limitation of the applicability
+of our work actually comes from the underlying RL methods. 
+
+Nevertheless, our work is not be useful when one method outperforms another.
+In general, model-based methods learn faster than model-free methods because of
+efficient use of samples, but it may not be true for some problems. 
+If the chosen model-based method is worse than the model-free method in both learning
+rate and learned policy, it is pointless to combine both methods. 
+Similarly, if the model-free method fails to handle the scenarios where the model-based
+method fails or the model-based method can learn the optimal policy, it is not necessary to apply our work.
+For small problems, if the model-based method fails to learn the optimal policy, 
+we learn the optimal policy by combining it with table-lookup HORDQ as we prove in Theorem \ref{thm:opt}.
+For large problems, it is difficult since approximated model-free RL may not learn the optimal policy.
+It is necessary to have the knowledge about the domain and apply the knowledge to choose some good features.
+
+%TODO: the process is similar to model-free RL
+We introduce theory of improving the quality of the policy of model-based methods.
+However, we don't have any theory regarding the learning rate. 
+It is true that if the model-based method is "approximately good", we can enjoy the 
+faster learning rate, as we showed in experiment X. Nevertheless, there are no theory
+to tell if a model-based method is approximately good or not.
+A possible direction of future work is to investigate what kind of the properties of model-based
+methods are necessary to increase the learning rate when they are combined with model-free methods.
+
+
+
+
+%1. No theory about learning rate (what is a good approximation?)
+%2. No thery about the interaction betwwen model-based and model-free approach.
+%If model-base dapproahc does not change it's policy accroding to model-free's policy,
+%the learning can be slower than pure model-free. Since model-based method
+%will stick on it's original bad plan, and guid the agent to the wrong action.
+
+%A problem may arise when the pseudo-reward is 
 
 %The performance of our approach depends on 
 %Large enough so that the model-free approach will pursue the subgoal
@@ -34,7 +179,6 @@ with such techniques.
 %Designing pseudo-reward requires insight of the problem
 %No theory yet!
 
-
 %model-based or model-free is too good
 
 %We have presented a learning algorithm for agile, integrated whole-body
@@ -46,7 +190,6 @@ with such techniques.
 %a complex dog character in 3-D and showed that our approach generalizes
 %to this character, given appropriate changes in the motor abstractions used
 %during the learning process. Finally, we showed that the resulting parame-
-%terized skills can be eectively used for high-level tasks, such as traversing
 %a terrain.
 %5.1 Discussion
 %While a learning approach to acquiring skills possesses many benets, it also
@@ -54,8 +197,6 @@ with such techniques.
 %Mainly, we found that the learning process requires occasional super-
 %vision to ensure that the intended skills are actually being learned. For
 %example in one case, a character learned a Flip motion that made it launch
-%into air, fall down, and then get back up very quickly. On a dierent oc-
-%casion, the character learned a double-ip instead of a ip. It thus became
 %necessary to supervise the learning process and restart it on a few occasions.
 %The majority of skill and character combinations (roughly 90%) did not re-
 %quire any interventions. We believe that these issues could be alleviated by
@@ -76,7 +217,6 @@ with such techniques.
 %that we are all familiar with from nature. Even though the learning al-
 %gorithm produced leaps that accomplished all desired goals, they did not
 %always resemble leaps that one would expect to see from a real dog. For
-%example, dogs exhibit a tendency to lift their front feet while in mid-ight,
 %but this motion did not emerge in the actions that were produced by the
 %algorithm. Instead, the dog left its front feet outstretched during the leap,
 %producing a motion that felt qualitatively strange despite achieving all task

@@ -28,8 +28,8 @@
 \chapter{Planning}
 
 %An overview here
-In this chapter, we are going to introduce an approach which 
-The theoretical result is introduced in this chapter. 
+In this chapter, we introduce the primarily property of hierarchical optimal reinforcement learning
+and show how to exploit this property to combine model-free and mode-based methods.
 The main idea is to exploit the fact that a hierarchically optimal RL method allows 
 a subtask to know the "consequence" of its own action, thus it will pursue a subgoal
 only when it leads to the optimal policy. It allows the subtask to act optimally 
@@ -79,79 +79,6 @@ The subtask policy $\pi_i: S_i \rightarrow A_i$ maps an active state to an actio
 %In theorem ?, we show that if we modify the hierarchy and let some subtasks to have access all primitive actions, 
 %the hierarchical optimal policy is equal to the optimal policy.
 
-\section{Recursive Optimality and Hierarchical Optimality}
-\label{se:ROHO}
-\begin{figure}[t]
-\begin{center}
-    \includegraphics[width=2in] {./figures/Maze.eps}
-\end{center}
-\caption{A simple maze problem \cite{MaxQJ}.}
-\label{fig:Maze}
-\end{figure}
-\begin{figure}[t]
-\begin{center}
-    \includegraphics[width=4in] {./figures/MazeH.eps}
-\end{center}
-\caption{The task hierarchy of the simple maze problem.}
-\label{fig:MazeH}
-\end{figure}
-
-There are three definitions of optimality of hierarchical reinforcement learning:
-
-\begin{definition}
-    \textbf{Optimality:} An optimal policy $\pi^*$ for MDP $M$ is a policy that achieves the highest cumulative reward
-    among all policies for the MDP.
-\end{definition}
-\begin{definition}
-    \textbf{Recursive Optimality:} A recursively optimal policy for MDP $M$ with hierarchical 
-    decomposition $M' = \{M_0, M_1, \dots, M_n\}$ is a policy $\pi = \{\pi_0, \pi_1, \dots, \pi_n\}$ such
-    that each policy $\pi_i$ achieves the highest cumulative pseudo-reward for the corresponding subtask $M_i$,
-    assuming fixed policies for its action $A_i$, 
-\end{definition}
-\begin{definition}
-    \textbf{Hierarchical Optimality:} Given $Pi_H$, which is the set of all policies consistent with hierarchy $H$, 
-    then a hierarchically optimal policy for MDP $M$ is a policy $\pi^* \in Pi_H$ that achieves the highest cumulative reward
-    among all policies $\pi \in Pi_H$.
-\end{definition}
-
-An optimal policy is what we want to find for any MDP $M$. However, it may not be possible to 
-be found due to the constraints imposed by the hierarchy. Instead of seeking optimality, 
-we can seek hierarchical optimality or recursive optimality, which are two important 
-optimality guarantee in hierarchical reinforcement learning.
-
-Recursive optimality guarantees that the policy of each subtask is optimal given the policies of its child subtasks.
-In this form of optimality, each subtask learns the optimal policy while ignoring the policy from its ancestors
-and the all subsequent rewards after the agent arrives the terminal states of the subtask.
-Recursive optimality allows the policy of subtask to be reused for different hierarchies. Since
-each subtask only needs to seek the optimality within its own subproblem, it is also possible
-to adopt state abstraction by ignoring the state variables which are irrelevant
-to the subproblem. The MAXQ-Q \cite{MaxQJ} algorithm converges to a recursively optimal policy. 
-
-A hierarchically optimal policy is the policy which achieves the highest cumulative reward given the
-hierarchical constraints. The hierarchically optimal policy is a stronger form of optimality. It
-may achieve a higher cumulative reward than a recursively optimal policy. In hierarchical optimality, 
-the policy of each subtask may not be optimal within its own subproblem, but the overall policy 
-of the entire hierarchy is optimal. The HAMQ \cite{HAMQ}, SDMP \cite{SMDP}, tracked Q and HORDQ \cite{HORDQ} algorithms learn
-a hierarchically optimal policy.
-
-%TODO: pros and cons for HO and RO
-Dietterich \cite{MaxQJ} demonstrates the difference of recursively and hierarchically optimal policies 
-with a simple Maze problem (Fig. \ref{fig:Maze}). A robot starts at left room and it needs to reach 
-the goal $G$ in the right room. It has three primitive actions, North, South and East.  
-The robot receives a reward of -1 for each move.
-There are two subtasks, Exit and GotoGoal. Subtask Exit terminates when the robot exits the left room,
-and GotoGoal terminates when the robot reaches the goal. The arrows in Figure \ref{fig:Maze} show the 
-recursively optimal policy. The arrows in the left room indicate a policy which seeks to exit
-the left room with minimum steps. The arrows in the right room seek a shortest path to the goal.
-Note that the policy in the shaded area is a recursively optimal but not hierarchically optimal and also not
-optimal. A hierarchically optimal policy should exit the left room by the upper door, but a recursively 
-optimal policy always exits the room with minimum moves since
-a recursively optimal policy ignores the consequences after the subgoal is achieved. 
-
-%TODO: why do we need HO to do the optimal planning
-Despite the fact that a hierarchically optimal policy is better than a recursively optimal policy, 
-the algorithms which learn the hierarchically optimal policy do not always yield a speedup over
-the flat algorithms such as Q-learning or SARSA \cite{MaxQJ, Andre02}. 
 
 
 %The following example from (Dietterich, 2000) demon-
@@ -294,7 +221,7 @@ the learning rate, so the time to learn the optimal policy might still decrease 
 %hierarchical optimal learning algorithms such as HAMQ\cite{HAMQ} or tracked decomposed Q-learning\cite{HORDQ}. However, HORDQ can be easily integrated with 
 %the existing MAXQ hierarchy, while the decomposed representation of Q-function is preserved.
 
-Andre and Russell \cite{OptimalQ, HORDQ} introduced hierarchical optimal recursive decomposed Bellman equations
+Andre and Russell \cite{Andre02, HORDQ} introduced hierarchical optimal recursive decomposed Bellman equations
 which extend the decomposition of MAXQ in a way that hierarchical optimality
 can be guaranteed.
 
@@ -370,8 +297,20 @@ action is executed. %TODO: (why?).
     \end{equation*}
     \label{thm:Bell}
 \end{theorem}
-Although we changed the formula for $Q_e^{\pi}$, the argument of Theorem 10 in \cite{HORDQ} still holds.
-We do not repeat the proof here. 
+%Although we changed the formula for $Q_e^{\pi}$, the argument of Theorem 10 in \cite{HORDQ} still holds.
+%We do not repeat the proof here. 
+
+\textbf{Proof:} 
+\begin{align}
+    \mbox{if $a$ is a primitive action:}
+    Q^\pi(i, s, a) &= Q_r^{\pi}(i, s, a) + Q_c^{\pi}(i, s, a) + Q_e^{\pi}(i, s, a) \\
+    &= Q_r^{\pi}(i, s, a) + Q_c^{\pi}(i, s, a) + \sum_{s'}P(i', s', a)\gamma Q_e^{\pi}(i', s', \pi_{i'(s')}) \\
+    &= \sum_{s'}P(s'|s, a)R(s'|s, a) \\
+    +& \sum_{s', N}P(i', s', N| i, s, a) \gamma Q_c^{\pi}(i', s', \pi_{i'}(s')) \\
+    +& \sum_{s', N}P(i', s', N| i, s, a) \gamma Q_e^{\pi}(i', s', \pi_{i'}(s')) \\
+    &= \sum_{s', N}P(i', s', N| i, s, a) \gamma Q^{\pi}(i', s', \pi_{i'}(s')) \\
+\end{align}
+
 
 %TODO: not all s are defined in Q(i, s, a) (focus on si instead of all i)
 %TODO: what if pi_c_bar may change for every step?
@@ -436,7 +375,7 @@ Theorem 11 and 13 of \cite{HORDQ} hold in our case. We do not repeat the argumen
 %it is more desirable if we can estimate the $Q$ value in an online fashion.
 The previous equations assume we have complete knowledge about the problem and can compute
 the Q-value with dynamic programming. If not, we can estimate the Q-value with
-the hierarchically optimal recursive Q-learning (HORDQ) \footnote{Also called ALispQ-learning in \cite{OptimalQ}} \cite{HORDQ} 
+the hierarchically optimal recursive Q-learning (HORDQ) \footnote{Also called ALispQ-learning in \cite{Andre02, HORDQ}} 
 update rules:
 %use temporal difference learning instead:
 %TODO: the discount term compared the Bellman 
@@ -511,15 +450,44 @@ the convergence to the optimal policy can be guaranteed.
                        &\alpha_t[ R_t(s'| s, a) + \gamma^N[{Q}_r^{t}(i', s', a') + {Q}_c^t(i', s', a') + {Q}_e^{t}(i', s', a')]] \\
                       =&(1 - \alpha_t) {Q}^{t}(i, s, a) + \alpha_t[ R_t(s'| s, a) + \gamma^N  {Q}^{t}(i', s', a') ]
 \end{align*}
-    Since $a$ and $a'$ are primitive actions, the HORDQ rule identical to the standard Q-learning update rule.
-    Therefore, it converges under the same condition as Q-learning. \textbf{Q.E.D.}
+Since $a$ and $a'$ are primitive actions, the HORDQ rule identical to the standard Q-learning update rule.
+Therefore, it converges under the same condition as Q-learning. \textbf{Q.E.D.}
 
+
+\section{Pseudo-reward}
+
+
+%explain the reward system here
+%the difference between MAXQ's pseudo reward
+%explain my rewarding system here, and only add reward at terminal state
 One of the problem of hierarchical optimal learning algorithms is that policy $\pi_i$ of subtask $M_i$
-is determined by the reward of original MDP. There are no pseudo rewards which are allowed as
+is determined by the reward of original MDP. There are no pseudo-rewards which are allowed as
 in MAXQ. Due to the lack of pseudo reward, each subtask $M_i$ lacks the motivation to 
 pursue the subgoal defined by the hierarchy, thus it makes the hierarchical 
-design useless. It is necessary to add some pseudo reward to encourage each subtask to pursue 
-the subgoal. However, we cannot guarantee optimality with a nonzero pseudo reward.
+design useless. It is necessary to add some pseudo-rewards to encourage each subtask to pursue 
+the subgoal. However, we cannot guarantee optimality with a nonzero pseudo-reward.
+%use taxi domain to explain or maze problem (Navigate(t) problem)
+%a key is policy reuse
+
+%TODO: mention that pseudo-reward can atlernative between different policy
+In fact, the above argument illustrates the difference between the hierarchically optimal policy
+and the recursively optimal policy. 
+As shown in the expriment of \cite{Andre02}, hierarchically optimal RL learns  
+a better policy than the one of recursively optimal RL. However, its learning rate
+is slower than resursively optimal one.
+
+Since neither approach is better than the other in terms of learning rate and 
+the quality of policy, there are no reason to stick to one of them.
+With the introduction of pseudo-reward, we can alternate the agent's behavior
+between the hierarchically optimal RL and the recursively optimal RL.
+
+We show two tricks we can play when working with these pseudo-rewards.
+We showed that with the appropriately choosen pseudo-reward, the resulting behavior
+can be better than both approaches in terms of learning rate and the quality of policy.
+The result is presented in chapter 4.
+
+%a bridge between RO and HO
+
 A practical approach is to use positive reward to encourage the effective exploration
 in the early stage, and gradually decrease it to 0. 
 
@@ -553,8 +521,6 @@ in the early stage, and gradually decrease it to 0.
 %to execute the plan. If everything works a李世光s the plan, the agent would converge to the optimal
 %policy in a short time. If not (following the plan is worse than the penalty term),
 %the model-free node will take control and find the optimal policy on its own.
-
-\section{Pseudo Reward}
 %alternative between recursive optimal and hierarchical optimal
 %Fight against Ditterich's comment: pseudo reward is neccessary, but state abstraction is unnecessary
 \endinput

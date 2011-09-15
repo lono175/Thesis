@@ -41,6 +41,7 @@ combine both methods to learn a better one.
 %TODO: say we use MaxQ for model based approach
 \section{Bus Domain}
 \label{se:domain}
+
 \begin{figure}[t]
  \begin{minipage}[b]{0.5\linewidth}
     \begin{center}
@@ -240,9 +241,36 @@ algorithm, it is beneficial to incorporate HORDQ in the hierarchy.
 
 
 \section{Super Mario Brothers}
-
+\label{se:MarioExp}
 %reward system here
 %and pseudo reward
+\subsection{Previous Work}
+There is also a recent interest in developing agents that can play a complete side-scrolling
+arcade-style game. In 2009, two AI competitions were organized on agents that can play
+entire levels of Inite Mario, a clone of Nintendo's popular Super Mario Bros game. The
+RL 2009 Competition [Mohan and Laird, 2009] requires the agents to use reinforcement
+learning to learn to play the game. The learning agents are given a state representation
+containing the location of the player character (PC) and other monsters, as well as the types
+of the individual tiles on the screen. The agents receive a positive reward once the level is
+complete, and a small negative reward on all other states. The Mario AI Competition4, on
+the other hand, does not limit the agents to a speci approach. Indeed, the participants
+are encouraged to use evolutionary neural networks, genetic programming, fuzzy logic,
+temporal dirence learning, human ingenuity, [and] hybrids of the above"5. Playing an
+Atari 2600 game was previously attempted by Diuk et. al., who illustrated the performance
+of their Object-Oriented Rmax algorithm by teaching the Player Character to pass the st
+screen of the game Pitfall [Diuk et al., 2008].
+A shared characteristic between all the above examples, and (to our knowledge) all
+previous attempts of learning to play video games, is that each agent is designed and tuned
+to play a single game. Therefore, all the essential game properties (e.g., the location of the
+PC and important NPC's, health levels, and timers) are either explicitly included in the
+state representation, or can be easily extracted form it. Also, game-speci abstractions are
+often performed to deal with the large state-space. Furthermore, the reward signal may be
+shaped in a way to accelerate the learning.
+One of the key distinctions of the methods described in this thesis is their generic nature.
+
+%Screen feature
+%assume the location of PC is known
+%the result is unknown (the properties of monsters or coins)
 \subsection{Planner}
 We adopt our static assumption on all objects except Mario. The state of Mario 
 can be described by a 4-tuple $(x, y, dx, dy)$, where are the location and speed of Mario. 
@@ -351,6 +379,17 @@ to the end (TODO: Mario Competition here). We do
 conduct the planning process perfectly without 
 resort to 
 It is possible to have a pe
+
+\subsection{Pseudo-reward}
+XX is a special hierarchy. It allows us to combine two different methods under the HRL
+framework even for a problem without clear hierarchical structure. 
+%no overhead
+For this special hierarchy, the pseudo-reward imposes a very interesting property:
+the policy is identical to the policy of model-free method with a pseudo-reward equal to zero and
+it is identical to the one of model-based method given sufficiently large pseudo-reward.
+We can adjust the value of pseudo-reward to alternate the agent's behavior between
+two different methods.
+
 \endinput
 %Most of the previous work on RL focus on model-free approaches for several reasons. 
 %The most 
