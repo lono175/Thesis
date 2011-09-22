@@ -41,6 +41,7 @@
 \RequirePackage{amsfonts}
 \RequirePackage{amsmath}
 \RequirePackage{changebar}
+
 %\usepackage{memoir}
 %\usepackage{soul}
 %\usepackage{color}
@@ -245,6 +246,9 @@
     \ClassWarning{ubcdiss}{Ignoring \protect\advisor}}
 \newcommand{\advisortitle}[1]{%
     \ClassWarning{ubcdiss}{Ignoring \protect\advisortitle}}
+
+%add by lono
+\newcommand{\argmax}{\operatornamewithlimits{argmax}}
 
 \renewcommand{\maketitle}{%
     % For some reason FoGS thinks the title page should be page 1

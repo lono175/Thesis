@@ -12,7 +12,7 @@ Reinforcement learning (RL) addresses the problem of finding an optimal policy i
 In the RL setting, an agent interacts with the environment, optimizing its behavior to
 maximize the received rewards. For many applications, it is expensive and time-consuming to 
 acquire samples from the environment, so it is important to for the agent 
-to learn an effective policy in as few actions as possible. 
+to learn an effective policy in as few samples as possible. 
 
 RL methods can be broadly classified into two classes: model-based and
 model-free.
@@ -33,17 +33,22 @@ For large domains, it is necessary to apply machine learning algorithms to gener
 the knowledge to unvisited states. Learning the model is a supervised learning problem:
 given the agent's current state and action, the learning algorithm needs to predict
 the next state and reward. Many supervised learning algorithms can generalize 
-over unvisited states. Therefore  
+over unvisited states. 
+%Therefore  
 
 
 Methods based on factored Markov decision processes (FMDPs) assume the problem has some factored structure, and use 
-specialized algorithms that exploit the structure \cite{ApproxFactor, SPUDD}. 
-However, these methods require prior knowledge
-of the structure of the problem, which may not be available in practice.
+specialized algorithms that exploit the structure \cite{ApproxFactor, SPUDD, Wynkoop08, Walsh09}. 
+However, not all of problems have the factored structures. Thus, the applicability of these
+methods are limited.
 
 Hester and Stone \cite{Hester09} observed that the relative transition effects of actions
 is more generalizable than absolute values. They propose RL-DT to model relative
 effects with decision trees.
+
+Walsh et al. \cite{Walsh09} proposed KWIK (Know What It Knows) linear regression
+to learn the transition probabilities and applied it Stochastic STRIPS domain while
+assuming the preconditions and effects of each action are known in advance. 
 
 %OOMDP problem (relational)
 %How to learn all effects
@@ -163,16 +168,50 @@ effects with decision trees.
 %DBN
 
 %Dyna
-Degris and Sigaud \cite{ApproxTree} extended Dyna \cite{Dyna} with the approximation of decision trees.
+Degris and Sigaud \cite{ApproxTree} proposed SDYNA, which extended Dyna \cite{Dyna} by
+learning the structure of a problem with incremental decision trees.
 Sutton et al. \cite{ApproxDyna} introduced linear Dyna -- a combination 
 of Dyna and linear function approximation. 
 Instead of enumerating all states, which is impossible for large problems, they
 use Dyna-style planning. Given the current state and policy, 
 their methods predict the features of the next state and reward, using function approximation
-techniques. Despite the difficulty of correct prediction, their methods are biased 
-in a stochastic environment. It is possible to have
-several possible next states given the same state and policy in a stochastic environment.
-If we predict the most likely one, we will not find the optimal policy because of the bias in our model.
+techniques. 
+
+%For large domains, it is necessary to apply machine learning algorithms to generalize
+%the knowledge to unvisited states. Learning the model is a supervised learning problem:
+%given the agent's current state and action, the learning algorithm needs to predict
+%the next state and reward. Many supervised learning algorithms can generalize 
+%over unvisited states. 
+
+Model-based methods are powerful techniques. 
+It allows us to predict the outcome 
+of the agent behavior and plan over it. They can effectively reduce the number of 
+samples which are required to find a good policy.
+With the learned model, it is easy for model-based methods to generalize
+it knowledge to novel scenarios.
+However, it is difficult for model-based methods to learn the optimal policy.
+The possible reasons are:
+\begin{itemize}
+\item Inaccuracy of the underlying supervised learning algorithms: most of model-based methods rely on supervised learning algorithms
+    to learn the model, but we do have any supervised learning algorithms which can guarantee 100\% accuracy. Any incorrect
+    prediction may lead to a suboptimal policy.
+\item Structure assumption of the model: most of model-based methods have some assumptions on the structure of model.
+    For example, the methods based on FMDPs assume the problem has some factored structure; Linear Dyna \cite{ApproxDyna} assumes
+    the features of next state can be predicted with linear approximate while SDYNA assumes it can be done with decision trees.
+\item Impossible to learn all the effects: as indicated in \cite{Walsh09}, to learn the effects in Stochastic STRIPS domains is NP-Hard.
+    If the number of all possible effects is small, it is possible to enumerate all of them and exclude the effects with
+    small probability. However, the problem is NP-Hard and heuristic solutions \cite{Pasula07} are necessary to solve it.
+\item Computational constraint: even if we can learn all the effects, it may be too expensive to consider all of them during
+    the planning process. Due to the stochastic nature of MDP, each effect may result in several possible outcomes given
+    the same state and action. If we consider too many effects during the planning process, the number states in a planning envelope
+    might become too large to compute.
+\end{itemize}
+
+
+%Despite the difficulty of correct prediction, their methods are biased 
+%in a stochastic environment. It is possible to have
+%several possible next states given the same state and policy in a stochastic environment.
+%If we predict the most likely one, we will not find the optimal policy because of the bias in our model.
 
 %deterministic
 
@@ -181,7 +220,10 @@ On the other hand, model-free methods learn the Q-function directly.
 There are no simulation steps for model-free methods and modeling is unnecessary. 
 The existing linear function approximation algorithms for model-free methods have been successfully 
 applied to large domains \cite{LSTD99, KeepAway}. 
-
+However, these methods may have slower learning rate since they cannot predict
+the outcome of agent's behavior and are unable to use planning techniques to 
+search for a better policy. Instead, they need to collect the samples with the trial-and-error 
+approach. It makes these methods hard to generalize over novel scenarios.
 %However, when the
 %state space is too large, we cannot build the exact model anymore. Instead, we
 %have to approximate the model with techniques such as function approximation. 
@@ -194,8 +236,6 @@ applied to large domains \cite{LSTD99, KeepAway}.
 %1. Faster learning rate
 %2. Possibly worse policy because of structural modeling assumptions
 %3. Rapid adaptation to new problems
-
-
 
 In this thesis, we investigate the possibility to combine both model-based and model-free methods 
 and get the best of it--simulate the experiences from samples to increase the learning rate
@@ -280,7 +320,7 @@ We provide a brief review of reinforcement learning in Chapter 2.
 That includes Markov decision processes (MDPs), semi-Markov decision processes (SMDPs),
 and hierarchical reinforcement learning (HRL).
 Our main theory is presented in Chapter 3. 
-We provide experimental results on School Bus domain and Super Mario Bros. in  Chapter 4.
+We provide experimental results on Bus domain and Infinite Mario in Chapter 4.
 Finally, conclusions, limitations, and future work are discussed in Chapter 5.
 
 

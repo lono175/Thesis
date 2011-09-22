@@ -1,7 +1,7 @@
 NAME1 = diss
 PRODUCT1 = $(NAME1).dvi
 TEXSOURCE1 = $(NAME1).tex \
-		    abstract.tex ack.tex glossary.tex intro.tex version.tex planning.tex discussion.tex MDP.tex\
+		    abstract.tex ack.tex glossary.tex intro.tex version.tex planning.tex discussion.tex MDP.tex Experiment.tex\
 		    ubcdiss.cls
 BBL1 = $(NAME1).bbl
 

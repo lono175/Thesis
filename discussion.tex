@@ -52,16 +52,16 @@ it is not necessary to adopt our work if the model-based method can learn the op
 on its own.
 Our work is not the only remedy to the failure of model-based methods,
 another alternative is to improve the quality of the model by incorporate more domain knowledge.
-For example, in our Super Mario Bros. experiment, we do not include any effects 
+For example, in our Infinite Mario experiment, we do not include any effects 
 of the interactions between monsters and Mario. It is possible to include such effects
 by hand-coded the preconditions and postconditions of these effects, as suggested by Walsh et al. \cite{Walsh09}.
-In fact, the source code of Super Mario Bros. is publicly available,
+In fact, the source code of Infinite Mario is publicly available,
 %(TODO: source code)
 there are no need to use model-based RL to learn the model. Instead,
-we can simulate the experiences of the agent with the simulator of Super Mario Bros.
+we can simulate the experiences of the agent with the simulator of Infinite Mario. 
 Since the model and the environment are identical, there are no biases which will be 
 introduced during the simulation process.
-We can follow Baumgarten's work \cite{robin09} to adopt $A*$ to search for the optimal action sequences.
+We can follow Baumgarten's work \cite{Robin09} to adopt $A*$ to search for the optimal action sequences.
 With the complete domain knowledge, it is unlikely for any RL methods to outperform his work.
 
 However, the key idea of RL is to build an adaptive agent.
@@ -99,7 +99,7 @@ If a pseudo-reward is large than the difference, the model-free method will foll
 of the model-based method strictly, and the combined policy will be the same as 
 the policy of model-based method.
 
-In our experiments \ref{se:domain, se:MarioExp}, a pseudo-reward larger than the expected death penalty is considered "too large", 
+In our experiments (Sections \ref{se:domain} \ref{se:MarioExp}), a pseudo-reward larger than the expected death penalty is considered "too large", 
 since it will let the model-free method follow the instruction of model-based method even 
 when it will lead to the death of the agent. Any pseudo-reward which is smaller it can prevent the
 death of the agent.
