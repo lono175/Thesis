@@ -409,11 +409,10 @@ policies which can have the same value function.
 The most well-known dynamic programming algorithms are
 value iteration \cite{Bellman57} and policy iteration \cite{Howard1960}.
 
-Value iteration iterative apply the Bellman equation to update the
+Value iteration iteratively apply the Bellman equation to update the
 values for all possible states. The value function will converge
 usually in few iterations. 
 
-\ \ \ \ \ \ \ \ \ \ \ \ Choose $a'$ based on $s'$ using policy derived from $Q$ (e.g., $\epsilon$-greedy method)\\
 \begin{center}
 \begin{tabular}{@{}lp{6cm}@{}}
 \hline
@@ -859,7 +858,7 @@ The subtask policy $\pi_i: S_i \rightarrow A_i$ maps an active state to an actio
 %\subsection{Value Function Decomposition}
 In the MAXQ framework, the Q-function is decomposed as:
 \begin{align}
-    \label{eq:MaxQ}
+    %\label{eq:MaxQ}
     Q^{\pi}(i, s, a) = E[\sum_{t=0}^{\infty}\gamma^t r_t] &= E[\sum_{t=0}^{N - 1}\gamma^t r_t] + E[\sum_{t=N}^{\infty}\gamma^t r_t]\\
                     &= Q_r^{\pi}(i, s, a) + Q_c^{\pi}(i, s, a),
 \end{align}
@@ -870,12 +869,12 @@ $Q_c^{\pi}$ is the expected cumulative reward after action $a$ is finished.
 \begin{equation}
     Q_r^{t+1}(i, s, a) =
     (1 - \alpha_t)Q_r^t(i, s, a) + \alpha_t R_t(s'| s, a)   \mbox{ if $a$ is primitive} \\
-    \label{eq:TdQr}
+    %\label{eq:TdQr}
 \end{equation}
 \begin{equation}
     Q_c^{t+1}(i, s, a) =
     (1 - \alpha_t)Q_c^t(i, s, a) + \alpha_t \gamma^N[Q_r^{t}(i', s', a') + Q_c^t(i', s', a')] \\
-    \label{eq:TdQc}
+    %\label{eq:TdQc}
 \end{equation}
 
 \begin{equation}
@@ -884,7 +883,7 @@ $Q_c^{\pi}$ is the expected cumulative reward after action $a$ is finished.
     (1 - \alpha_t)Q_e^{t}(i, s, a) + \alpha_t \gamma^N[Q_e^{t}(i', s', a')]  \mbox{ if $s' \in S_i$} \\
     (1 - \alpha_t)Q_e^{t}(i, s, a) + \alpha_t \gamma^N[Q^{t}(i', s', a')]  \mbox{ if $s' \in T_i$} \\
     \end{array} \right.
-    \label{eq:TdQe}
+    %\label{eq:TdQe}
 \end{equation}
 where $i'$ is the index of next subtask in $TC(H)$ that will be invoked, $a' = arg max_b Q^t(i', s', b)$.
 
@@ -896,7 +895,7 @@ $Q_r^{\pi}$ can be computed as:
         Q_r^{\pi}(a, s, \pi_a(s)) + Q_c^{\pi}(a, s, \pi_a(s))& \mbox{if $a$ is composite} \\
         \Sigma_{s'} P(s'|s, a)R(s'|s, a) & \mbox{if $a$ is primitive} \\  
     \end{array} \right.
-    \label{eq:Qr}
+    %\label{eq:Qr}
 \end{equation}
 %In our example, to compute $Q^{\pi}(MaxRoot, s, GotoExit)$, "MaxRoot" node would query 
 %"MaxExit" node to get $V^{\pi}(GotoExit, s)$.
@@ -904,7 +903,7 @@ $Q_r^{\pi}$ can be computed as:
 $Q_c^{\pi}$ can be computed as:
 \begin{equation}
     Q_c^{\pi}(i, s, a) = \sum_{s', N} P_{S_i}^{\pi}(i, s', N|s, a)\gamma^N[Q_r^{\pi}(i, s', \pi_i(s')) + Q_c^{\pi}(i, s', \pi(s'))],
-    \label{eq:Qc}
+    %\label{eq:Qc}
 \end{equation}
 where $P_{S_i}^{\pi}(i, s', N|s, a)$ is the probability that $s'$ is the first state in $S_i$ which
 is encountered after the execution of action $a$ which takes exactly $N$ steps to finish. 
@@ -916,7 +915,7 @@ which extend the decomposition of MAXQ in a way that hierarchical optimality can
 
 The Q-value is decomposed as:
 \begin{align}
-    \label{eq:HordQ}
+    %\label{eq:HordQ}
     Q^{\pi}(i, s, a) = E[\sum_{t=0}^{\infty}\gamma^t r_t] &= E[\sum_{t=0}^{N_1 - 1}\gamma^t r_t] + E[\sum_{t=N_1}^{N_2 - 1}\gamma^t r_t] + E[\sum_{t=N_2}^{\infty}\gamma^t r_t]\\
                     &= Q_r^{\pi}(i, s, a) + Q_c^{\pi}(i, s, a) + Q_e^{\pi}(i, s, a),
 \end{align}
@@ -935,13 +934,13 @@ $Q_r^{\pi}$ can be computed as:
         Q_r^{\pi}(a, s, \pi_a(s)) + Q_c^{\pi}(a, s, \pi_a(s))& \mbox{if $a$ is composite} \\
         \Sigma_{s'} P(s'|s, a)R(s'|s, a) & \mbox{if $a$ is primitive} \\  
     \end{array} \right.
-    \label{eq:Qr}
+    %\label{eq:Qr}
 \end{equation}
 
 $Q_c^{\pi}$ can be computed as:
 \begin{equation}
     Q_c^{\pi}(i, s, a) = \sum_{s', N} P_{S_i}^{\pi}(i, s', N|s, a)\gamma^N[Q_r^{\pi}(i, s', \pi_i(s')) + Q_c^{\pi}(i, s', \pi(s'))],
-    \label{eq:Qc}
+    %\label{eq:Qc}
 \end{equation}
 where $P_{S_i}^{\pi}(i, s', N|s, a)$ is the probability that $s'$ is the first state in $S_i$ which
 is encountered after the execution of action $a$ which takes exactly $N$ steps to finish. 
@@ -949,7 +948,7 @@ is encountered after the execution of action $a$ which takes exactly $N$ steps t
 And $Q_e^{\pi}$:
 \begin{equation}
     Q_e^{\pi}(i, s, a) = \sum_{s', N} P_{T_i}^{\pi}(k, s', N|s, a)\gamma^N[Q^{\pi}(k, s', \pi_k(s'))],
-    \label{eq:Qe}
+    %\label{eq:Qe}
 \end{equation}
 where $k$ is the index of parent subtask which invoked subtask $M_i$.
 

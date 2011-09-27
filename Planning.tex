@@ -81,23 +81,16 @@ The issues with the pseudo-reward are discussed in section \ref{se:pseudo}.
 \section{Optimal planning with task hierarchy}
 \label{se:OptimalPlanning}
 
-\begin{figure}[t]
+\begin{figure}[ht]
 \begin{center}
-    \includegraphics[width=4.5in] {./figures/taxi.eps}
+    \includegraphics[width=2in] {./figures/taxi.eps}
 \end{center}
 \caption{The Taxi Domain.}
 \label{fig:taxi_domain}
 \end{figure}
 
-\begin{figure}[t]
-\begin{center}
-    \includegraphics[width=4.5in] {./figures/TaxiHierarchy.eps}
-\end{center}
-\caption{The task hierarchy of Taxi domain.}
-\label{fig:taxi}
-\end{figure}
 
-We illustrate our idea with the task hierarchy of Taxi domain \cite{MaxQJ} (Fig. \ref{fig:taxi, fig:taxi_domai}).
+We illustrate our idea with the task hierarchy of Taxi domain \cite{MaxQJ} (Fig. \ref{fig:taxi} and \ref{fig:taxi_domain}).
 The taxi problem is an episodic task. For each episode, the taxi starts
 at a random location. To finish the task, the taxi needs to go to the passenger's location, pick up the passenger,
 go to the destination, and put down the passenger. The task can be further decomposed two subtasks: $Get$ and $Put$. 
@@ -124,6 +117,14 @@ it cannot put him down. We need to modify the hierarchy to let subtask $Get$ be
 able to solve the problem on its own. A way to achieve that is to let subtask $Get$ have access
 to action $Putdown$. 
 
+\begin{figure}[th]
+\begin{center}
+    \includegraphics[width=4.5in] {./figures/TaxiHierarchy.eps}
+\end{center}
+\caption{The task hierarchy of Taxi domain.}
+\label{fig:taxi}
+\end{figure}
+
 %We can only guarantee optimality by adopting HORDQ for certain positions
 %in the hierarchy. The "positions" are defined by the following definition:
 
@@ -140,7 +141,7 @@ We define which subtasks shall act optimally with the following definition:
 We can always find a leaf cover for a hierarchy by including all subtasks which have access
 to primitive actions. The total leaf cover can be constructed from the leaf cover by
 adding the missing primitive actions.
-Consider the task hierarchy in the Taxi domain in Figure \ref{fig:taxi},
+Consider the task hierarchy in the Taxi domain in Fig. \ref{fig:taxi},
 if we add action $Pickup$ and $Putdown$ to subtask $Navigate$, 
 we get a total leaf cover which consists of subtasks $Get$, $Put$, and $Navigate$.
 %Another way is to let Navigate, Get and Put subtasks
@@ -231,19 +232,19 @@ action is executed. %TODO: (why?).
     \end{equation*}
     \label{thm:Bell}
 \end{theorem}
-%Although we changed the formula for $Q_e^{\pi}$, the argument of Theorem 10 in \cite{HORDQ} still holds.
-%We do not repeat the proof here. 
+Although we changed the formula for $Q_e^{\pi}$, the argument of Theorem 10 in \cite{HORDQ} still holds.
+We do not repeat the proof here. 
 
-\textbf{Proof:} 
-\begin{align}
-    \mbox{if $a$ is a primitive action:}
-    Q^\pi(i, s, a) &= Q_r^{\pi}(i, s, a) + Q_c^{\pi}(i, s, a) + Q_e^{\pi}(i, s, a) \\
-    &= Q_r^{\pi}(i, s, a) + Q_c^{\pi}(i, s, a) + \sum_{s'}P(i', s', a)\gamma Q_e^{\pi}(i', s', \pi_{i'(s')}) \\
-    &= \sum_{s'}P(s'|s, a)R(s'|s, a) \\
-    +& \sum_{s', N}P(i', s', N| i, s, a) \gamma Q_c^{\pi}(i', s', \pi_{i'}(s')) \\
-    +& \sum_{s', N}P(i', s', N| i, s, a) \gamma Q_e^{\pi}(i', s', \pi_{i'}(s')) \\
-    &= \sum_{s', N}P(i', s', N| i, s, a) \gamma Q^{\pi}(i', s', \pi_{i'}(s')) \\
-\end{align}
+%\textbf{Proof:} 
+%\begin{align}
+    %\mbox{if $a$ is a primitive action:}
+    %Q^\pi(i, s, a) &= Q_r^{\pi}(i, s, a) + Q_c^{\pi}(i, s, a) + Q_e^{\pi}(i, s, a) \\
+    %&= Q_r^{\pi}(i, s, a) + Q_c^{\pi}(i, s, a) + \sum_{s'}P(i', s', a)\gamma Q_e^{\pi}(i', s', \pi_{i'(s')}) \\
+    %&= \sum_{s'}P(s'|s, a)R(s'|s, a) \\
+    %+& \sum_{s', N}P(i', s', N| i, s, a) \gamma Q_c^{\pi}(i', s', \pi_{i'}(s')) \\
+    %+& \sum_{s', N}P(i', s', N| i, s, a) \gamma Q_e^{\pi}(i', s', \pi_{i'}(s')) \\
+    %&= \sum_{s', N}P(i', s', N| i, s, a) \gamma Q^{\pi}(i', s', \pi_{i'}(s')) \\
+%\end{align}
 
 
 %TODO: not all s are defined in Q(i, s, a) (focus on si instead of all i)
@@ -380,8 +381,8 @@ Therefore, it converges under the same condition as Q-learning. \textbf{Q.E.D.}
 %explain the reward system here
 %the difference between MAXQ's pseudo reward
 %explain my rewarding system here, and only add reward at terminal state
-One of the problem of hierarchical optimal learning algorithms is that policy $\pi_i$ of subtask $M_i$
-is determined by the reward of original MDP. There are no pseudo-rewards which are allowed as
+One of the problem of hierarchically optimal RL is that policy $\pi_i$ of subtask $M_i$
+is determined by the reward of the original MDP. There are no pseudo-rewards which are allowed as
 in MAXQ. Due to the lack of pseudo reward, each subtask $M_i$ lacks the motivation to 
 pursue the subgoal defined by the hierarchy, thus it makes the hierarchical 
 design useless. It is necessary to add some pseudo-rewards to encourage each subtask to pursue 
@@ -392,24 +393,28 @@ the subgoal. However, we cannot guarantee optimality with a nonzero pseudo-rewar
 %TODO: mention that pseudo-reward can atlernative between different policy
 In fact, the above argument illustrates the difference between the hierarchically optimal policy
 and the recursively optimal policy. 
-As shown in the expriment of \cite{Andre02}, hierarchically optimal RL learns  
+As shown in the experiment of \cite{Andre02}, hierarchically optimal RL learns  
 a better policy than the one of recursively optimal RL. However, its learning rate
-is slower than resursively optimal one.
+is slower than the recursively optimal one.
 
 Since neither approach is better than the other in terms of learning rate and 
 the quality of policy, there are no reason to stick to one of them.
 With the introduction of pseudo-reward, we can alternate the agent's behavior
 between the hierarchically optimal RL and the recursively optimal RL.
 
-We show two tricks we can play when working with these pseudo-rewards.
-We showed that with the appropriately choosen pseudo-reward, the resulting behavior
-can be better than both approaches in terms of learning rate and the quality of policy.
-The result is presented in Chapter 4.
+An approach is to use positive reward to encourage the effective exploration
+in the early stage, and gradually decrease it to 0 to learn the hierarchically optimal policy. 
+Since the hierarchically optimal policy is equal to the optimal policy when the hierarchy contains a leaf cover,
+the optimal policy will be learned with a pseudo-reward equal to 0.
+The result in presented in Chapter 4.
+
+%We show two tricks we can play when working with these pseudo-rewards.
+%We showed that with the appropriately choosen pseudo-reward, the resulting behavior
+%can be better than both approaches in terms of learning rate and the quality of policy.
+%The result is presented in Chapter 4.
 
 %a bridge between RO and HO
 
-A practical approach is to use positive reward to encourage the effective exploration
-in the early stage, and gradually decrease it to 0. 
 
 %The penalty term serves as a mechanism to enforce the subtask to follow the hierarchy.
 %The subtask will strictly follow the subgoal defined by the hierarchy if the penalty term is large.
