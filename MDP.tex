@@ -10,14 +10,13 @@
 \label{ch:RL}
 
 In this chapter, we introduce the basic concept of reinforcement learning (RL)
-and the Markov decision process (MDP) and Semi-Markov decision process (SMDP) formalisms.
-We describe the solution methods of MDPs, that include model-free and model-based 
+, the Markov decision process (MDP) and semi-Markov decision process (SMDP) formalisms. We describe the solution methods of MDPs, that include model-free and model-based 
 methods. Then we review the concepts and algorithms in the hierarchical reinforcement learning (HRL) framework. 
-We present the brief introduction of previous work in the RL field.
-For more comprehensive introductionx of MDP, SMDP and RL, please refer to standard text
+We present a brief introduction of previous work in the RL field.
+For more comprehensive introductions of MDP, SMDP and RL, please refer to the standard texts
 \cite{Howard1960, Puterman94, SuttonIntro, KevinIntro}.
 A more theoretic treatment of RL is provided by Bertsekas and Tsitsiklis \cite{Neurodynamic}.
-Barto and Mahadevan provide an excellent review on HRL.
+Barto and Mahadevan provide an excellent review on HRL \cite{HRLSurvey}.
 
 \section{Reinforcement learning}
 \label{se:RL}
@@ -65,8 +64,7 @@ policy $\pi$ is followed from state $s$.
 
 The value function is defined as:
 \begin{align}
-    V^{\pi}(s) &= E[R(s_0, \pi(s_0)) + \gamma R(s_1, \pi(s_1)) + \gamma^2 R(s_2, \pi(s_2)) + \dots | s_0 = s, \pi]\\
-               &= E[\sum_{t=0}^{\infty}\gamma^t R(s_t, a_t) | s_0=s, \pi],\\
+    V^{\pi}(s) &= E[R(s_0, \pi(s_0)) + \gamma R(s_1, \pi(s_1)) + \gamma^2 R(s_2, \pi(s_2)) + \dots | s_0 = s, \pi],
     \label{eq:defV}
 \end{align}
 where $\gamma \in [0, 1]$ is the discount factor which discounts the future reward to the present value.
@@ -87,12 +85,12 @@ The Q-function is defined as:
 
 The Bellman equation for the Q-function is:
 \begin{equation}
-    Q^{\pi}(s, a) = \sum_{s'}P(s'|s, a)[R(s, a) + \gamma Q^{\pi}(s', \pi(s'))].
+    Q^{\pi}(s, a) = \sum_{s'}P(s'|s, a)[R(s, a) + \gamma Q^{\pi}(s', \pi(s'))]
     \label{eq:Q}
 \end{equation}
 
 We are interesting in finding the optimal policy, which is the policy 
-that achieves as high as the value of any other policy for all states.
+that achieves as high as the value of any other policies in all states.
 It is defined as:
 \begin{equation}
     \pi^*(s) = \argmax_{a \in A} [R(s, a) + \gamma \sum_{s'} P(s'|s, a)V^*(s')],
@@ -109,18 +107,17 @@ Likewise, the optimal Q-function is the solution of the following equation:
 \end{equation}
 
 %-------------------------------------------------------------------------
-\section{Solution method for MDPs}
+\section{Solution methods for MDPs}
 
-There are several types of methods to solve an MDP problem.
-If the transition and reward functions are known as a priori, 
+There are several types of methods to solve an MDP problem. If the transition and reward functions are known as a priori, 
 the optimal policy can be computed with dynamic programming (DP) algorithms.
 %TODO: algorithms here? bellman equation
 These methods are considered offline algorithms, since they are performed without
-interaction of the environment.
+the interaction with the environment.
 
 In the field of RL, people are more interested in solving the problems which
 the underlying MDP is unknown in the beginning. 
-Due the lack of a priori model, it is necessary for the agent to interact with
+Due to the lack of a priori model, it is necessary for the agent to interact with
 the environment and collect samples to acquire the statistical knowledge of the MDP.
 Therefore, the methods to solve these
 problems are considered online algorithms.
@@ -140,7 +137,7 @@ a policy or value function.
 
 For both types of methods, a exploration policy is required to 
 guide the sampling process.
-The simplest strategy is to select an action which leads to the highest value of value function. However, 
+The simplest strategy is to select an action which leads to the highest value. However, 
 this strategy does not allow the agent to explore the states which are not visited before.
 A better approach is to use $\epsilon$-greedy method. The method allows the agent to abandon the
 best action and choose a random action with a very small probability $\epsilon$. The higher the probability, the more
@@ -320,23 +317,21 @@ The equation to update the value function in TD learning is:
    V(S_t) \leftarrow V(S_t) + \alpha [r_{t+1} + \gamma V(S_{t+1}) - V(S_t)],
 \end{displaymath}
 where $V(s_t)$ is the value function of the state $s_t$. $V(s_t)$ is the expected reward when
-the agent reaches the state $s_t$. $r_{t+1}$ is the reward given to the agent when it chooses
+the agent reaches state $s_t$. $r_{t+1}$ is the reward given to the agent when it chooses
 the action at state $s_t$.
 
-SARSA\cite{Rummery94} and Q-learning\cite{Watkins89} are the most popular TD methods.
+SARSA\cite{Rummery94} and Q-learning\cite{Watkins89} are the most popular TD
+methods. SARSA is an on-policy TD approach, which indicates that it learns
+from the current policy. Different from other TD approaches, SARSA updates the
+Q-value from the value of the next state-action pair. The Q-value is
+updated by:
 
-%\section{SARSA}
-%\label{sec:SARSA}
-SARSA is a on-policy TD approach. On-policy indicates that it learns from the current policy.
-Different from other TD approaches, SARSA updates the Q-value of the current state-action from the next state-action.
-The Q-value is updated by:
 \begin{displaymath}
     Q(s_t, a_t) \leftarrow Q(s_t, a_t) + \alpha [r_{t+1} + \gamma Q(s_{t+1}, a_{t+1})-Q(s_t, a_t)],
 \end{displaymath}
-where $Q(s, a)$ is the value function for state-pair, and it is the expected reward when the agent takes
-the action $a$ at the state $s$. $\alpha$ is step-wise, which controls the learning rate. 
-$\gamma$ is the discount factor.
-
+where $Q(s, a)$ is the expected reward when the agent takes the action $a$ at
+the state $s$. $\alpha$ is a constant step-size parameter. $\gamma$ is the
+discount factor.
 
 \begin{center}
 \begin{tabular}{@{}lp{6cm}@{}}
@@ -352,7 +347,7 @@ Repeat (for each episode):\\
 \ \ \ \ \ \ \ \ \ \ \ \ Choose $a'$ based on $s'$ using policy derived from $Q$ (e.g., $\epsilon$-greedy method)\\
 \ \ \ \ \ \ \ \ \ \ \ \ $Q(s, a) \leftarrow Q(s, a) + \alpha [r + \gamma Q(s', a')-Q(s, a)]$\\
 \ \ \ \ \ \ \ \ \ \ \ \ $s \leftarrow s'$\\
-howard1960\ \ \ \ \ \ \ \ \ \ \ \ $a \leftarrow a'$\\
+\ \ \ \ \ \ \ \ \ \ \ \ $a \leftarrow a'$\\
 \ \ \ \ \ \ Until $s$ is terminal\\
 \hline  
 \end{tabular}
@@ -391,23 +386,23 @@ Repeat (for each episode):\\
 \subsection{Model-based methods}
 \label{se:modelbased}
 Unlike model-free methods which adopt the trial-and-error learning process,
-model-based methods construct a model of the environment from the samples
-and conduct a planning process over it. With the constructed model, these methods
+model-based methods construct a model of the environment from the samples and
+conduct a planning process over it. With the constructed model, these methods
 can predict the outcome of the agent's action, and choose an optimal action
-that can achieve the highest predictive reward.
-Since this type of methods makes efficient use of samples, they often
-require fewer samples to learn a good policy than model-free methods.
-They are important to the applications where computation is cheap and the
-interactions of the environment are expensive.
+that can achieve the highest predictive reward. Since this type of methods
+makes efficient use of samples, they often require fewer samples to learn a
+good policy than model-free methods. They are important to the applications
+where computation is cheap and the interactions of the environment are
+expensive.
 
 A straightforward approach is to build the model by learning the transition function and
 reward function, then use dynamic programming (DP) to compute the solution of
 Bellman equation (Equation \ref{eq:optimalQ}).
 
-The solution of Bellman equation is unique, but there might be several
-policies which can have the same value function.
-The most well-known dynamic programming algorithms are
-value iteration \cite{Bellman57} and policy iteration \cite{Howard1960}.
+The solution of Bellman equation is unique, but there might be several policies
+which can have the same value function. The most well-known dynamic
+programming algorithms are value iteration \cite{Bellman57} and policy
+iteration \cite{Howard1960}.
 
 Value iteration iteratively apply the Bellman equation to update the
 values for all possible states. The value function will converge
@@ -428,12 +423,10 @@ Until maximal update smaller than $\delta$\\
 \end{tabular}
 \end{center}
 
-The policy iteration algorithm 
-separates the iterative process into two stages.
-The first stage is policy evaluation, which computes
-the value function for current policy.
-The second stage is policy improvement, which improve the policy 
-by choosing a better action based on the value function computed in previous stage.
+The policy iteration algorithm separates the iterative process into two stages. The first stage is policy evaluation, which computes the value function for
+current policy. The second stage is policy improvement, which improve the
+policy by choosing a better action based on the value function computed in
+previous stage.
 
 \begin{center}
 \begin{tabular}{@{}lp{6cm}@{}}
@@ -445,11 +438,11 @@ $k \leftarrow 1$\\
 Repeat:\\
 \ \ \ Repeat:\\
 \ \ \ \ \ \ for $s \in S$ do\\
-\ \ \ \ \ \ \ \ \ $V^{\pi_k}(s, a) \leftarrow [R(s, \pi_k(s)) + \gamma \sum_{s'} P(s'|s, \pi_k(s)) V(s')]$\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \\
+\ \ \ \ \ \ \ \ \ $Q^{\pi_k}(s, a) \leftarrow [R(s, \pi_k(s)) + \gamma \sum_{s'} P(s'|s, \pi_k(s)) Q^{\pi_k}(s', \pi_k(s))]$\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \\
 \ \ \ \ \ \ end for\\
 \ \ \ Until maximal update smaller than $\delta$\\
 \ \ \ for $s \in S$ do\\
-\ \ \ \ \ \ $\pi_{k+1}(s) \leftarrow \argmax_a \sum_{s'} P(s'|s, \pi_k(s))]$\\
+\ \ \ \ \ \ $\pi_{k+1}(s) \leftarrow \argmax_a Q^{\pi_k}(s', a)$\\
 \ \ \ end for\\
 \ \ \ $k \leftarrow k + 1$\\
 Until $\pi_{k+1} = \pi_{k}$\\
@@ -458,8 +451,8 @@ Until $\pi_{k+1} = \pi_{k}$\\
 \end{center}
 
 Another popular class of model-based methods is the Dyna architecture \cite{Dyna}.
-Dyna \cite{Dyna} is to use the learned model to generate extra experience through
-simulation process, but the underlying learning algorithm is still a model-free method.
+Dyna \cite{Dyna} is to use the learned model to generate extra experiences through
+the simulating process, but the underlying learning algorithm is still a TD method.
 %The idea of the Dyna architecture is to use a model-free solution technique
 %(such as the ones that will be described in the next section), but at the same
 %time learn a model of the environment as in the certainty equivalent method.
@@ -661,23 +654,22 @@ simulation process, but the underlying learning algorithm is still a model-free 
 \section{Semi-Markov decision processes}
 \label{se:SMDP}
 
-Semi-Markov decision processes (SMDPs) \cite{Puterman94} extend MDPs to handle the actions 
-which may take several steps to finish. It allows us to handle
-the problem which the agent 
-cannot make a decision for every step. 
-The state may be updated several times between
-each decision made by the agent.  
-SMDPs provide a way to model these temporal-extended actions, which
-make them an important tool to describe the environment of hierarchical 
-reinforcement learning.
+Semi-Markov decision processes (SMDPs) \cite{Puterman94} extend MDPs to handle
+the actions which may take several steps to finish. It allows us to handle the
+problem which the agent cannot make a decision for every step. The state may
+be updated several times between each decision made by the agent. SMDPs
+provide a way to model these temporal-extended actions, which make them an
+important tool to describe the environment of hierarchical reinforcement
+learning.
 
 \begin{definition} A semi-Markov decision process (SMDP) is formalized as a tuple $<S, A, P, R>$, where:
 \begin{itemize}
     \item $S$ is a finite set of states of the environment.
     \item $A$ is a finite set of actions.
-    \item $P:S \times \mathbb{N} \times A \times S \rightarrow [0, 1]$ is a multi-step transition function.
-        $P(s', N | s, a)$ denotes the probability that state is transited from  $s$ to $s'$
-        after action $a$ is taken at state $s$ and finished in exact $N$ steps.
+    \item $P:S \times \mathbb{N} \times A \times S \rightarrow [0, 1]$ is a
+        multi-step transition function. $P(s', N | s, a)$ denotes the
+        probability that state is transited from  $s$ to $s'$ after action $a$
+        is taken at state $s$ and finished in exact $N$ steps.
     \item $R:S \times \mathbb{N} \times A \rightarrow \mathbb{R}$ is the reward function which defines the reward after executing a certain action at a certain state.
     \item $I:S \rightarrow [0, 1]$ specifies the initial state distribution.
  \end{itemize}
@@ -709,8 +701,6 @@ The optimal value function and Q-function satisfy the following equations:
 \begin{equation}
     V^*(s) = \max_{a \in A} [R(s, a) + \sum_{s', N} \gamma^N P(s', N|s, a)V^*(s')]
 \end{equation}
-
-Likewise, the optimal Q-function is the solution of the following equation:
 \begin{equation}
     Q^*(s, a) = R(s, a) + \sum_{s', N} \gamma^N P(s', N|s, a) \max_{a' \in A} Q^*(s', a')
 \end{equation}
@@ -778,24 +768,24 @@ a large MDP into several smaller subtasks. Each subtask is responsible to
 learn a policy of part of the original state space.
 It allows us to adopt a divide-and-conquer
 strategy and focus on finding the optimal policy for a part of
-the original problem.
+the original problem (state decomposition).
 It also allows us to group a sequence of actions together and share
-it for several subtasks. Finally, it allows us to ignore the features which
-are irrelevant to the subtask.
+it for several subtasks (temporal abstraction). Finally, it allows us to ignore the features which
+are irrelevant to the subtask (spatial abstraction).
 
 Singh \cite{Singh92} presented Hierarchical DYNA (H-DYNA) which extends Dyna
-to learn a hierarchy of abstract models. Singh proposed a gating architecture to switch 
+to learn a hierarchy of abstract models. Singh proposed a gating architecture which switches
 between temporal-extended actions and adopted H-DYNA to solve the problem. 
 Dayan and Hinton \cite{Dayan95} introduced Feudal Q-learning, a hierarchical method that
-recursively partitions the problem in both spatial and temporal scale. 
+recursively partitions the problem in both spatial and temporal scales. 
 
 The above methods depend on the MDP formulation. However, it is not suitable for the problem of HRL.
 In HRL, the agent makes decisions when each temporal-extended actions are finished, thus the state
 may change several times between each decision. The SMDP model which we have described
 in section \ref{se:SMDP} is a better alternative. The application of SMDP model
-to HRL led to developing powerful HRL models such as options \cite{SMDP},
+to HRL led to developing powerful HRL methods such as options \cite{SMDP},
 MAXQ \cite{MaxQJ}, hierarchies of abstract machines (HAMs) \cite{HAMQ}, and 
-programmable HAMs\cite{HORDQ}.
+HORDQ \cite{HORDQ}.
 
 The options framework introduced by Sutton et al. \cite{SMDP} extends
 Q-learning to include temporal-extended actions with hard-coded policies.
@@ -803,30 +793,31 @@ In options framework, the temporal-extended actions are indivisible and opaque u
 Because the MDP combined with the options is an SMDP, they proposed SMDP Q-learning, which is
 the SMDP version of one-step Q-learning. It updates the Q-function after each option is terminated.
 
-Parr and Russell \cite{HAMQ} introduced HAMs. They observed the execution of a hierarchical policy
+Parr and Russell \cite{HAMQ} introduced HAMs. They observed that the execution of a hierarchical policy
 resembles finite-state machines. The state of a machine includes the internal execution states as well as
 the current state of the agent. They showed that the whole hierarchical learning process can be reduced to
-learning the optimal policy for a flat SMDP with each state of the SMDP corresponds to the finite-state machine.
+learning the optimal policy for a flat SMDP with each state of the SMDP, which corresponds to the finite-state machine.
 
 The MAXQ framework is one of the early methods that combine temporal abstraction with state abstraction.
 Unlike the options framework or HAMs which reduce the problem to a single SMDP, MAXQ decomposes
-the problem into several MDPs with each MDP corresponds to a subtask in the hierarchy.
-The primary idea of MAXQ is to decompose the value function into the expected reward that
+the problem into several MDPs. Each MDP corresponds to a subtask in the hierarchy.
+The main idea of MAXQ is to decompose the value function into the expected reward that
 the agent will be received after an action is finished and the expected reward that
 the agent will be received on the completion of a subtask. 
 The problem of MAXQ framework is that the learning process of each subtask 
 is isolated from the rest of hierarchy. Since each subtask is unaware
 of the consequence of its decision after the subtask is completed, 
-the agent will learn a recursively optimal policy, which is worser than
-a hierarchically optimal policy, which can be learned by the options, HAMs, or programmable HAMs framework.
+the agent will learn a recursively optimal policy, which is worse than
+a hierarchically optimal policy, which can be learned by the options, HAMs, or HORDQ.
 
 To address the problem,
-Andre and Russell \cite{Andre02, HORDQ} introduced hierarchical optimal recursive decomposed Bellman equations
-They decompose the value function into three parts. The first two parts are identical to MAXQ decomposition.
+Andre and Russell \cite{Andre02, HORDQ} introduced hierarchically optimal recursive decomposed Bellman equations
+Their method decomposes the value function into three parts. The first two parts are identical to the MAXQ decomposition.
 The additional part is the expected reward after the subtask is completed.
-With the additional part, they are able to show that a hierarchical optimal policy can be learned.
+With the additional part, they are able to show that a hierarchical optimal policy can be learned with hierarchically
+optimal recursive decomposed Q-learning (HORDQ).
 
-Since the MAXQ framework and programmable framework are more relevant to our work,
+Since the MAXQ framework and HORDQ are more relevant to our work,
 we provide more details about their formalisms and algorithms in the following sections.
 
 \subsection{The MAXQ decomposition}
@@ -866,49 +857,34 @@ where $r_t$ is the random variable of the reward that the agent receives at step
 $ Q_r^{\pi}$ represents the expected cumulative reward for executing action $a$ at state $s$.
 $Q_c^{\pi}$ is the expected cumulative reward after action $a$ is finished.
 
-\begin{equation}
-    Q_r^{t+1}(i, s, a) =
-    (1 - \alpha_t)Q_r^t(i, s, a) + \alpha_t R_t(s'| s, a)   \mbox{ if $a$ is primitive} \\
-    %\label{eq:TdQr}
-\end{equation}
-\begin{equation}
-    Q_c^{t+1}(i, s, a) =
-    (1 - \alpha_t)Q_c^t(i, s, a) + \alpha_t \gamma^N[Q_r^{t}(i', s', a') + Q_c^t(i', s', a')] \\
-    %\label{eq:TdQc}
-\end{equation}
 
-\begin{equation}
-    Q_e^{t+1}(i, s, a) =
-    \left\{\begin{array}{ll}
-    (1 - \alpha_t)Q_e^{t}(i, s, a) + \alpha_t \gamma^N[Q_e^{t}(i', s', a')]  \mbox{ if $s' \in S_i$} \\
-    (1 - \alpha_t)Q_e^{t}(i, s, a) + \alpha_t \gamma^N[Q^{t}(i', s', a')]  \mbox{ if $s' \in T_i$} \\
-    \end{array} \right.
-    %\label{eq:TdQe}
-\end{equation}
-where $i'$ is the index of next subtask in $TC(H)$ that will be invoked, $a' = arg max_b Q^t(i', s', b)$.
-
-%The node queries its children node to get the value of $V^{\pi}(a, s)$.
-$Q_r^{\pi}$ can be computed as:
+$Q_r^{\pi}$ and $Q_c^{\pi}$ satisfy the following equations:
 \begin{equation}
     Q_r^{\pi}(i, s, a) = 
     \left\{\begin{array}{ll}
         Q_r^{\pi}(a, s, \pi_a(s)) + Q_c^{\pi}(a, s, \pi_a(s))& \mbox{if $a$ is composite} \\
         \Sigma_{s'} P(s'|s, a)R(s'|s, a) & \mbox{if $a$ is primitive} \\  
     \end{array} \right.
-    %\label{eq:Qr}
 \end{equation}
-%In our example, to compute $Q^{\pi}(MaxRoot, s, GotoExit)$, "MaxRoot" node would query 
-%"MaxExit" node to get $V^{\pi}(GotoExit, s)$.
-
-$Q_c^{\pi}$ can be computed as:
 \begin{equation}
-    Q_c^{\pi}(i, s, a) = \sum_{s', N} P_{S_i}^{\pi}(i, s', N|s, a)\gamma^N[Q_r^{\pi}(i, s', \pi_i(s')) + Q_c^{\pi}(i, s', \pi(s'))],
-    %\label{eq:Qc}
+    Q_c^{\pi}(i, s, a) = \sum_{s', N} P^{\pi}(i, s', N|s, a)\gamma^N[Q_r^{\pi}(i, s', \pi_i(s')) + Q_c^{\pi}(i, s', \pi(s'))],
 \end{equation}
-where $P_{S_i}^{\pi}(i, s', N|s, a)$ is the probability that $s'$ is the first state in $S_i$ which
-is encountered after the execution of action $a$ which takes exactly $N$ steps to finish. 
 
-\subsection{The hierarchical recursive decomposition Q-learning}
+To learn the recursively optimal policy, MAXQ-Q learning iteratively updates
+the estimates of $Q_r$ and $Q_c$:
+\begin{equation}
+    Q_r^{t+1}(i, s, a) \leftarrow
+    (1 - \alpha_t)Q_r^t(i, s, a) + \alpha_t R_t(s'| s, a)   \mbox{ if $a$ is primitive} \\
+    %\label{eq:TdQr}
+\end{equation}
+\begin{equation}
+    Q_c^{t+1}(i, s, a) \leftarrow
+    (1 - \alpha_t)Q_c^t(i, s, a) + \alpha_t \gamma^N[Q_r^{t}(i', s', a') + Q_c^t(i', s', a')] \\
+    %\label{eq:TdQc}
+\end{equation}
+
+
+\subsection{The HORDQ learning}
 
 Andre and Russell \cite{HORDQ} introduced hierarchically optimal recursive decomposed Bellman equations
 which extend the decomposition of MAXQ in a way that hierarchical optimality can be guaranteed.
@@ -925,32 +901,28 @@ to finish subtask $M_i$. $ Q_r^{\pi}$ is the expected cumulative reward for exec
 $Q_c^{\pi}$ is the expected cumulative reward when subtask $M_i$ finishes after the execution of action $a$. 
 $Q_e^{\pi}$ is the expected cumulative reward when the episode ends after the execution of subtask $M_i$ .
 
+They show that a hierarchically optimal policy can be learned with hierarchically optimal recursive Q-learning (HORDQ):
+
 %TODO: $Q_r$ 
-
-$Q_r^{\pi}$ can be computed as:
 \begin{equation}
-    Q_r^{\pi}(i, s, a) = 
+    Q_r^{t+1}(i, s, a) \leftarrow
+    (1 - \alpha_t)Q_r^t(i, s, a) + \alpha_t R_t(s'| s, a)   \mbox{ if $a$ is primitive} \\
+    %\label{eq:TdQr}
+\end{equation}
+\begin{equation}
+    Q_c^{t+1}(i, s, a) \leftarrow
+    (1 - \alpha_t)Q_c^t(i, s, a) + \alpha_t \gamma^N[Q_r^{t}(i', s', a') + Q_c^t(i', s', a')] \\
+    %\label{eq:TdQc}
+\end{equation}
+
+\begin{equation}
+    Q_e^{t+1}(i, s, a) \leftarrow
     \left\{\begin{array}{ll}
-        Q_r^{\pi}(a, s, \pi_a(s)) + Q_c^{\pi}(a, s, \pi_a(s))& \mbox{if $a$ is composite} \\
-        \Sigma_{s'} P(s'|s, a)R(s'|s, a) & \mbox{if $a$ is primitive} \\  
+    (1 - \alpha_t)Q_e^{t}(i, s, a) + \alpha_t \gamma^N[Q_e^{t}(i', s', a')]  \mbox{ if $s' \in S_i$} \\
+    (1 - \alpha_t)Q_e^{t}(i, s, a) + \alpha_t \gamma^N[Q^{t}(i', s', a')]  \mbox{ if $s' \in T_i$} \\
     \end{array} \right.
-    %\label{eq:Qr}
+    %\label{eq:TdQe}
 \end{equation}
-
-$Q_c^{\pi}$ can be computed as:
-\begin{equation}
-    Q_c^{\pi}(i, s, a) = \sum_{s', N} P_{S_i}^{\pi}(i, s', N|s, a)\gamma^N[Q_r^{\pi}(i, s', \pi_i(s')) + Q_c^{\pi}(i, s', \pi(s'))],
-    %\label{eq:Qc}
-\end{equation}
-where $P_{S_i}^{\pi}(i, s', N|s, a)$ is the probability that $s'$ is the first state in $S_i$ which
-is encountered after the execution of action $a$ which takes exactly $N$ steps to finish. 
-
-And $Q_e^{\pi}$:
-\begin{equation}
-    Q_e^{\pi}(i, s, a) = \sum_{s', N} P_{T_i}^{\pi}(k, s', N|s, a)\gamma^N[Q^{\pi}(k, s', \pi_k(s'))],
-    %\label{eq:Qe}
-\end{equation}
-where $k$ is the index of parent subtask which invoked subtask $M_i$.
 
 \subsection{Recursive optimality vs hierarchical optimality}
 \label{se:ROHO}
@@ -969,7 +941,7 @@ where $k$ is the index of parent subtask which invoked subtask $M_i$.
 \label{fig:MazeH}
 \end{figure}
 
-There are three definitions of optimality of hierarchical reinforcement learning:
+There are three definitions of optimality in HRL:
 
 \begin{definition}
     \textbf{Optimality:} An optimal policy $\pi^*$ for MDP $M$ is a policy that achieves the highest cumulative reward
@@ -979,7 +951,7 @@ There are three definitions of optimality of hierarchical reinforcement learning
     \textbf{Recursive Optimality:} A recursively optimal policy for MDP $M$ with hierarchical 
     decomposition $M' = \{M_0, M_1, \dots, M_n\}$ is a policy $\pi = \{\pi_0, \pi_1, \dots, \pi_n\}$ such
     that each policy $\pi_i$ achieves the highest cumulative pseudo-reward for the corresponding subtask $M_i$,
-    assuming fixed policies for its action $A_i$, 
+    assuming fixed policies for its child subtasks.
 \end{definition}
 \begin{definition}
     \textbf{Hierarchical Optimality:} Given $Pi_H$, which is the set of all policies consistent with hierarchy $H$, 
@@ -987,10 +959,10 @@ There are three definitions of optimality of hierarchical reinforcement learning
     among all policies $\pi \in Pi_H$.
 \end{definition}
 
-An optimal policy is what we want to find for any MDP $M$. However, it may not be possible to 
-be found due to the constraints imposed by the hierarchy. Instead of seeking optimality, 
+An optimal policy is what we want to find for any MDP $M$. However, it may not be possible
+due to the constraints imposed by the hierarchy. Instead of seeking optimality, 
 we can seek hierarchical optimality or recursive optimality, which are two important 
-optimality guarantee in hierarchical reinforcement learning.
+optimality guarantees in HRL.
 
 Recursive optimality guarantees that the policy of each subtask is optimal given the policies of its child subtasks.
 In this form of optimality, each subtask learns the optimal policy while ignoring the policy from its ancestors
@@ -1009,14 +981,14 @@ a hierarchically optimal policy.
 
 %TODO: pros and cons for HO and RO
 Dietterich \cite{MaxQJ} demonstrates the difference of recursively and hierarchically optimal policies 
-with a simple Maze problem (Fig. \ref{fig:Maze}). A robot starts at left room and it needs to reach 
+with a simple Maze problem (Figure \ref{fig:Maze}). A robot starts at left room and it needs to reach 
 the goal $G$ in the right room. It has three primitive actions, North, South and East.  
 The robot receives a reward of -1 for each move.
 There are two subtasks, Exit and GotoGoal. Subtask Exit terminates when the robot exits the left room,
 and GotoGoal terminates when the robot reaches the goal. The arrows in Figure \ref{fig:Maze} show the 
 recursively optimal policy. The arrows in the left room indicate a policy which seeks to exit
 the left room with minimum steps. The arrows in the right room seek a shortest path to the goal.
-Note that the policy in the shaded area is a recursively optimal but not hierarchically optimal and also not
+Note that the policy in the shaded area is recursively optimal but not hierarchically optimal nor
 optimal. A hierarchically optimal policy should exit the left room by the upper door, but a recursively 
 optimal policy always exits the room with minimum moves since
 a recursively optimal policy ignores the consequences after the subgoal is achieved. 

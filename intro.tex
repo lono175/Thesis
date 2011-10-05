@@ -172,8 +172,7 @@ Degris and Sigaud \cite{ApproxTree} proposed SDYNA, which extended Dyna \cite{Dy
 learning the structure of a problem with incremental decision trees.
 Sutton et al. \cite{ApproxDyna} introduced linear Dyna -- a combination 
 of Dyna and linear function approximation. 
-Instead of enumerating all states, which is impossible for large problems, they
-use Dyna-style planning. Given the current state and policy, 
+Instead of enumerating all states, which is impossible for large problems,
 their methods predict the features of the next state and reward, using function approximation
 techniques. 
 
@@ -188,20 +187,19 @@ It allows us to predict the outcome
 of the agent behavior and plan over it. They can effectively reduce the number of 
 samples which are required to find a good policy.
 With the learned model, it is easy for model-based methods to generalize
-it knowledge to novel scenarios.
+the knowledge to novel scenarios.
 However, it is difficult for model-based methods to learn the optimal policy.
 The possible reasons are:
 \begin{itemize}
 \item Inaccuracy of the underlying supervised learning algorithms: most of model-based methods rely on supervised learning algorithms
-    to learn the model, but we do have any supervised learning algorithms which can guarantee 100\% accuracy. Any incorrect
-    prediction may lead to a suboptimal policy.
+    to learn the model. When these algorithms predict incorrectly, a suboptimal policy might be learned.
 \item Structure assumption of the model: most of model-based methods have some assumptions on the structure of model.
     For example, the methods based on FMDPs assume the problem has some factored structure; Linear Dyna \cite{ApproxDyna} assumes
-    the features of next state can be predicted with linear approximate while SDYNA assumes it can be done with decision trees.
-\item Impossible to learn all the effects: as indicated in \cite{Walsh09}, to learn the effects in Stochastic STRIPS domains is NP-Hard.
+    the features of next state can be predicted with linear function approximation. When the assumptions are incorrect, a suboptimal policy will be learned.
+\item Impossible to learn all the effects: as indicated in \cite{Walsh09}, to learn the effects in stochastic STRIPS domains is NP-Hard.
     If the number of all possible effects is small, it is possible to enumerate all of them and exclude the effects with
-    small probability. However, the problem is NP-Hard and heuristic solutions \cite{Pasula07} are necessary to solve it.
-\item Computational constraint: even if we can learn all the effects, it may be too expensive to consider all of them during
+    small probability. However, since the problem is NP-Hard, there are no efficient solutions to resolve it.
+\item Computational constraints: even if we can learn all the effects, it may be too expensive to consider all of them during
     the planning process. Due to the stochastic nature of MDP, each effect may result in several possible outcomes given
     the same state and action. If we consider too many effects during the planning process, the number states in a planning envelope
     might become too large to compute.
@@ -222,8 +220,8 @@ The existing linear function approximation algorithms for model-free methods hav
 applied to large domains \cite{LSTD99, KeepAway}. 
 However, these methods may have slower learning rate since they cannot predict
 the outcome of agent's behavior and are unable to use planning techniques to 
-search for a better policy. Instead, they need to collect the samples with the trial-and-error 
-approach. It makes these methods hard to generalize over novel scenarios.
+search for a better policy. Instead, they need to collect the samples with the trial-and-error.
+It makes these methods difficult to generalize over novel scenarios.
 %However, when the
 %state space is too large, we cannot build the exact model anymore. Instead, we
 %have to approximate the model with techniques such as function approximation. 
@@ -278,14 +276,13 @@ designed manually or learned by automatic hierarchy discovery techniques \cite{H
 %\section{Related work}
 %Model-based + HRL
 %Model-based + Model-free + HRL
-We are not the first to try to combine different RL methods within the HRL framework.  
-Ghavamzadeh and Mahadevan \cite{HybridPolicy} combined value function-based RL and policy gradient RL to handle
+We are not the first to try to combine different RL methods within the HRL framework. Ghavamzadeh and Mahadevan \cite{HybridPolicy} combined value function-based RL and policy gradient RL to handle
 continuous MDP problems. Cora \cite{Vlad} incorporated model-based, model-free and Bayesian active learning into the MAXQ framework.
 Nevertheless, these methods seek recursive optimality in the learning process, 
 thus they fail to satisfy any optimality condition when one of the subtasks
 fails to find its optimal policy.
 In contrast, our method learns the optimal policy without the requirement that 
-all of the policies of the subtasks need be optimal. It is thus more robust and allows us to incorporate approximate
+all of the policies of the subtasks need to be optimal. It is more robust and allows us to incorporate approximate
 approaches into the same framework.
 
 
@@ -320,8 +317,8 @@ We provide a brief review of reinforcement learning in Chapter 2.
 That includes Markov decision processes (MDPs), semi-Markov decision processes (SMDPs),
 and hierarchical reinforcement learning (HRL).
 Our main theory is presented in Chapter 3. 
-We provide experimental results on Bus domain and Infinite Mario in Chapter 4.
-Finally, conclusions, limitations, and future work are discussed in Chapter 5.
+We provide the experimental results on Bus domain and Infinite Mario in Chapter 4.
+Finally, conclusion, limitation, and future work are discussed in Chapter 5.
 
 
 %say the benefit of model-based RL (peter's model based HRL, 

@@ -68,10 +68,10 @@ The world is divided into six areas. There are six subtasks $Move(1), \dots,$ an
 bus to the corresponding area.
 Subtask $Move(t)$ can only be invoked if $t$ is the adjacent area.
 The subtask terminates if the bus exits the current area.
-When it terminates, a pseudo-reward $\tilde{r}$ is applied if the bus arrives at designated area $t$ and 0 otherwise.
+When it terminates, a pseudo-reward is applied if the bus arrives at designated area $t$ and 0 otherwise.
 The task hierarchy is shown in Figure \ref{fig:bus}(b). 
 
-A state can be described by the 8-tuple $(x, y, h, p_1, p_2, p_3, a, b)$, where $(x, y)$ is the location of 
+A state can be described by a 8-tuple $(x, y, h, p_1, p_2, p_3, a, b)$, where $(x, y)$ is the location of 
 bus, $h$ shows if the bus is damaged, $p_i$ indicates if the corresponding passenger has been picked up or not,
 and $a$ and $b$ are binary variables which indicate the status of the construction sites.
 
@@ -93,7 +93,7 @@ policy. Subtask $Root$ adopted our approximate model-based method.
 
 %TODO: dyanmic programming
 %TODO: add free + free HORDQ to show that HORDQ makes the hierarchical process useless
-The planning variables of our model are $\{x, y, p_1, p_2, p_3\}$, while the damage
+The variables of our model are $\{x, y, p_1, p_2, p_3\}$, while the damage
 status and road conditions are assumed to be static during the planning process.
 Our model can learn that a large penalty will be received when the bus is damaged.  
 However, our model cannot learn that the bus will get damaged if it passes through
@@ -133,7 +133,7 @@ where $Q_r^{\pi}(i, x, j)$ is provided by the child subtask $M_j$.
 
 The task of subtask $M_i$ is to compute $Q_c^{\pi}(i, x, j)$ by:
 \begin{equation}
-    Q_c^{\pi}(i, x, j) = \sum_{x'} P_m^{\pi}(x'|s, j)[Q_r^{\pi}(i, x', \pi_i(x')) + Q_c^{\pi}(i, x', \pi(x'))],
+    Q_c^{\pi}(i, x, j) = \sum_{x'} P_m^{\pi}(x'|s, j)[Q_r^{\pi}(i, x', \pi_i(x')) + Q_c^{\pi}(i, x', \pi_i(x'))],
     \label{eq:biasedQc}
 \end{equation}
 
@@ -162,15 +162,15 @@ the instruction of its parent too strictly.
 
 On the other hand, if we do not impose any pseudo-reward, 
 the optimal policy can be learned, but the learning rate is
-slower than SARSA(0) learning. Since the subtask has no
-incentive to follow the instruction from the hierarchy, 
+slower than SARSA(0) learning. Since subtask $Move(t)$ has no
+incentive to follow the instruction of its parent subtask, 
 the learning process is similar to SARSA(0) learning 
 except it has six different Q-functions to learn (one for each subtask) instead of one.
 Thus it takes longer to learn the optimal policy. 
 
-With the appropriate pseudo-reward, we can get a near-optimal policy
-while the learning rate is faster than SARSA(0)
-Our experiment shows that a pseudo-reward of +5 is enough to make the subtask follow 
+With an appropriate pseudo-reward, we can get a near-optimal policy
+while the learning rate is faster than SARSA(0).
+Our experiment shows that a pseudo-reward of +5 is enough to make subtask $Move(t)$ follow 
 the order of $Root$ in most of the times, but it is not enough for the subtask to ignore
 the breakdown penalty. For example, when $Root$ executes $Move(4)$ to move the bus from area 
 3 to area 4 and the road at location $A$ is under construction, $Move(4)$ subtask
@@ -689,7 +689,7 @@ We can adjust the value of pseudo-reward to alternate the agent's behavior betwe
 two different methods.
 
 
-\subsection{The result}
+\subsection{The result of Infinite Mario}
 \label{se:MarioRes}
 \begin{figure}[t]
  \begin{minipage}[b]{1.0\linewidth}
@@ -710,7 +710,7 @@ $\epsilon$-greedy with $\epsilon = 0.01$.}
 \hline
 \multicolumn{1}{c}{Table 1. The number of times for Mario to finish the level}\\
 \hline
-Method Name & # of finishing a level\\
+Method Name & \# of finishing a level\\
 \hline
 SARSA    & 1\\
 Model+HORDQ(10)    & 277\\
@@ -740,7 +740,7 @@ The model-based method only includes the dynamics of Mario, and ignores the rest
 Thus, the learned policy can get Mario killed. On the other hand, the features of model-free method
 do not include the information of pits, so it may fall into a pit.
 
-Fig. \ref{fig:MarioExp} shows the distance travelled by Mario with different pseudo-rewards.
+Figure \ref{fig:MarioExp} shows the distance travelled by Mario with different pseudo-rewards.
 Different from the experiment of Bus domain, the model-based method does not have
 a better learn rate then the model-free method. The problem is that the model-based method
 may lead Mario to be killed by a monster in a early state, thus it suffers a decreased learning rate.

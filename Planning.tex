@@ -44,29 +44,27 @@ policy can be always learned. To ensure that the optimal policy can be learned,
 we need to "patch" the hierarchy to allow some subtasks to be able to solve
 the whole MDP on their own. The result is presented in section \ref{se:OptimalPlanning}.
 
-It is worth noting that
-what we are seeking here is optimality, not
-recursive optimality nor hierarchical optimality.
-Since we allow some of subtasks to learn a suboptimal policy,
-the recursive optimality cannot be achieved.
-The hierarchical optimality cannot be achieved as well before the hierarchy is patched.
-In Theorem \ref{thm:opt}, we show that the hierarchically optimal policy
-is equal to optimal policy with a patched hierarchy.
-In other words, seeking the optimality or hierarchical optimality are the same
-with a patched hierarchy. 
+It is worth noting that what we are seeking is optimality, not recursive
+optimality nor hierarchical optimality. Since we allow some of subtasks to
+learn a suboptimal policy, the recursive optimality cannot be achieved. The
+hierarchical optimality cannot be achieved as well before the hierarchy is
+patched. In Theorem \ref{thm:opt}, we show that the hierarchically optimal
+policy is equal to optimal policy with a patched hierarchy. In other words,
+seeking the optimality or hierarchical optimality are the same with a patched
+hierarchy. 
 %TODO: what we seek is optimality not RO or HO
 
 In this work, we follow a hierarchical formulation that is similar to the MAXQ framework \cite{MaxQJ}.
 An MDP $M$ is decomposed into a finite
 set of subtasks $M' = \{M_0, M_1, \dots, M_n\}$, where $M_0$ is the root subtask. 
 Each subtask is defined by 3 tuples $<U_i, A_i, R_i>$, where 
-$U_i$ is a termination predicate that partitions the state space into active states $S_i$ and terminal states $T_i$,
+$U_i$ is a termination predicate that partitions the state space into active states $S_i$ and terminal states $T_i$.
 $A_i$ is a set of actions for subtask $M_i$,
-and $R_i$ is the reward function for subtask $M_i$.
-There are two types of actions: primitive and composite.
-A primitive action corresponds to one of the actions in MDP $M$, which takes one step to finish. 
-A composite action corresponds to a subtask in the hierarchy, which will not finish before
-the subtask arrive one of its terminal states.
+and $R_i$ is the reward function for subtask $M_i$. There are two types of
+actions: primitive and composite. A primitive action corresponds to one of the
+actions in MDP $M$, which takes one step to finish. A composite action
+corresponds to a subtask in the hierarchy, which will not finish before the
+subtask arrives one of its terminal states.
 
 Different from MAXQ, 
 the reward function $R_i$ is separated into internal reward function and external reward function.
@@ -90,7 +88,7 @@ The issues with the pseudo-reward are discussed in section \ref{se:pseudo}.
 \end{figure}
 
 
-We illustrate our idea with the task hierarchy of Taxi domain \cite{MaxQJ} (Fig. \ref{fig:taxi} and \ref{fig:taxi_domain}).
+We illustrate our idea with the task hierarchy of Taxi domain \cite{MaxQJ} (Figure \ref{fig:taxi} and \ref{fig:taxi_domain}).
 The taxi problem is an episodic task. For each episode, the taxi starts
 at a random location. To finish the task, the taxi needs to go to the passenger's location, pick up the passenger,
 go to the destination, and put down the passenger. The task can be further decomposed two subtasks: $Get$ and $Put$. 
@@ -141,7 +139,7 @@ We define which subtasks shall act optimally with the following definition:
 We can always find a leaf cover for a hierarchy by including all subtasks which have access
 to primitive actions. The total leaf cover can be constructed from the leaf cover by
 adding the missing primitive actions.
-Consider the task hierarchy in the Taxi domain in Fig. \ref{fig:taxi},
+Consider the task hierarchy in the Taxi domain in Figure \ref{fig:taxi},
 if we add action $Pickup$ and $Putdown$ to subtask $Navigate$, 
 we get a total leaf cover which consists of subtasks $Get$, $Put$, and $Navigate$.
 %Another way is to let Navigate, Get and Put subtasks
@@ -317,25 +315,25 @@ update rules:
 %TODO: the value iteration here!!!
 
 \begin{equation}
-    Q_r^{t+1}(i, s, a) =
+    Q_r^{t+1}(i, s, a) \leftarrow
     (1 - \alpha_t)Q_r^t(i, s, a) + \alpha_t R_t(s'| s, a)   \mbox{ if $a$ is primitive} \\
     \label{eq:TdQr}
 \end{equation}
 \begin{equation}
-    Q_c^{t+1}(i, s, a) =
+    Q_c^{t+1}(i, s, a) \leftarrow
     (1 - \alpha_t)Q_c^t(i, s, a) + \alpha_t \gamma^N[Q_r^{t}(i', s', a') + Q_c^t(i', s', a')] \\
     \label{eq:TdQc}
 \end{equation}
 
 \begin{equation}
-    Q_e^{t+1}(i, s, a) =
+    Q_e^{t+1}(i, s, a) \leftarrow
     \left\{\begin{array}{ll}
     (1 - \alpha_t)Q_e^{t}(i, s, a) + \alpha_t \gamma^N[Q_e^{t}(i', s', a')]  \mbox{ if $s' \in S_i$} \\
     (1 - \alpha_t)Q_e^{t}(i, s, a) + \alpha_t \gamma^N[Q^{t}(i', s', a')]  \mbox{ if $s' \in T_i$} \\
     \end{array} \right.
     \label{eq:TdQe}
 \end{equation}
-where $i'$ is the index of next subtask in $TC(H)$ that will be invoked, $a' = arg max_b Q^t(i', s', b)$.
+where $i'$ is the index of next subtask in $TC(H)$ that will be invoked and $a' = arg max_b Q^t(i', s', b)$.
 
 Unfortunately, the convergence of HORDQ is an open problem (Conjecture 1 of \cite{HORDQ}).
 However, if we let all subtasks in $TC(H)$ have access to all primitive actions directly, 
