@@ -330,7 +330,7 @@ The training data is obtained through search-based methods similar to Baumgarten
 The above approaches either depend on game-specific information ("isMarioOnGround")
 or depend on the information that is difficult to be retrieved from image features (the location and size of pits).
 In this section, we introduce an approach 
-to building an agent for Infinite Mario 
+of building an agent for Infinite Mario 
 without using such information.
 We only restrict the agent to use the features provided by the simulator of Infinite Mario from RL competition 2009.
 The features can be retrieved from the screen directly, 
@@ -662,8 +662,8 @@ since the pit can be handled by the model-based method.
 \label{fig:MarioHierarchy}
 \end{figure}
 We combine the model-based method and model-free method with the task hierarchy shown in Fig. \ref{fig:MarioHierarchy}.
-The model-based method is responsible for subtask $Root$ and the model-based method is for
-subtask $Action(t)$. %Bruno you repeated model-based here. Are you sure this is what you meant?
+The model-based method is responsible for subtask $Root$ and the model-free method is for
+subtask $Action(t)$.
 For each step, subtask $Root$ selects one of the actions to execute.
 Subtask $Action(t)$ then decide if it is going to follow the action suggested by $Root$ or not. 
 If it does, $Action(t)$ will receive a pseudo-reward. 
