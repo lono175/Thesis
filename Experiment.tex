@@ -1,23 +1,21 @@
 %TODO: add maze problem with invisible trap as illustration for transfer learning, so the location of trap is important. Otherwise, the learning rate may decrease.
 %TODO: show that bus domain is an example for delayed death.
 
-\chapter{Experimental Results for Bus and Infinite Mario Domain }
+\chapter{Empirical study}
 
-We show the effectiveness of our approach with 
-Bus and Infinite Mario domain.
-Bus domain is a 6 by 6 grid world problem. 
-The number of states for bus domain is
-2,304, so it is small enough to apply table-lookup methods to learn
+In this chapter, we demonstrate the effectiveness of our approach in the 
+Bus and Infinite Mario domains.
+The Bus domain is a 6 by 6 grid world problem. 
+We have $2304$ states in this domain, so it is small enough to apply table-lookup methods to learn
 the optimal policy. In this experiment, we combine table-lookup HORDQ and an approximate model-based method 
 to illustrate how to increase the learning rate and learn a near-optimal policy with our approach.
 
-For large problems with more than millions of states, it is not possible to adopt
-table-lookup methods to learn the optimal policy.
+For large problems with more than millions of states, it is not possible to use table-lookup methods to learn the optimal policy.
 Instead, it is necessary to adopt function approximation techniques to learn the policy.
 However, the optimality guarantee of Theorem \ref{thm:opt} relies on table-lookup methods and 
 does not hold for function approximation techniques.
 With function approximation, it is not possible to learn the optimal policy anymore.
-We illustrate our work with Infinite Mario to show that despite the optimality guarantee is lost in
+We illustrate our work with Infinite Mario to show that despite the fact that the optimality guarantee is lost in
 large problems, we can still use model-free methods to help model-based methods handle the effects which
 are not included in the model. 
 %Since both model-free and model-based methods may not learn the optimal policy, it is possible to 
@@ -54,16 +52,16 @@ are not included in the model.
 Figure \ref{fig:bus}(a) shows the bus domain. The bus starts at $S$. Its task
 is to pickup all passengers marked as $P$ and return to $S$.
 The bus can move North, South, East, or West. There is a reward of -1 applied for each action.
-There is 0.1 probability for the bus to move in a random direction. It stays put 
+There is a $0.1$ probability for the bus to move in a random direction. It stays put 
 when trying to cross a wall. 
 The passengers are picked up automatically when the bus moves into
 the location of a passenger. The passengers can be picked up in any order.
 The episode ends when it finishes the task.  
 There are two possible locations for road construction. They are marked as 
 $A$ and $B$. If the bus passes a construction site, it will get damaged with probability 1 and has the probability
-of 0.25 to break down for each step afterwards. There is a reward of -50 if the bus breaks down and the episode ends immediately. 
+of 0.25 of breaking down for each step afterwards. There is a reward of $-50$ if the bus breaks down and the episode ends immediately. 
 At the beginning of an episode, the status of the road is randomly chosen from no construction, $A$ is under construction,
-or $B$ is under construction. There is a 0.05 probability for the road status to change for each step.
+or $B$ is under construction. There is a $0.05$ probability for the road status to change for each step.
 The world is divided into six areas. There are six subtasks $Move(1), \dots,$ and $Move(6)$ which move the
 bus to the corresponding area.
 Subtask $Move(t)$ can only be invoked if $t$ is the adjacent area.
@@ -71,8 +69,7 @@ The subtask terminates if the bus exits the current area.
 When it terminates, a pseudo-reward is applied if the bus arrives at designated area $t$ and 0 otherwise.
 The task hierarchy is shown in Figure \ref{fig:bus}(b). 
 
-A state can be described by a 8-tuple $(x, y, h, p_1, p_2, p_3, a, b)$, where $(x, y)$ is the location of 
-bus, $h$ shows if the bus is damaged, $p_i$ indicates if the corresponding passenger has been picked up or not,
+A state can be described by a 8-tuple $(x, y, h, p_1, p_2, p_3, a, b)$, where $(x, y)$ is the location of the bus, $h$ shows if the bus is damaged, $p_i$ indicates if the corresponding passenger has been picked up or not,
 and $a$ and $b$ are binary variables which indicate the status of the construction sites.
 
 %TODO: the damage status is not perceived on the screen, so it cannot be modeled
@@ -152,10 +149,10 @@ $P_m(x|s, j)$ can be estimated by:
 \end{equation}
 for all $x \in S_i$, where $\delta_{x'x}=1$ if $x' = x$ and is 0 otherwise.
 
-\subsection{The result of Bus domain}
+\subsection{Empirical results in the Bus domain}
 \label{se:BusRes}
-Figure \ref{fig:res}(a) shows the learning curves with different level of pseudo-rewards.
-With pseudo-reward +60, it learned a suboptimal policy because
+Figure \ref{fig:res}(a) shows the learning curves with different levels of pseudo-rewards.
+With pseudo-reward $+60$, it learned a suboptimal policy because
 the pseudo-reward is too large to make subtask $Move(t)$ ignore 
 the penalty of breakdown. As a result, the subtask followed 
 the instruction of its parent too strictly.
@@ -176,8 +173,8 @@ the breakdown penalty. For example, when $Root$ executes $Move(4)$ to move the b
 3 to area 4 and the road at location $A$ is under construction, $Move(4)$ subtask
 will learn it is a bad decision with HORDQ.
 Instead of moving to area 4, $Move(4)$ may move to area 1 or 5 to avoid
-the breakdown penalty. In turn, $Root$ learns $Move(4)$ cannot be executed in 
-such a scenario, thus it will seek an alternate plan if the same scenario
+the breakdown penalty. In turn, $Root$ learns that $Move(4)$ cannot be executed in 
+such a scenario, thus it will seek an alternative plan if the same scenario
 is encountered.
 
 To illustrate the undesirable result when some suboptimal subtasks exist in 
@@ -191,14 +188,14 @@ HORDQ, we replaced our model-based approach with a random policy.
 The result is shown in Figure \ref{fig:res}(b). In this case, SARSA(0) has the fastest
 learning rate. It takes more time for $Move(t)$ to realize that the policy of $Root$ is bad with higher pseudo rewards.
 Nevertheless, it will eventually learn a near-optimal policy.
-The combination of random policy and MAXQ has the worst result.
+The combination of random policy and MAXQ presented the worst result.
 
-The result shows that a good approximate model 
+This result shows that a good approximate model 
 can help increase the learning rate with the combination of HORDQ. 
-If the model is poor, HORDQ serves as a fail-safe mechanism to stop 
-the agent repeating the same poor policy over and over again.
+If the model is poor, HORDQ serves as a fail-safe mechanism to keep 
+the agent from repeating the same poor policy over and over again.
 On the other hand, MAXQ learned a poor policy in both cases.  
-The result suggests that in order to construct a robust HRL 
+This evidence suggests that in order to construct a robust HRL 
 algorithm, it is beneficial to incorporate HORDQ in the hierarchy.
 
 \begin{figure}[b]
@@ -248,22 +245,24 @@ with $\epsilon = 0.1$.}
 %and pseudo reward
 We use Infinite Mario to show the effectiveness of our approach in large domains. 
 Large domains contain more than millions of states, so it makes table-lookup methods not applicable
-due to the curse of dimensionality. The approximation techniques are required to handle these
+due to the curse of dimensionality. Approximation techniques are required to handle these
 problems, but the optimality guarantee will be lost.
 It is interesting to see how our work will perform with function approximation techniques,
 especially when model-free methods cannot learn the optimal policy.
 
 \subsection{Previous work}
 Infinite Mario is an open source Java implementation of Nintendo's Super Mario Brothers game.
-It becomes a recent interest in the AI community possibly thanks to
+It received much attention in the AI community possibly due to
 the two AI competitions -- RL 2009 competition and Mario AI competition, which were held in 2009.
 The objective of these competitions is to build the best agent that
 can play this classic side-scrolling arcade-style game.
 
-RL 2009 competition requires the competitors to use RL algorithms to build their agents.
+%Bruno In the paragraph above, perhaps you could cite the competitions, at least as a footnote directing to their web site
+
+The RL 2009 competition required competitors to use RL algorithms to build their agents.
 On the other hand, the Mario AI 2009 competition \cite{Robin09} 
-does not pose any restrictions on the underlying technique.
-It encourages
+did not pose any restrictions on the underlying technique.
+It encouraged
 competitors to use neural networks, genetic genetic programming, fuzzy logic, temporal difference learning, and human ingenuity.
 
 The observation of Mario AI in RL 2009 competition 
@@ -279,28 +278,31 @@ Mohan and Laird \cite{Mohan09} combined HRL and Soar-RL \cite{Nason05} to build
 a Mario agent. In their hierarchy, the task is divided to "Grab Coin", "Search Question", "Tackle Monster",
 "Avoid Pit", and "Move to Goal". 
 The root subtask chooses one of these subtasks to execute based on the learned
-preferences. Each subtask deals with at most one object. For example, 
+preferences. Each subtask deals with at most one object. For example, the
 "Grab Coin" subtask is considered successful only when the specified 
-coin is collected. Thus, the number of subtasks available for root task to choose
+coin is collected. Thus, the number of subtasks available for the root task to choose
 depends on the current objects in the screen.
 
 Gibson and Risk \cite{Gibson09} adopts the options framework.
 The master agent can execute 3 options -- a $SARSA(\lambda)$ agent, a "pit specialist" agent, and a
-rule-based agent. The "pit specialist" concerns only the pits, and is available only when
+rule-based agent. The "pit specialist" concerns only with the pits, and is available only when
 there is a pit within 4 tiles of Mario. 
-The master agent uses SMDP Q-learning to learn which option to execute given the state.
+The master agent uses SMDP Q-learning to learn which option to execute given a state.
 
 Ringstad et al. \cite{Paul09} 
 used a modified linear SARSA algorithm to build the agent.
-The input features are the locations of 3 nearest monsters or pits.
+The input features are the locations of the 3 nearest monsters or pits.
 Their idea is to design an agent that can finish the level as fast as possible.
 To encourage the agent to finish the level, they added a pseudo-reward to encourage
 the agent to move as far as possible.
 Their method won the Mario AI championship of RL competition 2009.
 
+%Bruno What is a pseudo-reward? And shouldn't you be describing these contributions in the related work section of your thesis? Possibly in a separate chapter?
 
-The observation of Mario AI 2009 competition \cite{Robin09} includes $22 \times 22$ tiles on the screen, the location and the speed of monsters, 
+The state observation of Mario AI 2009 competition \cite{Robin09} includes $22 \times 22$ tiles on the screen, the location and the speed of monsters, 
 and the status of Mario such as "isMarioOnGround" or "mayMarioJump".
+
+%Bruno What do these status variables have in common? Are there others? How many variables are there? What's the # of dimensions in the state?
 
 %Booleans: mario is on the ground, may
 %jump, is carrying a shell, is small/big/fireprovides an interface
@@ -314,8 +316,9 @@ and use $A^*$ search to find a path to the right border of the screen as fast as
 Since his approach requires the agent to have the complete knowledge of the environment,
 the approach falls into the category of classical planning.
 
+%Bruno So if classical planning won the competition, either the learning agents were really bad (therefore a bad baseline) or the domain is not challenging enough right?
 
-Ross et al. \cite{Ross11} use supervised learning to learn the direct policy
+Ross et al. \cite{Ross11} used supervised learning to learn the direct policy
 mapping between input features and the primitive actions. The input features
 are $22 \times 22$ tiles around Mario in previous 4 frames, the state of Mario
 and the last 6 actions. The tiles include the types of the ground, blocks, and
@@ -327,12 +330,12 @@ The training data is obtained through search-based methods similar to Baumgarten
 The above approaches either depend on game-specific information ("isMarioOnGround")
 or depend on the information that is difficult to be retrieved from image features (the location and size of pits).
 In this section, we introduce an approach 
-to build an agent for Infinite Mario 
+to building an agent for Infinite Mario 
 without using such information.
 We only restrict the agent to use the features provided by the simulator of Infinite Mario from RL competition 2009.
-The features can be retrieved from the images of screen directly, 
+The features can be retrieved from the screen directly, 
 therefore it allow us to generalize our approach to other video games without
-the need to redesign specialized features for each individual game.
+the need to redesign specialized features for each individual problem.
 
 %Our goal
 %is to train the computer to play this game based on the current
@@ -376,7 +379,7 @@ the need to redesign specialized features for each individual game.
 
 \subsection{Infinite Mario domain}
 
-We use the environment of RL competition 2009 to conduct our experiment.
+We use the 2009 RL competition environment to conduct our experiment.
 The action space of Infinite Mario consists of 4 buttons which correspond
 to the original Nintendo controller.
 These buttons are:
@@ -394,6 +397,8 @@ We exclude action "speed", "jump speed" and "no op" from the
 action space, since they do not seem to be relevant to the optimal policy.
 The agent can execute 9 actions in our experiment.
 
+%Bruno At this point you could say already if something belongs to the optimal policy or not, since you claim that your method learns this policy right?
+
 The screen of Infinite Mario is comprised of a matrix of $22 \times 16$ tiles.
 The matrix is an array of characters, with each element representing the type of tile.
 The types of tile are brick, question-block, coin, pipe, empty tile, the finish line and Mario.
@@ -404,7 +409,7 @@ The information of each object includes x- and y-positions, x- and y-velocities,
 Note that the positions and velocities are continuous, so a quantization technique might be required.
 
 The tile information can be captured from screen with basic image processing techniques \cite{Yavar}.
-The location and speed of monsters can be obtained by applying the computer vision techniques such
+The location and speed of monsters can be obtained by applying computer vision techniques such
 as object tracking or optical flow.
 
 The levels are generated with 3 parameters: random seed, type, and difficulty.
@@ -425,6 +430,8 @@ The agent will receive the following rewards:
 Besides, we apply a reward equal to the
 displacement of x-position to encourage the agent to move as right as possible
 and penalize the agent if it moves to left.
+
+%Bruno Where this choice come from? Would your method work without it?
 
 \subsection{The model-based method}
 %TODO: only 9 actions
@@ -460,20 +467,20 @@ can be described by a 4-tuple $(x, y, dx, dy)$, where are the location and veloc
 The ranges of $x$, $y$, $dx$ and $dy$ are $[0, 318]$, $[0, 15]$, $[-2.5, 2.5]$, and $[-2.5, 2.5]$.
 These variable are continuous, so it is not possible to enumerate all possible states
 of Mario with dynamic programming techniques. It is possible to discretize the variables, but the resulting state space 
-is still too large if we want to predict the dynamics of Mario precisely.
+would still be too large if we want to predict the dynamics of Mario precisely.
 
-Instead of discretizing the variables, we use the regression tree algorithm
-in Orange package \cite{Orange04} to predict the future position and speed of Mario.
+Instead of discretizing the variables, we used the regression tree algorithm
+in the Orange package \cite{Orange04} to predict the future position and speed of Mario.
 The features are the current speed of Mario and the tiles within 5 by 5 
 area around Mario (Fig. \ref{fig:Mario}(a)). There are 27 variables. 
 Since each action has different dynamics, 
-We build different trees for different actions. 
+we build different trees for different actions. 
 Given the current state and action, the regression trees should predict 
 the speed and position of the following state. 
 The regression trees predict
 the relative changes of positions $\epsilon_x = x' - x$ and 
 $\epsilon_y = y' - y$ since modeling relative change might generalize better across states \cite{Hester09}.
-However, the relative changes of speeds doesn't generalize well, so we predict
+However, the relative changes of speeds do not generalize well, so we predict
 the value of speeds directly.
 %(a possible reason is that the maximum speed is capped, so Mario cannot
 %keep increasing its speed by press the speed button). 
@@ -484,7 +491,7 @@ have 36 regression trees to model the dynamics of Mario.
 
 We borrowed the idea of Baumgarten \cite{Robin09}, using
 the search-based method to find a sequence of actions that moves Mario to the right edge of the screen as fast as possible.
-Instead of hard-coded the objective of the search process, we add a possible reward to the agent if it moves
+Instead of hard-coding the objective of the search process, we add a possible reward to the agent if it moves
 to the right and a negative reward otherwise.
 We adopt a simple k-step lookahead greedy search in our planning process.
 It begins with the current state of Mario. 
@@ -494,7 +501,7 @@ the maximum depth, which is 6 in our experiment, we use greedy search and expand
 with the largest predicted reward. 
 The process stops after the number of nodes exceeds 300, then the search algorithm returns 
 a sequence of actions which achieves the highest predicted reward.
-To reduce the computation time spent on search, the search algorithm will return
+To reduce the computation time spent on searching, the search algorithm will return
 immediately if there is a sequence of action which gets more than +6 reward.
 There are $9^6=531,441$ nodes in the fully-expanded tree. 
 Since we only search a very small part of it, it is possible for the search algorithm
@@ -503,7 +510,7 @@ The locations of monsters and other objects are assumed to be the same
 during the planning process. 
 
 It is crucial for the search-based method to learn when Mario is going to be killed. 
-However, the number of samples right before Mario getting killed is limited by the
+However, the number of samples right before Mario gets killed is limited by the
 number of episodes due to the fact that the episode terminates immediately after the death of Mario.
 To efficiently use the available samples, we use a single regression tree to learn the 
 reward function. The input features of the regression tree are
@@ -541,7 +548,7 @@ efficiently to finish a level.
 %TODO: objective: generic AI, challenge here (no specific domain knowledge)
 %why model-free approach is necessary
 
-Since we only model the dynamics of Mario, the effect such as the dynamics of other objects or
+Since we only model the dynamics of Mario, effects such as the dynamics of other objects or
 the interactions between objects are ignored. 
 
 Here is the list of effects which are not included in the model:
@@ -568,17 +575,17 @@ to solve it \cite{Pasula07}.
 
 Our work provides an alternative approach to this problem--instead of learning 
 all possible effects, we only learn part of them and 
-let model-free methods to handle the scenarios where
+let model-free methods handle the scenarios associated with
 the effects which are not included in the model.
 
 The 5 by 5 tiles around Mario include the monsters as well,
-so it is possible for the model-based method to learn the immediately
-death caused by moving Mario directly to monsters. What it cannot handle is the delayed death, which happens when
-Mario moves very close to monsters, but yet touches it.
+so it is possible for the model-based method to learn the imminent
+death caused by moving Mario directly to monsters. What it cannot handle is the delayed death cases, which happen when
+Mario moves very close to monsters, but does not touch it.
 In such a scenario, it doesn't matter which action Mario is going to take, 
 the subsequent death is guaranteed. 
-It also happens when Mario moves to a position which will be surrounded by
-monsters. After Mario moves to the position, Mario will be killed inevitably.
+This also happens when Mario moves to a position which will be surrounded by
+monsters. After Mario moves to such a position, Mario will be killed inevitably.
 %Since there are no way out, the death is inevitable. 
 The supervised learning can only learn the reward function with immediate reward.
 When the death is actually caused by a decision made few steps before, it is difficult
@@ -605,11 +612,13 @@ such as $SARSA(\lambda)$, so it is not a problem for these methods.
 
 \subsection{The model-free method}
 
-Since the model-based method cannot deal with the interaction between objects, we let
+%Bruno Perhaps this section could be called The model-free method and its relation to the problem you illustrated before.
+
+Since the model-based method cannot deal with the interaction between objects, we use a
 model-free method to handle it.
 
 The features of model-free methods include the types and locations of moving objects
-other than Mario it self. To reduce number of features, we do not include the speed of objects.
+other than Mario itself. To reduce the number of features, we do not include the speed of objects.
 As noted in \cite{Gibson09}, it is more generalizable if we use "egocentric representation".
 That is, we use the relative positions between Mario and objects 
 as the features instead of the absolute positions.
@@ -624,12 +633,12 @@ round each variable to the nearest integer.
 
 Unlike previous approaches \cite{Paul09, Gibson09, Mohan09, Mohan10},
 we do not include the location of pits in our features.
-Since the pit is not a moving object nor does it a single tile,
+Since the pit is not a moving object nor does it occupy a single tile,
 it is not available in the input features.
-The previous approaches rely on prior knowledge of the shape and size of pits to parse the tile information
+Previous approaches relied on prior knowledge of the shape and size of pits to parse the tile information
 and extract the location of a pit. 
-We argue that it will destroy the generality of the method.
-It is possible to include the pit information by using the whole screen ($22 \times 16$)
+We argue that this would not contribute to the generality of the method.
+It would be possible to include the pit information by using the whole screen ($22 \times 16$)
 as the feature. But the potential huge state space makes it inapplicable in practice ($14^{352}$ states with 14 different types of tiles)
 Moreover, it is not necessary to include the pit information in model-free methods,
 since the pit can be handled by the model-based method. 
@@ -654,27 +663,27 @@ since the pit can be handled by the model-based method.
 \end{figure}
 We combine the model-based method and model-free method with the task hierarchy shown in Fig. \ref{fig:MarioHierarchy}.
 The model-based method is responsible for subtask $Root$ and the model-based method is for
-subtask $Action(t)$.
+subtask $Action(t)$. %Bruno you repeated model-based here. Are you sure this is what you meant?
 For each step, subtask $Root$ selects one of the actions to execute.
 Subtask $Action(t)$ then decide if it is going to follow the action suggested by $Root$ or not. 
-It it does, $Action(t)$ will receive a pseudo-reward. 
+If it does, $Action(t)$ will receive a pseudo-reward. 
 Since $Action(t)$ is the only subtask that executes the primitive action,
-the behavior of agent solely depends on the decision of it.
+the behaviour of the agent solely depends on its decision.
 Subtask $Root$ can only influence its decision with the pseudo-reward.
 Note that $Action(t)$ will terminate immediately after executing a single primitive action.
 There is no temporal and spatial abstraction in this hierarchy.
-That means that we do not enjoy any benefits by adopting the HRL framework.
-In fact, the reason why we adopt the HRL framework is to combine different methods.
-And the benefit of doing so does not come the HRL framework, but come from the power of combining
+That means that we do not enjoy any benefits from adopting the HRL framework.
+In fact, the reason we adopted the HRL framework is to combine different methods.
+And the benefit of doing so does not come from the HRL framework, but from the power of combining
 model-free and model-based methods.
 
-Different from our approach of Bus domain, we do not have 
+Unlike our approach with the Bus domain, we do not have 
 individual subtask $Action(t)$ defined for each primitive action. 
-Since subtask $Action(t)$ DOES know that it will be rewarded if it follows 
-the action of $Root$, there are no need for us to separately learn the Q-function for every possible action. 
+Since subtask $Action(t)$ knows that it will be rewarded if it follows 
+the action of $Root$, there is no need for us to separately learn the Q-function for every possible action. 
 Instead, we use a single subtask $Action(t)$ to learn the Q-function for the original MDP. 
 And the decision of $Action(t)$ is biased with the pseudo-reward when it is going to select the best action to execute. 
-Thus, the method presented here doesn't have the overhead of maintaining multiple Q-functions as in our method for Bus domain.
+Thus, the method presented here does not have the overhead of maintaining multiple Q-functions as in our method for Bus domain.
 %For this hierarchy, there is one 
 
 %The state transition function and reward function depend on the policy of 
@@ -684,8 +693,8 @@ Thus, the method presented here doesn't have the overhead of maintaining multipl
 
 For this special hierarchy, the pseudo-reward imposes a very interesting property:
 the policy is identical to the policy of model-free method when a pseudo-reward is equal to zero and
-it is identical to the one of model-based method given sufficiently large pseudo-reward.
-We can adjust the value of pseudo-reward to alternate the agent's behavior between
+it is identical to the one of model-based method given a sufficiently large pseudo-reward.
+We can adjust the value of pseudo-reward to alternate the agent's behaviour between
 two different methods.
 
 
@@ -734,6 +743,8 @@ with type 0 and the difficulty is 3.
 The maximum distance for Mario to move to the right is 315.
 Beyond that, the level is finished with +100 reward.
 
+%Bruno when random seed 1247, are you talking about a specific run? If so, what's special about this one in specific? Is it typical of something?
+
 Table 1 shows the number of times for Mario to finish the level within 1000 episodes.
 Unsurprisingly, the model-based and model-free method are difficult
 to finish a level because they may fail to handle either monsters or pits.
@@ -742,9 +753,9 @@ Thus, the learned policy can get Mario killed. On the other hand, the features o
 do not include the information of pits, so it may fall into a pit.
 
 Figure \ref{fig:MarioExp} shows the distance travelled by Mario with different pseudo-rewards.
-Different from the experiment of Bus domain, the model-based method does not have
-a better learn rate then the model-free method. The problem is that the model-based method
-may lead Mario to be killed by a monster in a early state, thus it suffers a decreased learning rate.
+Unlike the experiment in the Bus domain, the model-based method does not have
+a better learning rate then the model-free method. The problem is that the model-based method
+may lead Mario to be killed by a monster in an early state, thus it suffers a decreased learning rate.
 
 If we combine both methods, we can see that Mario now can learn a better policy since
 it can avoid both pits and monsters.

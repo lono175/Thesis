@@ -5,8 +5,8 @@
 %loss of optimality. One future direction is to investigate the applicability of combining our method
 %with such techniques.
 
-Model-based methods are powerful tools. It allows us to predict the outcome 
-of the agent behavior and plan over it. They can effectively reduce the number of 
+Model-based methods are powerful tools. They allow us to predict the outcome 
+of the agent behaviour and plan over it. They can effectively reduce the number of 
 samples which are required to find the optimal policy.
 However, model-based methods may not be able to learn the optimal
 policy due to the structural assumptions.
@@ -20,14 +20,18 @@ policy due to the structural assumptions.
 %\end{itemize}
 In this work, we propose an approach to combine the approximate model-based method with the
 model-free method (HORDQ) under the HRL framework. We are able to show that our approach
-can learn the optimal policy even when the assumption of model is not satisfied. Furthermore, we show that the optimality
+can learn the optimal policy even when the assumptions of model are not satisfied. Furthermore, we show that optimality
 is guaranteed for any subtask policy as long as the subtask does not belong to the total leaf
-cover of given hierarchy.
+cover of a given hierarchy.
 
-In this chapter, we share our experience about how to apply our theory to design a system.
-Since the performance of system highly depends on the value of pseudo-reward, we will also introduce
+%Bruno maybe it is a bit weird to talk about left cover in this point. I believe the reader might be a bit confused by this language. Perhaps you could in more abstract terms or remember the reader what a leaf means...
+
+In this chapter, we share our experiences about how to apply our theory to design a system.
+Since the performance of a system highly depends on the value of pseudo-rewards, we will also introduce
 some heuristics for choosing an appropriate pseudo-reward.
-Finally, we discuss the limitation and possible future works of our theory. 
+Finally, we discuss limitations and possible directions for future works. 
+
+%Bruno same comment above but here about pseudo-rewards. 
 
 %In this thesis, we describe an approach to use model-free methods to 
 %compensate the scenarios when model-based methods are failed to learn the optimal policy.
@@ -39,46 +43,56 @@ Finally, we discuss the limitation and possible future works of our theory.
 
 \section{System design}
 
+%Bruno Re. the paragraph below, who said that design principle? Do you have a reference? Or are you claiming that this is true?
+
 An important design principle of the system is to design the model-based method first,
 and the model-free method later. 
 We need to decide the features used by the
 model-based methods, the underlying supervised learning algorithms and most
 importantly, the effects which we would like to include in our model. Then we
-run the experiments, and observe the scenarios where the model-based method
-is failed. 
-Based on the observations, we design a set of features for model-free methods to handle
+run the experiments, and observe the scenarios where the model-based method fails. 
+Based on observations, we design a set of features for model-free methods to handle
 these scenarios. Note that we don't need to design a set of features to handle
-the whole problems, but only part of it. We only need the model-free method
+the whole problem, but only part of it. We only need the model-free method
 to take control when the model-based method fails. Therefore, we can reduce the
 number of features for model-free methods and let the overall system
 successfully handle all scenarios.
 
+%Bruno What do you mean by features above? If you include features as a new set of variables, the model-based method could fail in a different way, and you might loop in this specification...
+
 %//There are other alternative approaches to overcome their limitation.
 Since our work is about how to use model-free methods to improve the learned policy of model-based methods,
-it is not necessary to adopt our work if model-based methods can learn the optimal policy
+it is not necessary to adopt our method if model-based methods can learn the optimal policy
 on their own.
+
+%Bruno Did you specify the conditions when model-based method will fail and your method will succeed?
 
 Our work is not the only solution when model-based methods fail.
 Another alternative is to improve the quality of the model by including more domain knowledge.
-For example, in our Infinite Mario experiment, we do not include any effects 
+For example, in our Infinite Mario experiment, we did not include any effects 
 of the interactions between monsters and Mario. It is possible to
 hand-code the preconditions and postconditions of these effects, as Walsh et al. proposed in \cite{Walsh09}.
 In fact, the source code of Infinite Mario is publicly available.
 %(TODO: source code)
-There are no need to use model-based methods to learn the model. Instead,
+There is no need to use model-based methods to learn the model. Instead,
 we can simulate the experiences of the agent with the simulator of Infinite Mario. 
 Since the environment and the model are identical, there are no biases which will be 
 introduced during the simulation process.
-It is what Baumgarten did with his $A^*$ method for Mario AI\cite{Robin09}.
+This is what Baumgarten did with his $A^*$ method for Mario AI\cite{Robin09}.
 With the complete domain knowledge, it is unlikely for any RL methods to outperform his work.
+
+%Bruno No biases inotrudced by the simulation? But you are learning a policy right? That's a bias by definition...
+%Bruno unlikely for any RL to outperform his work? how do you know? That's a pretty strong statement. Did he claim that?
 
 However, the key idea of RL is to build an adaptive agent.
 Not only do we want the agent to perform well in a problem which we know very well,
 but we also want the agent to adapt itself to novel problems which we cannot foresee when we design the agent.
-If we put too much domain knowledge into the agent's design, we forbids it from adapting 
+If we put too much domain knowledge into the agent's design, we forbid it from adapting 
 itself when the prior knowledge does not hold anymore. 
 In this work, we introduce an alternative -- instead of designing an omnipotent model-based agent, we
 divide the learning task into different parts and let model-free methods handle the parts which model-based methods cannot do.
+
+%Bruno But you said that your methodology involved observing how the model-based fails and ONLY THEN designing the model-free.. That doesn't give you the authonomy you claim in this paragraph.
 
 %We want the agent to adapt itself to novel scenarios and find the optimal policy.
 %If we put too much domain knowledge into the design of the model, the agent 
@@ -94,16 +108,16 @@ divide the learning task into different parts and let model-free methods handle 
 %TODO: the choice of model-free methods (not only HORDQ), anything that can know its consquences  
 %It is not a problem to find a hierarchy
 
-\section{Choose an appropriate pseudo-reward}
+\section{Choosing an appropriate pseudo-reward}
 It is important to choose an appropriate pseudo-reward. If we choose a pseudo-reward which is too small, 
-the policy of the agent will be similar to the policy of model-free method. Therefore, we may lose the 
-benefit of faster learning rate. On the other hand, if the pseudo-reward is too large, 
+the policy of the agent will be similar to the policy of a model-free method. Therefore, we may lose the 
+benefit of the faster learning rate. On the other hand, if the pseudo-reward is too large, 
 the policy will be similar to the model-model method, which may be suboptimal
 when the assumptions of the model are not all satisfied.
 
 It is easy to determine when a pseudo-reward is too large by
 looking at the difference between the expected reward of the optimal policy and the policy of model-based method.
-If a pseudo-reward is larger than the difference, the model-free method will follow the policy
+If a pseudo-reward is larger than this difference, the model-free method will follow the policy
 of the model-based method strictly, and the combined policy will be the same as 
 the policy of model-based method.
 
@@ -117,7 +131,7 @@ For small problems, if we adopt table-lookup HORDQ as the model-free method,
 the optimal policy will be learned when the pseudo-reward is decreased to zero.
 So a viable strategy is to choose some pseudo-reward, which is not too large, and
 gradually decrease it to zero.
-For large problems, we have adopt model-free methods with function approximation techniques
+For large problems, we have adopted model-free methods with function approximation techniques
 , therefore the optimal policy might not be learned when the pseudo-reward is zero.
 Instead, we need to find out an optimal pseudo-reward which can maximize the expected reward.
 A way to decide it is to conduct the experiment with the model-free method,
@@ -127,7 +141,7 @@ the model-free method to follow the policy of model-based one.
 %the model-based method does not have enough samples to build a good model,
 %it is possible for it to compute very poor policy.
 
-\section{Limitation and future work}
+\section{Limitations and future work}
 
 The quality of learned policy depends on the chosen model-free method,
 the model-based method and the pseudo-reward. 
@@ -135,17 +149,17 @@ Since we can control the pseudo-reward to decide if the combined
 policy should be similar to model-free or model-based one,
 the combined policy can never be worse than any of them. 
 
-Since our work is a combination of two,  Our work will fail in scenarios where both methods fail, 
-It is only possible to resolve it by applying better model-free or model-based methods. 
+Since our work is a combination of the two, it will fail in scenarios where both methods fail. 
+We could only improve on this scenario if we apply better model-free or model-based methods. 
 
 %If we adopt the task hierarchy in \ref{se:MarioExp}, we can apply our work
 %to any reinforcement learning problems.  
 %The limitation of the applicability
 %of our work actually comes from the underlying RL methods. 
 
-Nevertheless, our work is not be useful when one method outperforms another.
+Nevertheless, our work is not useful either when one method outperforms another.
 In general, model-based methods learn faster than model-free methods because of
-efficient use of samples, but it may not be true for some problems. 
+the efficient use of samples, but it may not be true for some problems. 
 If the chosen model-based method is worse than the model-free method in both learning
 rate and the learned policy, it is pointless to combine both methods. 
 Similarly, if the model-free method fails to handle the scenarios where the model-based
@@ -155,16 +169,18 @@ we learn the optimal policy by combining it with table-lookup HORDQ as we prove 
 For large problems, it is difficult since approximated model-free RL may not learn the optimal policy.
 It is necessary to have the knowledge about the domain and apply the knowledge to choose some good features.
 
+%Bruno The 1st line of the previous paragraph is confusing. Clearly one method will outperform the other.
+
 %TODO: the process is similar to model-free RL
 We introduced the theory of improving the quality of the policy of model-based methods. However, we don't have any theory regarding the learning rate.
 It is true that if the model-based method is "approximately good", we can enjoy the 
-faster learning rate, as we showed in the experiment of Bus domain. Nevertheless, there are no theory
-to tell if a model-based method is approximately good or not.
-A possible direction of future work is to investigate what kind of the properties of model-based
+faster learning rate, as we showed in the Bus domain experiment. Nevertheless, there is no theory to tell if a model-based method is approximately good or not.
+A possible direction of future work is to investigate what kind of properties of model-based
 methods are necessary to increase the learning rate and how much they can increase when they are combined with model-free methods.
 
+%Bruno Your use of the word "learning rate" might mean different things to different people. Did you define it somewhere in your thesis? I'm not reading in order so I don't know it at this point.
 
-
+%Bruno Perhaps you could get a better closure for the thesis. I get the feeling that you are ending it too suddenly. But this is a minor style thing...
 
 %1. No theory about learning rate (what is a good approximation?)
 %2. No thery about the interaction betwwen model-based and model-free approach.

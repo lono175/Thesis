@@ -23,7 +23,7 @@ Barto and Mahadevan provide an excellent review on HRL \cite{HRLSurvey}.
 Reinforcement learning (RL) is a collection of methods which allow an agent to execute
 a sequence of actions and improve its actions by a reinforcement mechanism.
 In the RL setting, the environment can be modeled in several formalisms.
-One of the most commonly adopted formalisms is Markov decision processes (MDPs).
+One of the most commonly adopted formalisms is that of Markov decision processes (MDPs).
 An MDP assumes that the state of the environment is fully observable, and each action takes a single
 step to finish. Semi-Markov decision processes (SMDPs) remove the latter assumption and allow
 the action to take several time steps. Partially observable Markov decision processes (POMDPs) remove
@@ -90,7 +90,7 @@ The Bellman equation for the Q-function is:
 \end{equation}
 
 We are interesting in finding the optimal policy, which is the policy 
-that achieves as high as the value of any other policies in all states.
+that yields a value that is as high as the value of any other policies in all states.
 It is defined as:
 \begin{equation}
     \pi^*(s) = \argmax_{a \in A} [R(s, a) + \gamma \sum_{s'} P(s'|s, a)V^*(s')],
@@ -115,7 +115,9 @@ the optimal policy can be computed with dynamic programming (DP) algorithms.
 These methods are considered offline algorithms, since they are performed without
 the interaction with the environment.
 
-In the field of RL, people are more interested in solving the problems which
+%Bruno Re the sentence below, only part of the MDP is unknown right?
+
+In the field of RL, people are more interested in solving problems where
 the underlying MDP is unknown in the beginning. 
 Due to the lack of a priori model, it is necessary for the agent to interact with
 the environment and collect samples to acquire the statistical knowledge of the MDP.
@@ -126,7 +128,7 @@ problems are considered online algorithms.
 %gather statistical knowledge about this unknown model. Depending on the kind
 %of knowledge that is gathered, a distinction is made between model-based and
 %model-free solution techniques.
-Depend on how samples are processed, a distinction is made between model-based
+Depending on how samples are processed, a distinction is made between model-based
 and model-free methods. Model-based methods use samples to construct 
 a model of environment and use the techniques such as dynamic programming
 to compute the optimal policy from it.
@@ -135,11 +137,11 @@ a policy or value function.
 %A brief introduction of model-based and model-free methods are provided in
 %Sections \ref{se:modelbased} and \ref{se:modelfree} respectively.
 
-For both types of methods, a exploration policy is required to 
+For both types of methods, an exploration policy is required to 
 guide the sampling process.
 The simplest strategy is to select an action which leads to the highest value. However, 
 this strategy does not allow the agent to explore the states which are not visited before.
-A better approach is to use $\epsilon$-greedy method. The method allows the agent to abandon the
+A better approach is to use $\epsilon$-greedy method. Such a method allows the agent to abandon the
 best action and choose a random action with a very small probability $\epsilon$. The higher the probability, the more
 likely that the agent would explore the new actions. However, if the exploration probability 
 is too high, it will increase the time to converge.
@@ -312,6 +314,8 @@ estimate the new values based on the old estimates. After the agent selects an a
 the value of the previous state is updated based on the immediate reward and the 
 value of current state.
 
+%Bruno There are many model-free methods that aren't TD right?
+
 The equation to update the value function in TD learning is:
 \begin{displaymath}
    V(S_t) \leftarrow V(S_t) + \alpha [r_{t+1} + \gamma V(S_{t+1}) - V(S_t)],
@@ -396,15 +400,15 @@ where computation is cheap and the interactions of the environment are
 expensive.
 
 A straightforward approach is to build the model by learning the transition function and
-reward function, then use dynamic programming (DP) to compute the solution of
-Bellman equation (Equation \ref{eq:optimalQ}).
+reward function, then use dynamic programming (DP) to compute the solution of the
+Bellman equations (Equation \ref{eq:optimalQ}).
 
-The solution of Bellman equation is unique, but there might be several policies
+The solution of the Bellman equation is unique, but there might be several policies
 which can have the same value function. The most well-known dynamic
 programming algorithms are value iteration \cite{Bellman57} and policy
 iteration \cite{Howard1960}.
 
-Value iteration iteratively apply the Bellman equation to update the
+Value iteration iteratively applies the Bellman equation to update the
 values for all possible states. The value function will converge
 usually in few iterations. 
 
@@ -424,7 +428,7 @@ Until maximal update smaller than $\delta$\\
 \end{center}
 
 The policy iteration algorithm separates the iterative process into two stages. The first stage is policy evaluation, which computes the value function for
-current policy. The second stage is policy improvement, which improve the
+current policy. The second stage is policy improvement, which improves the
 policy by choosing a better action based on the value function computed in
 previous stage.
 
@@ -451,7 +455,7 @@ Until $\pi_{k+1} = \pi_{k}$\\
 \end{center}
 
 Another popular class of model-based methods is the Dyna architecture \cite{Dyna}.
-Dyna \cite{Dyna} is to use the learned model to generate extra experiences through
+Dyna \cite{Dyna} uses the learned model to generate extra experiences through
 the simulating process, but the underlying learning algorithm is still a TD method.
 %The idea of the Dyna architecture is to use a model-free solution technique
 %(such as the ones that will be described in the next section), but at the same
@@ -613,7 +617,8 @@ the simulating process, but the underlying learning algorithm is still a TD meth
 %5: for s 2 S do
 %6: Vk+1(s)   maxa
 %
-%R(s; a) + 
+%R(s; a) + 
+
 %P
 %
 %7: end for
@@ -625,7 +630,8 @@ the simulating process, but the underlying learning algorithm is still a TD meth
 %2: k   1
 %3: repeat
 %4: //Compute the value function of policy k by solving the equations
-%5: V k (s) := R(s; k(s)) + 
+%5: V k (s) := R(s; k(s)) + 
+
 %P
 %6: for s 2 S do
 %7: // Policy improvement step
@@ -802,8 +808,8 @@ The MAXQ framework is one of the early methods that combine temporal abstraction
 Unlike the options framework or HAMs which reduce the problem to a single SMDP, MAXQ decomposes
 the problem into several MDPs. Each MDP corresponds to a subtask in the hierarchy.
 The main idea of MAXQ is to decompose the value function into the expected reward that
-the agent will be received after an action is finished and the expected reward that
-the agent will be received on the completion of a subtask. 
+the agent will receive after an action is finished and the expected reward that
+the agent will receive on the completion of a subtask. 
 The problem of MAXQ framework is that the learning process of each subtask 
 is isolated from the rest of hierarchy. Since each subtask is unaware
 of the consequence of its decision after the subtask is completed, 
