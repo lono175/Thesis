@@ -253,7 +253,8 @@ especially when model-free methods cannot learn the optimal policy.
 \subsection{Previous work}
 Infinite Mario is an open source Java implementation of Nintendo's Super Mario Brothers game.
 It received much attention in the AI community possibly due to
-the two AI competitions -- RL 2009 competition and Mario AI competition, which were held in 2009.
+the two AI competitions -- RL 2009 competition\footnote{http://2009.rl-competition.org/}
+and Mario AI competition\footnote{http://julian.togelius.com/mariocompetition2009/}, which were held in 2009.
 The objective of these competitions is to build the best agent that
 can play this classic side-scrolling arcade-style game.
 
@@ -293,8 +294,8 @@ Ringstad et al. \cite{Paul09}
 used a modified linear SARSA algorithm to build the agent.
 The input features are the locations of the 3 nearest monsters or pits.
 Their idea is to design an agent that can finish the level as fast as possible.
-To encourage the agent to finish the level, they added a pseudo-reward to encourage
-the agent to move as far as possible.
+To encourage the agent to finish the level, they rewarded the agent when it traverses
+intervals of 10 tiles away from the start.
 Their method won the Mario AI championship of RL competition 2009.
 
 %Bruno What is a pseudo-reward? And shouldn't you be describing these contributions in the related work section of your thesis? Possibly in a separate chapter?
@@ -316,7 +317,8 @@ and use $A^*$ search to find a path to the right border of the screen as fast as
 Since his approach requires the agent to have the complete knowledge of the environment,
 the approach falls into the category of classical planning.
 
-%Bruno So if classical planning won the competition, either the learning agents were really bad (therefore a bad baseline) or the domain is not challenging enough right?
+%Bruno So if classical planning won the competition, either the learning agents were really bad (therefore a bad baseline)
+%or the domain is not challenging enough right?
 
 Ross et al. \cite{Ross11} used supervised learning to learn the direct policy
 mapping between input features and the primitive actions. The input features
@@ -433,7 +435,7 @@ and penalize the agent if it moves to left.
 
 %Bruno Where this choice come from? Would your method work without it?
 
-\subsection{The model-based method}
+\subsection{The model-based method for Mario domain}
 %TODO: only 9 actions
 %TODO: sampling
 
@@ -610,7 +612,7 @@ such as $SARSA(\lambda)$, so it is not a problem for these methods.
 %resort to 
 %It is possible to have a pe
 
-\subsection{The model-free method}
+\subsection{The model-free method for Mario domain}
 
 %Bruno Perhaps this section could be called The model-free method and its relation to the problem you illustrated before.
 
@@ -715,6 +717,7 @@ $\epsilon$-greedy with $\epsilon = 0.01$.}
 
 
 \begin{table}
+    \begin{center}
 \begin{tabular}[h]{l|l}
 %\hline
 %\multicolumn{1}{c}{}\\
@@ -728,6 +731,7 @@ Model        & 0\\
 \hline
 \hline
 \end{tabular}
+\end{center}
 \caption{The number of times for Mario to finish the level}
 %\caption{The features used by predicates.}
 \end{table}
@@ -765,6 +769,67 @@ If we decrease the pseudo-reward, the chances to fall into a pit will increase, 
 method ignores the pit completely.
 
 Our approach actually suggests a way to mix different methods and learn a better policy.
+\ \\
+\ \\
+\ \\
+\ \\
+\ \\
+\ \\
+\ \\
+\ \\
+\ \\
+\ \\
+\ \\
+\ \\
+\ \\
+\ \\
+\ \\
+\ \\
+\ \\
+\ \\
+\ \\
+\ \\
+\ \\
+\ \\
+\ \\
+\ \\
+\ \\
+\ \\
+\ \\
+\ \\
+\ \\
+\ \\
+\ \\
+\ \\
+\ \\
+\ \\
+\ \\
+\ \\
+\ \\
+\ \\
+\ \\
+\ \\
+\ \\
+\ \\
+\ \\
+\ \\
+\ \\
+\ \\
+\ \\
+\ \\
+\ \\
+\ \\
+\ \\
+\ \\
+\ \\
+\ \\
+\ \\
+\ \\
+\ \\
+\ \\
+\ \\
+\ \\
+\ \\
 %From experiment, 
 \endinput
 %Most of the previous work on RL focus on model-free approaches for several reasons. 

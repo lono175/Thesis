@@ -21,10 +21,10 @@ policy due to the structural assumptions.
 In this work, we propose an approach to combine the approximate model-based method with the
 model-free method (HORDQ) under the HRL framework. We are able to show that our approach
 can learn the optimal policy even when the assumptions of model are not satisfied. Furthermore, we show that optimality
-is guaranteed for any subtask policy as long as the subtask does not belong to the total leaf
-cover of a given hierarchy.
+is guaranteed for any subtask policy as long as the conditions of Theorem \ref{thm:opt} are satisfied.
 
-%Bruno maybe it is a bit weird to talk about left cover in this point. I believe the reader might be a bit confused by this language. Perhaps you could in more abstract terms or remember the reader what a leaf means...
+%Bruno maybe it is a bit weird to talk about left cover in this point. I believe the reader might be
+%a bit confused by this language. Perhaps you could in more abstract terms or remember the reader what a leaf means...
 
 In this chapter, we share our experiences about how to apply our theory to design a system.
 Since the performance of a system highly depends on the value of pseudo-rewards, we will also introduce
@@ -44,14 +44,13 @@ Finally, we discuss limitations and possible directions for future works.
 \section{System design}
 
 %Bruno Re. the paragraph below, who said that design principle? Do you have a reference? Or are you claiming that this is true?
-
 An important design principle of the system is to design the model-based method first,
 and the model-free method later. 
 We need to decide the features used by the
 model-based methods, the underlying supervised learning algorithms and most
 importantly, the effects which we would like to include in our model. Then we
 run the experiments, and observe the scenarios where the model-based method fails. 
-Based on observations, we design a set of features for model-free methods to handle
+Based on the observations, we design a set of features for model-free methods to handle
 these scenarios. Note that we don't need to design a set of features to handle
 the whole problem, but only part of it. We only need the model-free method
 to take control when the model-based method fails. Therefore, we can reduce the
@@ -78,7 +77,7 @@ There is no need to use model-based methods to learn the model. Instead,
 we can simulate the experiences of the agent with the simulator of Infinite Mario. 
 Since the environment and the model are identical, there are no biases which will be 
 introduced during the simulation process.
-This is what Baumgarten did with his $A^*$ method for Mario AI\cite{Robin09}.
+This is what Baumgarten, the champion of Mario AI competition 2009, did with his $A^*$ method for Mario AI \cite{Robin09}.
 With the complete domain knowledge, it is unlikely for any RL methods to outperform his work.
 
 %Bruno No biases inotrudced by the simulation? But you are learning a policy right? That's a bias by definition...
@@ -157,13 +156,15 @@ We could only improve on this scenario if we apply better model-free or model-ba
 %The limitation of the applicability
 %of our work actually comes from the underlying RL methods. 
 
-Nevertheless, our work is not useful either when one method outperforms another.
+Nevertheless, our work is not useful when one method outperforms another.
 In general, model-based methods learn faster than model-free methods because of
 the efficient use of samples, but it may not be true for some problems. 
 If the chosen model-based method is worse than the model-free method in both learning
 rate and the learned policy, it is pointless to combine both methods. 
 Similarly, if the model-free method fails to handle the scenarios where the model-based
 method fails or the model-based method can learn the optimal policy, it is not necessary to apply our work.
+Our work has its edge when the model-based method learns faster than the model-free method but learns
+a worse policy compared to the model-free one.
 For small problems, if the model-based method fails to learn the optimal policy, 
 we learn the optimal policy by combining it with table-lookup HORDQ as we prove in Theorem \ref{thm:opt}.
 For large problems, it is difficult since approximated model-free RL may not learn the optimal policy.
