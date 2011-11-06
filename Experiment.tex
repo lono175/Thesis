@@ -259,6 +259,7 @@ The objective of these competitions is to build the best agent that
 can play this classic side-scrolling arcade-style game.
 
 %Bruno In the paragraph above, perhaps you could cite the competitions, at least as a footnote directing to their web site
+%James added
 
 The RL 2009 competition required competitors to use RL algorithms to build their agents.
 On the other hand, the Mario AI 2009 competition \cite{Robin09} 
@@ -299,6 +300,8 @@ intervals of 10 tiles away from the start.
 Their method won the Mario AI championship of RL competition 2009.
 
 %Bruno What is a pseudo-reward? And shouldn't you be describing these contributions in the related work section of your thesis? Possibly in a separate chapter?
+%James The reference of pseudo-reward has been removed.
+%James It is good question. My concern is that the related work presented here is only related to Mario experiment. Where should I put it?
 
 The state observation of Mario AI 2009 competition \cite{Robin09} includes $22 \times 22$ tiles on the screen, the location and the speed of monsters, 
 and the status of Mario such as "isMarioOnGround" or "mayMarioJump".
@@ -319,6 +322,8 @@ the approach falls into the category of classical planning.
 
 %Bruno So if classical planning won the competition, either the learning agents were really bad (therefore a bad baseline)
 %or the domain is not challenging enough right?
+%James Because the classical planning has the complete knowledge of the problem, but RL methods do not.
+%James You may that say the domain is not challenging, since we do have the complete knowledge of Mario, but it may not be true for other video games.
 
 Ross et al. \cite{Ross11} used supervised learning to learn the direct policy
 mapping between input features and the primitive actions. The input features
@@ -400,6 +405,8 @@ action space, since they do not seem to be relevant to the optimal policy.
 The agent can execute 9 actions in our experiment.
 
 %Bruno At this point you could say already if something belongs to the optimal policy or not, since you claim that your method learns this policy right?
+%James In Mario domain, it is not clear what the optimal policy is, due to the huge state space.
+%James Do you suggest me rephrase it?
 
 The screen of Infinite Mario is comprised of a matrix of $22 \times 16$ tiles.
 The matrix is an array of characters, with each element representing the type of tile.
@@ -434,6 +441,8 @@ displacement of x-position to encourage the agent to move as right as possible
 and penalize the agent if it moves to left.
 
 %Bruno Where this choice come from? Would your method work without it?
+%James Because Mario doesn't know the exit is at the far end of his right, it needs some motivation to move in that direction.
+%James So no method will work without it.
 
 \subsection{The model-based method for Mario domain}
 %TODO: only 9 actions
@@ -615,6 +624,7 @@ such as $SARSA(\lambda)$, so it is not a problem for these methods.
 \subsection{The model-free method for Mario domain}
 
 %Bruno Perhaps this section could be called The model-free method and its relation to the problem you illustrated before.
+%James Title changed
 
 Since the model-based method cannot deal with the interaction between objects, we use a
 model-free method to handle it.
@@ -748,6 +758,7 @@ The maximum distance for Mario to move to the right is 315.
 Beyond that, the level is finished with +100 reward.
 
 %Bruno when random seed 1247, are you talking about a specific run? If so, what's special about this one in specific? Is it typical of something?
+%James No, it is not typical. It is just a random trial.
 
 Table 1 shows the number of times for Mario to finish the level within 1000 episodes.
 Unsurprisingly, the model-based and model-free method are difficult

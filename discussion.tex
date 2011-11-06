@@ -25,6 +25,7 @@ is guaranteed for any subtask policy as long as the conditions of Theorem \ref{t
 
 %Bruno maybe it is a bit weird to talk about left cover in this point. I believe the reader might be
 %a bit confused by this language. Perhaps you could in more abstract terms or remember the reader what a leaf means...
+%James The reference of leaf cover is removed  
 
 In this chapter, we share our experiences about how to apply our theory to design a system.
 Since the performance of a system highly depends on the value of pseudo-rewards, we will also introduce
@@ -32,6 +33,7 @@ some heuristics for choosing an appropriate pseudo-reward.
 Finally, we discuss limitations and possible directions for future works. 
 
 %Bruno same comment above but here about pseudo-rewards. 
+%James "pseudo-reward" is used across all chapters. The readers should have be familiar it. This is the last chapter after all.
 
 %In this thesis, we describe an approach to use model-free methods to 
 %compensate the scenarios when model-based methods are failed to learn the optimal policy.
@@ -44,6 +46,8 @@ Finally, we discuss limitations and possible directions for future works.
 \section{System design}
 
 %Bruno Re. the paragraph below, who said that design principle? Do you have a reference? Or are you claiming that this is true?
+%James It is how I designed the features in the experiment, based on my experience. It is not a statement, so it cannot be true or false.
+
 An important design principle of the system is to design the model-based method first,
 and the model-free method later. 
 We need to decide the features used by the
@@ -58,6 +62,8 @@ number of features for model-free methods and let the overall system
 successfully handle all scenarios.
 
 %Bruno What do you mean by features above? If you include features as a new set of variables, the model-based method could fail in a different way, and you might loop in this specification...
+%James The model-based methods and model-free methods use different features. The above process fixes the features of the model-based method, and changes the model-free features only.
+%James The model-based method stays the same, so it will fail in the same way.
 
 %//There are other alternative approaches to overcome their limitation.
 Since our work is about how to use model-free methods to improve the learned policy of model-based methods,
@@ -65,6 +71,9 @@ it is not necessary to adopt our method if model-based methods can learn the opt
 on their own.
 
 %Bruno Did you specify the conditions when model-based method will fail and your method will succeed?
+%James                                                       ^^^^                               ^^^^
+%James        It depends on the model-based method and the problem.
+%James                                                   If it is possible to find a set of features which can represent a better policy, it will.
 
 Our work is not the only solution when model-based methods fail.
 Another alternative is to improve the quality of the model by including more domain knowledge.
@@ -81,7 +90,11 @@ This is what Baumgarten, the champion of Mario AI competition 2009, did with his
 With the complete domain knowledge, it is unlikely for any RL methods to outperform his work.
 
 %Bruno No biases inotrudced by the simulation? But you are learning a policy right? That's a bias by definition...
+%James The biases mean that there is a difference between simulation and the environment. Do you think I should change another verb? 
+
 %Bruno unlikely for any RL to outperform his work? how do you know? That's a pretty strong statement. Did he claim that?
+%James He is still the world champion. But the reason is obvious-- RL methods need to learn how to play the game, but his A* approach has the complete knowledge of Mario in the beginning,
+%James so there are no learning phase in his approach. 
 
 However, the key idea of RL is to build an adaptive agent.
 Not only do we want the agent to perform well in a problem which we know very well,
@@ -92,6 +105,11 @@ In this work, we introduce an alternative -- instead of designing an omnipotent 
 divide the learning task into different parts and let model-free methods handle the parts which model-based methods cannot do.
 
 %Bruno But you said that your methodology involved observing how the model-based fails and ONLY THEN designing the model-free.. That doesn't give you the authonomy you claim in this paragraph.
+%James It is not possible to achieve the autonomy in RL. We need to specify the features, the primitive actions, the rewards and all the parameters. It is not possible to do these stuffs automatically.
+%James The idea here is to develop a generic AI which knows as little domain knowledge as possible, so we can apply it to different problems. 
+%James The engineering process such as designing a set of good features is still necessary, but it should be done in a generic way (like using image features only)
+%James There is a trade-off between generality and effectiveness. Baumgarten's A* is an example of effectiveness, but the same AI code cannot be applied to Pacman, so the generality is limited.
+%James The objective of my work is to achieve the best possible effectiveness and keep certain amount of generality at the same time.
 
 %We want the agent to adapt itself to novel scenarios and find the optimal policy.
 %If we put too much domain knowledge into the design of the model, the agent 
@@ -171,6 +189,8 @@ For large problems, it is difficult since approximated model-free RL may not lea
 It is necessary to have the knowledge about the domain and apply the knowledge to choose some good features.
 
 %Bruno The 1st line of the previous paragraph is confusing. Clearly one method will outperform the other.
+%James There are two objectives of RL algorithms: 1. Learn the best policy 2. in minimal steps
+%James It is possible that one method outperforms another in one objective but fails in another 
 
 %TODO: the process is similar to model-free RL
 We introduced the theory of improving the quality of the policy of model-based methods. However, we don't have any theory regarding the learning rate.
@@ -180,8 +200,10 @@ A possible direction of future work is to investigate what kind of properties of
 methods are necessary to increase the learning rate and how much they can increase when they are combined with model-free methods.
 
 %Bruno Your use of the word "learning rate" might mean different things to different people. Did you define it somewhere in your thesis? I'm not reading in order so I don't know it at this point.
+%James No, I didn't define it. Do you know any paper which provides the definition?
 
 %Bruno Perhaps you could get a better closure for the thesis. I get the feeling that you are ending it too suddenly. But this is a minor style thing...
+%James You are right. Any ideas what I should say here?
 
 %1. No theory about learning rate (what is a good approximation?)
 %2. No thery about the interaction betwwen model-based and model-free approach.
