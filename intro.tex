@@ -42,12 +42,12 @@ specialized algorithms that exploit the structure \cite{ApproxFactor, SPUDD, Wyn
 However, not all of problems have the factored structures. Thus, the applicability of these
 methods are limited.
 
-Hester and Stone \cite{Hester09} observed that the relative transition effects of actions
-is more generalizable than absolute values. They propose RL-DT to model relative
+Hester and Stone \cite{Hester09} observed that modeling relative transition effects of actions
+is more generalizable than modeling their absolute values. They proposed RL-DT to model relative
 effects with decision trees.
 
 Walsh et al. \cite{Walsh09} proposed KWIK (Know What It Knows) linear regression
-to learn the transition probabilities and applied it Stochastic STRIPS domain while
+to learn the transition probabilities and applied it to Stochastic STRIPS domains while
 assuming the preconditions and effects of each action are known in advance. 
 
 %OOMDP problem (relational)
@@ -235,7 +235,7 @@ This makes it more difficult for these methods to generalize to novel scenarios.
 %2. Possibly worse policy because of structural modeling assumptions
 %3. Rapid adaptation to new problems
 
-In this thesis, we investigate the possibility combining both model-based and model-free methods 
+In this thesis, we investigate the possibility of combining both model-based and model-free methods 
 and get the best of each - simulate the experiences from samples to increase the learning rate
 and learn an optimal policy even when the assumption of model is not satisfied. 
 
