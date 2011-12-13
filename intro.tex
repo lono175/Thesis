@@ -42,12 +42,12 @@ specialized algorithms that exploit the structure \cite{ApproxFactor, SPUDD, Wyn
 However, not all of problems have the factored structures. Thus, the applicability of these
 methods are limited.
 
-Hester and Stone \cite{Hester09} observed that the relative transition effects of actions
-is more generalizable than absolute values. They propose RL-DT to model relative
+Hester and Stone \cite{Hester09} observed that modeling relative transition effects of actions
+is more generalizable than modeling their absolute values. They proposed RL-DT to model relative
 effects with decision trees.
 
 Walsh et al. \cite{Walsh09} proposed KWIK (Know What It Knows) linear regression
-to learn the transition probabilities and applied it Stochastic STRIPS domain while
+to learn the transition probabilities and applied it to Stochastic STRIPS domains while
 assuming the preconditions and effects of each action are known in advance. 
 
 %OOMDP problem (relational)
@@ -235,11 +235,13 @@ This makes it more difficult for these methods to generalize to novel scenarios.
 %2. Possibly worse policy because of structural modeling assumptions
 %3. Rapid adaptation to new problems
 
-In this thesis, we investigate the possibility combining both model-based and model-free methods 
+In this thesis, we investigate the possibility of combining both model-based and model-free methods 
 and get the best of each - simulate the experiences from samples to increase the learning rate
 and learn an optimal policy even when the assumption of model is not satisfied. 
 
 %Bruno Optimality is not exactly the best target right? Many people are only worried about getting solutions that are good enough. What sacrifices are you making for optimality?
+%James The best case is to learn the optimal policy in the minimal steps. 
+%James About sacrifice, possibly the learning rate (see experiment of Bus domain), but it is also possible not to sacrifice anything (see Mario experiment)
 
 To combine these two methods, we need a framework which can incorporate different RL algorithms.
 One possible choice is hierarchical reinforcement learning (HRL). 
@@ -250,7 +252,9 @@ fails to approximate the problem.
 Our approach assumes the task hierarchy for an MDP is given. The hierarchy can either be 
 designed manually or learned by automatic hierarchy discovery techniques \cite{HexQ}.
 
+
 %Bruno How will you guarantee?
+%James Please see Theorem 3
 
 %hierarchically optimal recursive Q-learning (HORDQ) \cite{HORDQ}, which is a model-free method, we can 
 %guarantee that the overall policy will converge to the optimal one even when our model
