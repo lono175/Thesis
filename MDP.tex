@@ -21,7 +21,15 @@ Barto and Mahadevan provide an excellent review on HRL \cite{HRLSurvey}.
 \section{Reinforcement learning}
 \label{se:RL}
 Reinforcement learning (RL) is a collection of methods which allow an agent to execute
-a sequence of actions and improve its actions by a reinforcement mechanism.
+a sequence of actions and improve its actions by the rewards which are provided by the environment.
+There are two kinds of RL learning tasks--episodic and continuing tasks.
+In an episodic task, there are some terminal states that will terminate
+the current task (episode) when one of them is encountered.
+For the episodic task, an action only affects the subsequently received rewards
+within the current episode.
+There are no terminal states for a continuing task. Therefore, the sequence of actions which
+are executed by the agent will be infinite. 
+
 In the RL setting, the environment can be modeled in several formalisms.
 One of the most commonly adopted formalisms is that of Markov decision processes (MDPs).
 An MDP assumes that the state of the environment is fully observable, and each action takes a single
@@ -48,13 +56,12 @@ POMDPs are orthogonal to our work, thus they will not be covered.
 \label{se:MDP}
 %In this work, we address the finite state Markov decision process (MDP) problem:
 
-\begin{definition} A Markov decision process is formalized as a tuple $<S, A, P, R, I>$, where:
+\begin{definition} A Markov decision process is formalized as a tuple $<S, A, P, R>$, where:
 \begin{itemize}
     \item $S$ is a finite set of states of the environment.
     \item $A$ is a finite set of actions.
     \item $P:S \times A \times S \rightarrow [0, 1]$ is the transition function which defines a probability distribution over the possible next states.
     \item $R:S \times A \rightarrow \mathbb{R}$ is the reward function which defines the reward after executing a certain action at a certain state.
-    \item $I:S \rightarrow [0, 1]$ specifies the initial state distribution.
  \end{itemize}
 \end{definition}
 
@@ -391,8 +398,7 @@ Repeat (for each episode):\\
 
 \subsection{Model-based methods}
 \label{se:modelbased}
-Unlike model-free methods which adopt the trial-and-error learning process,
-model-based methods construct a model of the environment from the samples and
+Model-based methods construct a model of the environment from the samples and
 conduct a planning process over it. With the constructed model, these methods
 can predict the outcome of the agent's action, and choose an optimal action
 that can achieve the highest predictive reward. Since this type of methods
@@ -411,8 +417,8 @@ programming algorithms are value iteration \cite{Bellman57} and policy
 iteration \cite{Howard1960}.
 
 Value iteration iteratively applies the Bellman equation to update the
-values for all possible states. The value function will converge
-usually in few iterations. 
+values for all possible states. In theory, value iteration requires an infinite number of iterations to converge to the optimal value function $V^*$.
+In practice, we stop when the maximal update is smaller than certain amount.
 
 \begin{center}
 \begin{tabular}{@{}lp{6cm}@{}}
@@ -429,10 +435,10 @@ Until maximal update smaller than $\delta$\\
 \end{tabular}
 \end{center}
 
-The policy iteration algorithm separates the iterative process into two stages. The first stage is policy evaluation, which computes the value function for
+Policy iteration separates the iterative process into two stages. The first stage is policy evaluation, which computes the value function for
 current policy. The second stage is policy improvement, which improves the
 policy by choosing a better action based on the value function computed in
-previous stage.
+previous stage. Policy iteration often converges in few iterations. 
 
 \begin{center}
 \begin{tabular}{@{}lp{6cm}@{}}
@@ -679,7 +685,6 @@ learning.
         probability that state is transited from  $s$ to $s'$ after action $a$
         is taken at state $s$ and finished in exact $N$ steps.
     \item $R:S \times \mathbb{N} \times A \rightarrow \mathbb{R}$ is the reward function which defines the reward after executing a certain action at a certain state.
-    \item $I:S \rightarrow [0, 1]$ specifies the initial state distribution.
  \end{itemize}
 \end{definition}
 
@@ -787,7 +792,7 @@ between temporal-extended actions and adopted H-DYNA to solve the problem.
 Dayan and Hinton \cite{Dayan95} introduced Feudal Q-learning, a hierarchical method that
 recursively partitions the problem in both spatial and temporal scales. 
 
-The above methods depend on the MDP formulation. However, it is not suitable for the problem of HRL.
+The above methods depend on the MDP formulation. However, they are not suitable for the problem of HRL.
 In HRL, the agent makes decisions when each temporal-extended actions are finished, thus the state
 may change several times between each decision. The SMDP model which we have described
 in section \ref{se:SMDP} is a better alternative. The application of SMDP model

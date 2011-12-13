@@ -37,8 +37,6 @@ regardless of which subgoal is set by its parent subtask.
 
 %The difference of recursively optimal policy and hierarchically optimal policy is explained
 %in section \ref{se:ROHO}. 
-
-
 However, a hierarchically optimal method alone cannot guarantee that the optimal 
 policy can be always learned. To ensure that the optimal policy can be learned, 
 we need to "patch" the hierarchy to allow some subtasks to be able to solve
@@ -97,9 +95,9 @@ subtask $Put$ is to put down the passenger at the destination.
 
 Assume the policy of subtask $Root$ is suboptimal and always invokes $Get$ even when 
 the passenger is already in the taxi. Optimality can be guaranteed if subtask $Get$
-learns to deliver the passenger to his destination.
+learns to deliver the passenger to his destination and put him down.
 Or suppose the policy of $Root$ always chooses $Put$.
-If subtask $Put$ learns to pickup the passenger when he is not in the taxi, 
+If subtask $Put$ learns to navigate to the passenger's location and pick him up when he is not in the taxi, 
 we will have the optimal policy because it does not matter which decision is made 
 by $Root$, the passenger can always be picked up and delivered to the destination.
 

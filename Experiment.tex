@@ -3,7 +3,7 @@
 
 \chapter{Empirical study}
 
-In this chapter, we demonstrate the effectiveness of our approach in the 
+In this chapter, we demonstrate the effectiveness of our approach in
 Bus and Infinite Mario domains.
 The Bus domain is a 6 by 6 grid world problem. 
 We have $2304$ states in this domain, so it is small enough to apply table-lookup methods to learn
@@ -49,7 +49,11 @@ are not included in the model.
 \label{fig:bus}
 \end{figure}
 
-Figure \ref{fig:bus}(a) shows the bus domain. The bus starts at $S$. Its task
+The Bus domain is introduced in this section. We use it as an example to show 
+that model-based methods have faster learning rates, even with a biased model.
+We also use it to illustrate how to combine them with model-free methods to improve the learned policy.
+
+Figure \ref{fig:bus}(a) shows the Bus domain. The bus starts at $S$. Its task
 is to pickup all passengers marked as $P$ and return to $S$.
 The bus can move North, South, East, or West. There is a reward of -1 applied for each action.
 There is a $0.1$ probability for the bus to move in a random direction. It stays put 
@@ -90,14 +94,14 @@ policy. Subtask $Root$ adopted our approximate model-based method.
 
 %TODO: dyanmic programming
 %TODO: add free + free HORDQ to show that HORDQ makes the hierarchical process useless
-The variables of our model are $\{x, y, p_1, p_2, p_3\}$, while the damage
-status and road conditions are assumed to be static during the planning process.
-Our model can learn that a large penalty will be received when the bus is damaged.  
-However, our model cannot learn that the bus will get damaged if it passes through
-a construction site. The model is certainly biased in this case, thus
-it cannot learn the optimal policy. The objective of 
-the experiment is to show that the optimal policy can still be learned
-if we combine the model-based approach with HORDQ. 
+Suppose the variables of our model are $\{x, y, p_1, p_2, p_3\}$, which are fewer than the MDP, and assume
+that the damage status and road conditions are static during the planning
+process, our model can learn that a large penalty will be received when the bus
+is damaged. However, our model cannot learn that the bus will get damaged if
+it passes through a construction site. The model is certainly biased in this
+case, thus it cannot learn the optimal policy. The objective of the experiment
+is to show that the optimal policy can still be learned if we combine the
+model-based approach with HORDQ. 
 
 %Based on the results of the previous section, we can safely use any approximate model-based method 
 %to learn the Q-values of subtasks which do not belong to $TC(H)$ without worrying
@@ -215,7 +219,7 @@ algorithm, it is beneficial to incorporate HORDQ in the hierarchy.
 \end{minipage}
 \begin{minipage}[b]{0.9\linewidth} \centering (b) \end{minipage}
 %\end{center}
-\caption{The learning curve for the bus domain, averaged over 400 episodes. (a) With our model-based approach. (b) With random policy.
+\caption{The learning curve for the Bus domain, averaged over 400 episodes. (a) With our model-based approach. (b) With random policy.
 The pseudo-reward is shown in parentheses. The parameters are $\alpha=0.1$ and $\gamma=1$. All algorithms follow an $\epsilon$-greedy exploration policy
 with $\epsilon = 0.1$.}
 \label{fig:res}
