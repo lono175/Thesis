@@ -4,7 +4,7 @@
 \chapter{Empirical study}
 
 In this chapter, we demonstrate the effectiveness of our approach in
-Bus and Infinite Mario domains.
+a Bus domain and the Infinite Mario domain.
 The Bus domain is a 6 by 6 grid world problem. 
 We have $2304$ states in this domain, so it is small enough to apply table-lookup methods to learn
 the optimal policy. In this experiment, we combine table-lookup HORDQ and an approximate model-based method 
@@ -50,7 +50,7 @@ are not included in the model.
 \end{figure}
 
 The Bus domain is introduced in this section. We use it as an example to show 
-that model-based methods have faster learning rates, even with a biased model.
+that model-based methods can have faster learning rates, even with a biased model.
 We also use it to illustrate how to combine them with model-free methods to improve the learned policy.
 
 Figure \ref{fig:bus}(a) shows the Bus domain. The bus starts at $S$. Its task
@@ -94,7 +94,7 @@ policy. Subtask $Root$ adopted our approximate model-based method.
 
 %TODO: dyanmic programming
 %TODO: add free + free HORDQ to show that HORDQ makes the hierarchical process useless
-Suppose the variables of our model are $\{x, y, p_1, p_2, p_3\}$, which are fewer than the MDP, and assume
+Suppose the variables of our model are reduced to $(x, y, p_1, p_2, p_3)$ and assume
 that the damage status and road conditions are static during the planning
 process, our model can learn that a large penalty will be received when the bus
 is damaged. However, our model cannot learn that the bus will get damaged if

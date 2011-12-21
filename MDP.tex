@@ -22,7 +22,7 @@ Barto and Mahadevan provide an excellent review on HRL \cite{HRLSurvey}.
 \label{se:RL}
 Reinforcement learning (RL) is a collection of methods which allow an agent to execute
 a sequence of actions and improve its actions by the rewards which are provided by the environment.
-There are two kinds of RL learning tasks--episodic and continuing tasks.
+There are two kinds of RL learning tasks -- episodic and continuing tasks.
 In an episodic task, there are some terminal states that will terminate
 the current task (episode) when one of them is encountered.
 For the episodic task, an action only affects the subsequently received rewards
@@ -417,7 +417,7 @@ programming algorithms are value iteration \cite{Bellman57} and policy
 iteration \cite{Howard1960}.
 
 Value iteration iteratively applies the Bellman equation to update the
-values for all possible states. In theory, value iteration requires an infinite number of iterations to converge to the optimal value function $V^*$.
+values for all possible states. In theory, value iteration requires an unbounded number of iterations to converge to the optimal value function $V^*$.
 In practice, we stop when the maximal update is smaller than certain amount.
 
 \begin{center}
@@ -438,7 +438,7 @@ Until maximal update smaller than $\delta$\\
 Policy iteration separates the iterative process into two stages. The first stage is policy evaluation, which computes the value function for
 current policy. The second stage is policy improvement, which improves the
 policy by choosing a better action based on the value function computed in
-previous stage. Policy iteration often converges in few iterations. 
+previous stage. Policy iteration often quickly converges in a few iterations. 
 
 \begin{center}
 \begin{tabular}{@{}lp{6cm}@{}}
